@@ -8,16 +8,16 @@ import java.util.List;
 
 import com.excilys.cdb.mapper.CompanyMapper;
 import com.excilys.cdb.model.Company;
-import com.mysql.jdbc.PreparedStatement;
+import java.sql.PreparedStatement;
 
 public class CompanyDaoImpl implements IDao<Company>{
 
 	private Connection conn;
-	private java.sql.PreparedStatement selectAllCompany;
-	private java.sql.PreparedStatement selectOneCompany;
-	private java.sql.PreparedStatement deleteOneCompany;
-	private java.sql.PreparedStatement updateOneCompany;
-	private java.sql.PreparedStatement insertOneCompany;
+	private PreparedStatement selectAllCompany;
+	private PreparedStatement selectOneCompany;
+	private PreparedStatement deleteOneCompany;
+	private PreparedStatement updateOneCompany;
+	private PreparedStatement insertOneCompany;
 	
 	private static enum preparedStatement {
 		SELECT_ALL ("SELECT * FROM company;"),

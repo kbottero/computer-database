@@ -1,5 +1,7 @@
 package com.excilys.cdb.persistence;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -9,16 +11,26 @@ public enum DaoManager {
 	
 	INSTANCE;
 	
+	private Properties properties;
+	
+	DaoManager (){
+		properties = new Properties();
+		FileInputStream in;
+		try {
+			in = new FileInputStream("db.properties");
+			properties.load(in);
+			in.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public Connection getConnection() throws SQLException {
-
 	    Connection conn = null;
-	    Properties connectionProps = new Properties();
-	    connectionProps.put("user", "admincdb");
-	    connectionProps.put("password", "qwerty1234");
-
-        conn = DriverManager.getConnection(
-                   "jdbc:mysql://localhost:3306/computer-database-db?zeroDateTimeBehavior=convertToNull",
-                   connectionProps);
+	    conn = DriverManager.getConnection(
+	    		properties.getProperty("url")+properties.getProperty("database"),
+	    		properties);
         
 	    return conn;
 	}

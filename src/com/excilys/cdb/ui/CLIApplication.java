@@ -113,6 +113,9 @@ public class CLIApplication {
 		}
 	}
 	
+	/**
+	 * Display the list of computers within the Database
+	 */
 	private static void listComputers() {
 		ArrayList<Computer> list = new ArrayList<Computer>();
 		list = (ArrayList<Computer>) serv.getAllComputer();
@@ -120,7 +123,10 @@ public class CLIApplication {
 			printComputer(computer);
 		}
 	}
-	
+
+	/**
+	 * Display the list of companies within the Database
+	 */
 	private static void listCompanies() {
 		ArrayList<Company> list = new ArrayList<Company>();
 		list = (ArrayList<Company>) serv.getAllCompany();
@@ -128,7 +134,11 @@ public class CLIApplication {
 			printCompany(Company);
 		}
 	}
-	
+
+	/**
+	 * Display page by page the list of computers within the Database,
+	 * 
+	 */
 	private static void listComputersPage(Scanner s) {
 		Page<Computer> page;
 		try {
@@ -160,7 +170,11 @@ public class CLIApplication {
 			scan.close();
 		}
 	}
-
+	
+	/**
+	 * Display page by page the list of companies within the Database,
+	 * @param s Current Scanner value
+	 */
 	private static void listCompaniesPage(Scanner s) {
 		Page<Company> page;
 		try {
@@ -193,6 +207,10 @@ public class CLIApplication {
 		}
 	}
 
+	/**
+	 * Command to display details concerning one computer
+	 * @param s Current Scanner value
+	 */
 	private static void showComputer(Scanner s) {
 		if (s.next().equals(details)) {
 			try {
@@ -209,6 +227,11 @@ public class CLIApplication {
 		}
 	}
 	
+	
+	/**
+	 * Command to create a new computer 
+	 * @param s  Current Scanner value
+	 */
 	private static void createComputer(Scanner s) {
 		Computer computer;
 		String name;
@@ -246,6 +269,11 @@ public class CLIApplication {
 		}
 	}
 	
+	
+	/**
+	 * Command to update an existing computer 
+	 * @param s  Current Scanner value
+	 */
 	private static void updateComputer(Scanner s) {
 		Computer computer;
 		long id;
@@ -292,6 +320,10 @@ public class CLIApplication {
 		serv.saveOneComputer(computer);
 	}
 	
+	/**
+	 * Command to delete an existing computer 
+	 * @param s  Current Scanner value
+	 */
 	private static void deleteComputer(Scanner s) {
 		try {
 			long id = s.nextLong();
@@ -301,10 +333,13 @@ public class CLIApplication {
 		}
 	}
 	
+	/**
+	 * Command to display existing commands 
+	 */
 	private static void help() {
 		System.out.println("Help : list commands");
-		System.out.println(list+" "+computers);
-		System.out.println(list+" "+companies);
+		System.out.println(list+" "+computers+" [pages [nbLinePerPages]]");
+		System.out.println(list+" "+companies+" [pages [nbLinePerPages]]");
 		System.out.println(show+" id");
 		System.out.println(create+" name [introductionDate [discontinuedDate]]");
 		System.out.println(update+" id [name [introductionDate [discontinuedDate]]]");
@@ -312,10 +347,16 @@ public class CLIApplication {
 		System.out.println(quit);
 	}
 	
+	/**
+	 * Display a computer
+	 */
 	public static void printComputer(Computer c) {
 		System.out.println(c.getId()+"\t"+c.getName()+"\t"+c.getConstructor().getName()+"\t"+c.getIntroductionDate()+"\t"+c.getDiscontinuedDate());
 	}
 	
+	/**
+	 * Display a company
+	 */
 	public static void printCompany(Company c) {
 		System.out.println(c.getId()+"\t"+c.getName());
 	}

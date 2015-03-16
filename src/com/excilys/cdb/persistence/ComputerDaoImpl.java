@@ -1,6 +1,7 @@
 package com.excilys.cdb.persistence;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -9,23 +10,22 @@ import java.util.List;
 import com.excilys.cdb.mapper.ComputerMapper;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.mysql.jdbc.PreparedStatement;
 
 public class ComputerDaoImpl  implements IDao<Computer> {
 		
 	private Connection conn;
-	private java.sql.PreparedStatement selectAllComputer;
-	private java.sql.PreparedStatement selectOneComputer;
-	private java.sql.PreparedStatement deleteOneComputer;
-	private java.sql.PreparedStatement updateOneComputer;
-	private java.sql.PreparedStatement insertOneComputer;
+	private PreparedStatement selectAllComputer;
+	private PreparedStatement selectOneComputer;
+	private PreparedStatement deleteOneComputer;
+	private PreparedStatement updateOneComputer;
+	private PreparedStatement insertOneComputer;
 	
 	private static enum preparedStatement {
 		SELECT_ALL ("SELECT * FROM computer;"),
 		SELECT_ONE ("SELECT * FROM computer WHERE id=?;"),
 		INSERT_ONE ("INSERT INTO computer (name, introduced, discontinued,company_id) VALUES (?,?,?,?) ;"),
 		UPDATE_ONE ("UPDATE computer SET name=?,introduced=?,discontinued=?,company_id=? WHERE id=?;"),
-		DELETE_ONE ("SELECT * FROM computer;");
+		DELETE_ONE ("DELETE FROM computer WHERE id=?;");
 		
 		private final String request;
 		
@@ -68,9 +68,6 @@ public class ComputerDaoImpl  implements IDao<Computer> {
 		
 		updateOneComputer = conn.prepareStatement(preparedStatement.UPDATE_ONE.getRequest());
 	}
-	
-	
-	
 	
 	@Override
 	protected void finalize() {
@@ -199,7 +196,6 @@ public class ComputerDaoImpl  implements IDao<Computer> {
 			
 			e.printStackTrace();
 		}
-		
 	}
 
 	@Override

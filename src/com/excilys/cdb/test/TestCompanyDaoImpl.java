@@ -8,13 +8,13 @@ import org.junit.Test;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.persistence.CompanyDaoImpl;
-import com.excilys.cdb.persistence.ICompanyDao;
+import com.excilys.cdb.persistence.IDao;
 
 public class TestCompanyDaoImpl {
 
 	@Test
 	public void test() {
-		ICompanyDao comp = new CompanyDaoImpl();
+		IDao<Company> comp = new CompanyDaoImpl();
 		ArrayList<Company> list = (ArrayList<Company>) comp.getAll();
 		System.out.println(list);
 		

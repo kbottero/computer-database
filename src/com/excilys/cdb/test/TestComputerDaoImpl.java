@@ -6,13 +6,13 @@ import org.junit.Test;
 
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.ComputerDaoImpl;
-import com.excilys.cdb.persistence.IComputerDao;
+import com.excilys.cdb.persistence.IDao;
 
 public class TestComputerDaoImpl {
 
 	@Test
 	public void test() {
-		IComputerDao comp = new ComputerDaoImpl();
+		IDao<Computer> comp = new ComputerDaoImpl();
 		ArrayList<Computer> list = (ArrayList<Computer>) comp.getAll();
 		System.out.println(list);
 		

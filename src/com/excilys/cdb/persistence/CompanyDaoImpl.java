@@ -4,11 +4,13 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
+import com.excilys.cdb.mapper.CompanyMapper;
 import com.excilys.cdb.model.Company;
+import com.mysql.jdbc.PreparedStatement;
 
-public class CompanyDaoImpl implements ICompanyDao{
+public class CompanyDaoImpl implements IDao<Company>{
 
 	private Connection conn;
 	private java.sql.PreparedStatement selectAllCompany;
@@ -17,29 +19,56 @@ public class CompanyDaoImpl implements ICompanyDao{
 	private java.sql.PreparedStatement updateOneCompany;
 	private java.sql.PreparedStatement insertOneCompany;
 	
+	private static enum preparedStatement {
+		SELECT_ALL ("SELECT * FROM company;"),
+		SELECT_ONE ("SELECT * FROM company WHERE id=?;"),
+		INSERT_ONE ("INSERT INTO company (name) VALUES (?) ;"),
+		UPDATE_ONE ("UPDATE company SET name=? WHERE id=?;"),
+		DELETE_ONE ("DELETE FROM company WHERE id=?;");
+		
+		private final String request;
+		
+		preparedStatement(String request) {
+	        this.request = request;
+	    }
+	    private String getRequest() { return request; }
+	}
+	
+	
 	public CompanyDaoImpl() {
 		super();
 
 		try {
-			conn = DAOManager.getDAOManager().getConnection();
+			conn = DaoManager.INSTANCE.getConnection();
+			initPreparedStatement(conn);
 			
-			String request = "SELECT * FROM computer;";
-			selectAllCompany = conn.prepareStatement(request);
-			
-			request = "SELECT * FROM company WHERE id=?;";
-			selectOneCompany = conn.prepareStatement(request);
-			
-			request = "DELETE FROM company WHERE id=?;";
-			deleteOneCompany = conn.prepareStatement(request);
-	
-			request = "INSERT INTO company (name) VALUES (?) ;";
-			insertOneCompany = conn.prepareStatement(request);
-			
-			request = "UPDATE company SET name=? WHERE id=?;";
-			updateOneCompany = conn.prepareStatement(request);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public CompanyDaoImpl(Connection conn) {
+		super();
+		try {
+			this.conn = conn;
+	        initPreparedStatement(conn);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void initPreparedStatement(Connection conn) throws SQLException {
+		selectAllCompany = conn.prepareStatement(preparedStatement.SELECT_ALL.getRequest());
+		
+		selectOneCompany = conn.prepareStatement(preparedStatement.SELECT_ONE.getRequest());
+		
+		deleteOneCompany = conn.prepareStatement(preparedStatement.DELETE_ONE.getRequest());
+
+		insertOneCompany = conn.prepareStatement(preparedStatement.INSERT_ONE.getRequest(),
+								PreparedStatement.RETURN_GENERATED_KEYS);
+		
+		updateOneCompany = conn.prepareStatement(preparedStatement.UPDATE_ONE.getRequest());
 	}
 	
 	@Override
@@ -51,30 +80,26 @@ public class CompanyDaoImpl implements ICompanyDao{
 			e.printStackTrace();
 		}
 		try {
-			
 			selectAllCompany.close();
 			selectOneCompany.close();
 			deleteOneCompany.close();
 			insertOneCompany.close();
 			updateOneCompany.close();
-			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public Collection<Company> getAll() {
+	public List<Company> getAll() {
 
 		ResultSet curs;
-		Collection<Company> list = new ArrayList<Company>();
+		ArrayList<Company> list = new ArrayList<Company>();
 		
 		try {
 			curs = selectAllCompany.executeQuery();
 			while ( curs.next() ) {
-				Company comp = new Company(curs.getLong("id"),
-						curs.getString("name"));
-				list.add(comp);
+				list.add(CompanyMapper.INSTANCE.parseCompany(curs));
     		}
 		} catch (SQLException | NumberFormatException e) {
 			////////////////////////////////////////////////////////
@@ -92,8 +117,7 @@ public class CompanyDaoImpl implements ICompanyDao{
 			selectOneCompany.setLong(1,id);
 			curs = selectOneCompany.executeQuery();
 			if ( curs.next() ) {
-				comp = new Company(curs.getLong("id"),
-						curs.getString("name"));
+				comp = CompanyMapper.INSTANCE.parseCompany(curs);
     		}
 		} catch (SQLException | NumberFormatException e) {
 			////////////////////////////////////////////////////////
@@ -102,8 +126,8 @@ public class CompanyDaoImpl implements ICompanyDao{
 		return comp;
 	}
 
-//	@Override
-//	public void saveOne(Company c) {
+	@Override
+	public void saveOne(Company c) {
 //		boolean update=false;
 //		ResultSet curs;
 //
@@ -134,34 +158,25 @@ public class CompanyDaoImpl implements ICompanyDao{
 //			}
 //			if(nb==0)
 //			{
-//				//throw new DaoException("Impossible de sauvegarder l'eleve " ,6) ;
 //			}
 //			
 //		} catch (SQLException e) {
-//			/*
-//			if(!update)
-//				throw new DaoException("Impossible de sauvegarder l'eleve " +e1+" "+stInsert ,6) ;
-//			else
-//				throw new DaoException("Impossible de sauvegarder l'eleve " +e1+" "+stUpdate ,6) ;
-//				*/
 //			e.printStackTrace();
 //		}
-//	}
-//
-//	@Override
-//	public void deleteOne(long id) {
+	}
+
+	@Override
+	public void deleteOne(long id) {
 //		try {
 //			deleteOneCompany.setLong(1, id);
 //			int nb = deleteOneCompany.executeUpdate();
 //			if(nb==0)
 //			{
-//				//throw new DaoException("(Delete)Eleve d'id "+id+" inconnu "+stDelete ,6) ;
 //			}
 //		} catch (SQLException e) {
-//			//throw new DaoException("Impossible de charger tous les eleves " +e ,6) ;
 //			e.printStackTrace();
 //		}
-//	}
+	}
 
 	
 }

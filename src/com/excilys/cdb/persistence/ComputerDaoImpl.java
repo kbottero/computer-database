@@ -3,18 +3,15 @@ package com.excilys.cdb.persistence;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import com.excilys.cdb.mapper.ComputerMapper;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.mysql.jdbc.PreparedStatement;
 
-public class ComputerDaoImpl  implements IComputerDao {
+public class ComputerDaoImpl  implements IDao<Computer> {
 		
 	private Connection conn;
 	private java.sql.PreparedStatement selectAllComputer;
@@ -22,37 +19,58 @@ public class ComputerDaoImpl  implements IComputerDao {
 	private java.sql.PreparedStatement deleteOneComputer;
 	private java.sql.PreparedStatement updateOneComputer;
 	private java.sql.PreparedStatement insertOneComputer;
-	private java.sql.PreparedStatement selectOneCompany;
+	
+	private static enum preparedStatement {
+		SELECT_ALL ("SELECT * FROM computer;"),
+		SELECT_ONE ("SELECT * FROM computer WHERE id=?;"),
+		INSERT_ONE ("INSERT INTO computer (name, introduced, discontinued,company_id) VALUES (?,?,?,?) ;"),
+		UPDATE_ONE ("UPDATE computer SET name=?,introduced=?,discontinued=?,company_id=? WHERE id=?;"),
+		DELETE_ONE ("SELECT * FROM computer;");
+		
+		private final String request;
+		
+		preparedStatement(String request) {
+	        this.request = request;
+	    }
+	    private String getRequest() { return request; }
+	}
 	
 	public ComputerDaoImpl() {
-		
 		try {
-			conn = DAOManager.getDAOManager().getConnection();
-			
-			String request = "SELECT * FROM computer;";
-			selectAllComputer = conn.prepareStatement(request);
-			
-			request = "SELECT * FROM computer WHERE id=?;";
-			selectOneComputer = conn.prepareStatement(request);
-			
-			request = "DELETE FROM computer WHERE id=?;";
-			deleteOneComputer = conn.prepareStatement(request);
-	
-			request = "INSERT INTO computer (name, introduced, discontinued,company_id) VALUES (?,?,?,?) ;";
-			insertOneComputer = conn.prepareStatement(request,PreparedStatement.RETURN_GENERATED_KEYS);
-			
-			request = "UPDATE computer SET name=?,introduced=?,discontinued=?,company_id=? WHERE id=?;";
-			updateOneComputer = conn.prepareStatement(request);
-			
-			request = "SELECT * FROM company WHERE id=?;";
-			selectOneCompany = conn.prepareStatement(request);
-			
+			conn = DaoManager.INSTANCE.getConnection();
+			initPreparedStatement(conn);
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
 	}
+	
+	public ComputerDaoImpl(Connection conn) {
+		try {
+			this.conn = conn;
+			
+			initPreparedStatement(conn);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void initPreparedStatement(Connection conn) throws SQLException {
+		selectAllComputer = conn.prepareStatement(preparedStatement.SELECT_ALL.getRequest());
+		
+		selectOneComputer = conn.prepareStatement(preparedStatement.SELECT_ONE.getRequest());
+		
+		deleteOneComputer = conn.prepareStatement(preparedStatement.DELETE_ONE.getRequest());
+
+		insertOneComputer = conn.prepareStatement(preparedStatement.INSERT_ONE.getRequest(),
+								PreparedStatement.RETURN_GENERATED_KEYS);
+		
+		updateOneComputer = conn.prepareStatement(preparedStatement.UPDATE_ONE.getRequest());
+	}
+	
+	
+	
 	
 	@Override
 	protected void finalize() {
@@ -77,15 +95,15 @@ public class ComputerDaoImpl  implements IComputerDao {
 	}
 
 	@Override
-	public Collection<Computer> getAll(){
+	public List<Computer> getAll(){
 		
 		ResultSet curs;
-		Collection<Computer> list = new ArrayList<Computer>();
+		List<Computer> list = new ArrayList<Computer>();
 		
 		try {
 			curs = selectAllComputer.executeQuery();
 			while ( curs.next() ) {
-				list.add(ComputerMapper.INSTANCE.parserComputer(curs, getOneCompany(curs.getLong("company_id"))));
+				list.add(ComputerMapper.INSTANCE.parseComputer(curs, getOneCompany(curs.getLong("company_id"))));
     		}
 		} catch (SQLException | NumberFormatException e) {
 			////////////////////////////////////////////////////////
@@ -102,7 +120,7 @@ public class ComputerDaoImpl  implements IComputerDao {
 			selectOneComputer.setLong(1,id);
 			curs = selectOneComputer.executeQuery();
 			if ( curs.next() ) {
-				comp = ComputerMapper.INSTANCE.parserComputer(curs, getOneCompany(curs.getLong("company_id")));
+				comp = ComputerMapper.INSTANCE.parseComputer(curs, getOneCompany(curs.getLong("company_id")));
     		}
 		} catch (SQLException | NumberFormatException e) {
 			////////////////////////////////////////////////////////
@@ -175,16 +193,10 @@ public class ComputerDaoImpl  implements IComputerDao {
 			}
 			if(nb==0)
 			{
-				//throw new DaoException("Impossible de sauvegarder l'eleve " ,6) ;
 			}
 			
 		} catch (SQLException e) {
-			/*
-			if(!update)
-				throw new DaoException("Impossible de sauvegarder l'eleve " +e1+" "+stInsert ,6) ;
-			else
-				throw new DaoException("Impossible de sauvegarder l'eleve " +e1+" "+stUpdate ,6) ;
-				*/
+			
 			e.printStackTrace();
 		}
 		
@@ -197,31 +209,16 @@ public class ComputerDaoImpl  implements IComputerDao {
 			int nb = deleteOneComputer.executeUpdate();
 			if(nb==0)
 			{
-				//throw new DaoException("(Delete)Eleve d'id "+id+" inconnu "+stDelete ,6) ;
 			}
 		} catch (SQLException e) {
-			//throw new DaoException("Impossible de charger tous les eleves " +e ,6) ;
 			e.printStackTrace();
 		}
 		
 	}
 	
 	public Company getOneCompany(long id) {
-		
-		ResultSet curs;
-		Company comp=null;
-		try {
-			selectOneCompany.setLong(1,id);
-			curs = selectOneCompany.executeQuery();
-			if ( curs.next() ) {
-				comp = new Company(curs.getLong("id"),
-						curs.getString("name"));
-    		}
-		} catch (SQLException | NumberFormatException e) {
-			////////////////////////////////////////////////////////
-			e.printStackTrace();
-		}
-		return comp;
+		CompanyDaoImpl companyDao = new CompanyDaoImpl(conn);
+		return companyDao.getOne(id);
 	}
 
 }

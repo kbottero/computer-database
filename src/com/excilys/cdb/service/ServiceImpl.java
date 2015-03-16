@@ -6,13 +6,12 @@ import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.CompanyDaoImpl;
 import com.excilys.cdb.persistence.ComputerDaoImpl;
-import com.excilys.cdb.persistence.ICompanyDao;
-import com.excilys.cdb.persistence.IComputerDao;
+import com.excilys.cdb.persistence.IDao;
 
 public class ServiceImpl implements IService{
 	
-	private IComputerDao computerDao;
-	private ICompanyDao companyDao;
+	private IDao<Computer> computerDao;
+	private IDao<Company> companyDao;
 	
 	public ServiceImpl(){
 		computerDao = new ComputerDaoImpl();

@@ -12,7 +12,7 @@ import com.excilys.cdb.model.Computer;
 public enum ComputerMapper {
 	INSTANCE;
 	
-	public Computer parserComputer(ResultSet curs, Company company) {
+	public Computer parseComputer(ResultSet curs, Company company) {
 
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Computer comp;
@@ -35,7 +35,6 @@ public enum ComputerMapper {
 			comp.setIntroductionDate(null);
 		}
 		comp.setConstructor(company);
-//		comp.setConstructor(getOneCompany(curs.getLong("company_id")));
 		
 		return comp;
 		

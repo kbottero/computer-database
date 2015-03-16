@@ -5,20 +5,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class DAOManager {
+public enum DaoManager {
 	
-	private static DAOManager manager;
-
-	public static DAOManager getDAOManager() {
-		if (manager == null) {
-			synchronized(DAOManager.class) {
-				if (manager == null) {
-					manager = new DAOManager();
-				}
-			}
-		}
-		return manager;
-	}
+	INSTANCE;
 	
 	public Connection getConnection() throws SQLException {
 
@@ -28,7 +17,7 @@ public class DAOManager {
 	    connectionProps.put("password", "qwerty1234");
 
         conn = DriverManager.getConnection(
-                   "jdbc:mysql://localhost:3306/computer-database-db",
+                   "jdbc:mysql://localhost:3306/computer-database-db?zeroDateTimeBehavior=convertToNull",
                    connectionProps);
         
 	    return conn;

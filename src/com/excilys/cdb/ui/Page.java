@@ -1,7 +1,5 @@
 package com.excilys.cdb.ui;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 
 import com.excilys.cdb.model.Company;

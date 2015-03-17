@@ -1,14 +1,25 @@
 package com.excilys.cdb.persistence;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface IDao <T> {
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+public interface IDao <T, I extends Serializable> {
 	
-	public List<T> getAll();
+	public default List<T> getAll() throws DaoException {
+		throw new NotImplementedException();
+	}
 	
-	public T getOne(long id);
+	public default T getById(I id)  throws DaoException {
+		throw new NotImplementedException();
+	}
 	
-	public void saveOne(T c);
+	public default void save(T c)  throws DaoException {
+		throw new NotImplementedException();
+	}
 	
-	public void deleteOne(long id);
+	public default void delete(I id)  throws DaoException {
+		throw new NotImplementedException();
+	}
 }

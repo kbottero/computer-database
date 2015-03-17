@@ -2,42 +2,34 @@ package com.excilys.cdb.mapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.persistence.DaoException;
 
 public enum ComputerMapper {
 	INSTANCE;
 	
 	public Computer parseComputer(ResultSet curs, Company company) {
 
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Computer comp;
 		try {
 			comp = new Computer(curs.getLong("id"),
 					curs.getString("name"));
+			if (curs.getString("introduced") != null) {
+				comp.setIntroductionDate(Timestamp.valueOf((curs.getString("introduced"))).toLocalDateTime());
+			}
+			if (curs.getString("discontinued") != null) {
+				comp.setIntroductionDate(Timestamp.valueOf((curs.getString("discontinued"))).toLocalDateTime());
+			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-		try	{
-			comp.setIntroductionDate(dateFormat.parse(curs.getString("introduced")));
-		} catch (SQLException | ParseException | NullPointerException e) {
-			comp.setIntroductionDate(null);
-		}
-		try	{
-			comp.setIntroductionDate(dateFormat.parse(curs.getString("discontinued")));
-		} catch (SQLException | ParseException | NullPointerException e) {
-			comp.setIntroductionDate(null);
+			throw new DaoException(e);
 		}
 		comp.setConstructor(company);
 		
 		return comp;
-		
 	}
-	
 }

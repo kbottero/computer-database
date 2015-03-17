@@ -4,9 +4,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.excilys.cdb.model.Company;
+import com.excilys.cdb.persistence.DaoException;
 
 public enum CompanyMapper {
-	
 	INSTANCE;
 	
 	public Company parseCompany(ResultSet curs) {
@@ -15,9 +15,7 @@ public enum CompanyMapper {
 			comp = new Company(curs.getLong("id"),
 					curs.getString("name"));
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
+			throw new DaoException(e);
 		}
 		return comp;
 	}

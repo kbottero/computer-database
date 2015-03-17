@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,17 +12,11 @@ import com.excilys.cdb.mapper.ComputerMapper;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 
-public class ComputerDaoImpl  implements IDao<Computer> {
-		
-	private Connection conn;
-	private PreparedStatement selectAllComputer;
-	private PreparedStatement selectOneComputer;
-	private PreparedStatement deleteOneComputer;
-	private PreparedStatement updateOneComputer;
-	private PreparedStatement insertOneComputer;
+public enum ComputerDao  implements IDao<Computer, Long> {
+	
+	INSTANCE;
 	
 	private static enum preparedStatement {
-		SELECT_ALL ("SELECT * FROM computer;"),
 		SELECT_ONE ("SELECT * FROM computer WHERE id=?;"),
 		INSERT_ONE ("INSERT INTO computer (name, introduced, discontinued,company_id) VALUES (?,?,?,?) ;"),
 		UPDATE_ONE ("UPDATE computer SET name=?,introduced=?,discontinued=?,company_id=? WHERE id=?;"),
@@ -34,105 +29,69 @@ public class ComputerDaoImpl  implements IDao<Computer> {
 	    }
 	    private String getRequest() { return request; }
 	}
-	
-	public ComputerDaoImpl() {
-		try {
-			conn = DaoManager.INSTANCE.getConnection();
-			initPreparedStatement(conn);
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public ComputerDaoImpl(Connection conn) {
-		try {
-			this.conn = conn;
-			
-			initPreparedStatement(conn);
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void initPreparedStatement(Connection conn) throws SQLException {
-		selectAllComputer = conn.prepareStatement(preparedStatement.SELECT_ALL.getRequest());
-		
-		selectOneComputer = conn.prepareStatement(preparedStatement.SELECT_ONE.getRequest());
-		
-		deleteOneComputer = conn.prepareStatement(preparedStatement.DELETE_ONE.getRequest());
-
-		insertOneComputer = conn.prepareStatement(preparedStatement.INSERT_ONE.getRequest(),
-								PreparedStatement.RETURN_GENERATED_KEYS);
-		
-		updateOneComputer = conn.prepareStatement(preparedStatement.UPDATE_ONE.getRequest());
-	}
-	
-	@Override
-	protected void finalize() {
-		
-		try {
-			conn.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		try {
-			
-			selectAllComputer.close();
-			selectOneComputer.close();
-			deleteOneComputer.close();
-			insertOneComputer.close();
-			updateOneComputer.close();
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
 
 	@Override
 	public List<Computer> getAll(){
 		
 		ResultSet curs;
 		List<Computer> list = new ArrayList<Computer>();
-		
+		Connection conn = null;
 		try {
-			curs = selectAllComputer.executeQuery();
+			conn = DaoManager.INSTANCE.getConnection();
+			curs = conn.createStatement().executeQuery("SELECT * FROM computer;");
 			while ( curs.next() ) {
 				list.add(ComputerMapper.INSTANCE.parseComputer(curs, getOneCompany(curs.getLong("company_id"))));
     		}
 		} catch (SQLException | NumberFormatException e) {
-			////////////////////////////////////////////////////////
-			e.printStackTrace();
+			throw new DaoException(e);
+		} finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					throw new DaoException(e);
+				}
+			}
 		}
 		return list;
 	}
 
 	@Override
-	public Computer getOne(long id) {
+	public Computer getById(Long id) {
 		ResultSet curs;
 		Computer comp=null;
+		Connection conn = null;
 		try {
+			conn = DaoManager.INSTANCE.getConnection();
+			PreparedStatement selectOneComputer = conn.prepareStatement(preparedStatement.SELECT_ONE.getRequest());
 			selectOneComputer.setLong(1,id);
 			curs = selectOneComputer.executeQuery();
 			if ( curs.next() ) {
 				comp = ComputerMapper.INSTANCE.parseComputer(curs, getOneCompany(curs.getLong("company_id")));
     		}
 		} catch (SQLException | NumberFormatException e) {
-			////////////////////////////////////////////////////////
-			e.printStackTrace();
+			throw new DaoException(e);
+		} finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					throw new DaoException(e);
+				}
+			}
 		}
 		return comp;
 	}
 
 	@Override
-	public void saveOne(Computer c) {
+	public void save(Computer c) {
 		boolean update=false;
 		ResultSet curs;
 
+		Connection conn = null;
 		try {
-			
+			conn = DaoManager.INSTANCE.getConnection();
+			PreparedStatement selectOneComputer = conn.prepareStatement(preparedStatement.SELECT_ONE.getRequest());
 			selectOneComputer.setLong(1,c.getId());
 			curs = selectOneComputer.executeQuery();
 			int nb;
@@ -140,17 +99,18 @@ public class ComputerDaoImpl  implements IDao<Computer> {
 			{
 				update = true;
 			}
-
 			if(!update)
 			{
+				PreparedStatement insertOneComputer = conn.prepareStatement(preparedStatement.INSERT_ONE.getRequest(),
+						PreparedStatement.RETURN_GENERATED_KEYS);
 				insertOneComputer.setString(1,c.getName());
 				if(c.getIntroductionDate() != null) {
-					insertOneComputer.setTimestamp(2, new java.sql.Timestamp(c.getIntroductionDate().getTime()));
+					insertOneComputer.setTimestamp(2, Timestamp.valueOf(c.getIntroductionDate()));
 				} else {
 					insertOneComputer.setTimestamp(2, null);
 				}
 				if(c.getDiscontinuedDate() != null) {
-					insertOneComputer.setTimestamp(3, new java.sql.Timestamp(c.getDiscontinuedDate().getTime()));
+					insertOneComputer.setTimestamp(3, Timestamp.valueOf(c.getDiscontinuedDate()));
 				} else {
 					insertOneComputer.setTimestamp(3, null);
 				}
@@ -169,14 +129,15 @@ public class ComputerDaoImpl  implements IDao<Computer> {
 			}
 			else
 			{
+				PreparedStatement updateOneComputer = conn.prepareStatement(preparedStatement.UPDATE_ONE.getRequest());
 				updateOneComputer.setString(1,c.getName());
 				if(c.getIntroductionDate() != null) {
-					updateOneComputer.setTimestamp(2, new java.sql.Timestamp(c.getIntroductionDate().getTime()));
+					updateOneComputer.setTimestamp(2, Timestamp.valueOf(c.getIntroductionDate()));
 				} else {
 					updateOneComputer.setTimestamp(2, null);
 				}
 				if(c.getDiscontinuedDate() != null) {
-					updateOneComputer.setTimestamp(3, new java.sql.Timestamp(c.getDiscontinuedDate().getTime()));
+					updateOneComputer.setTimestamp(3, Timestamp.valueOf(c.getDiscontinuedDate()));
 				}else {
 					updateOneComputer.setTimestamp(3, null);
 				}
@@ -190,31 +151,66 @@ public class ComputerDaoImpl  implements IDao<Computer> {
 			}
 			if(nb==0)
 			{
+				throw new DaoException("Computer update not in database.");
 			}
-			
 		} catch (SQLException e) {
-			
-			e.printStackTrace();
+			throw new DaoException(e);
+		} finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					throw new DaoException(e);
+				}
+			}
 		}
 	}
 
 	@Override
-	public void deleteOne(long id) {
+	public void delete(Long id) {
+
+		Connection conn = null;
 		try {
+			conn = DaoManager.INSTANCE.getConnection();
+			PreparedStatement deleteOneComputer = conn.prepareStatement(preparedStatement.DELETE_ONE.getRequest());
 			deleteOneComputer.setLong(1, id);
 			int nb = deleteOneComputer.executeUpdate();
 			if(nb==0)
 			{
+				throw new DaoException("Computer not in database.");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					throw new DaoException(e);
+				}
+			}
 		}
 		
 	}
 	
 	public Company getOneCompany(long id) {
-		CompanyDaoImpl companyDao = new CompanyDaoImpl(conn);
-		return companyDao.getOne(id);
+		Connection conn = null;
+		Company company = null;
+		try {
+			conn = DaoManager.INSTANCE.getConnection();
+			company = CompanyDao.INSTANCE.getById(id);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					throw new DaoException(e);
+				}
+			}
+		}
+		return company;
 	}
 
 }

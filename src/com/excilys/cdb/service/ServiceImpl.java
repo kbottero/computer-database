@@ -4,54 +4,45 @@ import java.util.Collection;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.CompanyDaoImpl;
-import com.excilys.cdb.persistence.ComputerDaoImpl;
-import com.excilys.cdb.persistence.IDao;
+import com.excilys.cdb.persistence.CompanyDao;
+import com.excilys.cdb.persistence.ComputerDao;
 
 public class ServiceImpl implements IService{
-	
-	private IDao<Computer> computerDao;
-	private IDao<Company> companyDao;
-	
-	public ServiceImpl(){
-		computerDao = new ComputerDaoImpl();
-		companyDao = new CompanyDaoImpl();
-	}
 
 	@Override
 	public Collection<Computer> getAllComputer() {
 		
-		return computerDao.getAll();
+		return ComputerDao.INSTANCE.getAll();
 	}
 
 	@Override
 	public Computer getOneComputer(long id) {
 		// TODO Auto-generated method stub
-		return computerDao.getOne(id);
+		return ComputerDao.INSTANCE.getById(id);
 	}
 
 	@Override
 	public void saveOneComputer(Computer c) {
 		// TODO Auto-generated method stub
-		computerDao.saveOne(c);
+		ComputerDao.INSTANCE.save(c);
 	}
 
 	@Override
 	public void deleteOneComputer(long id) {
 		// TODO Auto-generated method stub
-		computerDao.deleteOne(id);
+		ComputerDao.INSTANCE.delete(id);
 	}
 
 	@Override
 	public Collection<Company> getAllCompany() {
 		// TODO Auto-generated method stub
-		return companyDao.getAll();
+		return CompanyDao.INSTANCE.getAll();
 	}
 
 	@Override
 	public Company getOneCompany(long id) {
 		// TODO Auto-generated method stub
-		return companyDao.getOne(id);
+		return CompanyDao.INSTANCE.getById(id);
 	}
 	
 }

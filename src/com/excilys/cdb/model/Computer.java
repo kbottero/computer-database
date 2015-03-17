@@ -1,16 +1,16 @@
 package com.excilys.cdb.model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class Computer {
 	
-	private long id;
+	private Long id;
 	
 	private String name;
 	private Company constructor;
 	
-	private Date introductionDate;
-	private Date discontinuedDate;
+	private LocalDateTime introductionDate;
+	private LocalDateTime discontinuedDate;
 	
 	public Computer(long id, String name) {
 		super();
@@ -26,11 +26,9 @@ public class Computer {
 		this.constructor = constructor;
 	}
 
-
-	public Date getIntroductionDate() {
+	public LocalDateTime getIntroductionDate() {
 		return introductionDate;
 	}
-
 
 	public String getName() {
 		return name;
@@ -40,23 +38,25 @@ public class Computer {
 		this.name = name;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public void setIntroductionDate(Date introductionDate) {
+	public void setIntroductionDate(LocalDateTime introductionDate) {
 		this.introductionDate = introductionDate;
 	}
 
-
-	public Date getDiscontinuedDate() {
+	public LocalDateTime getDiscontinuedDate() {
 		return discontinuedDate;
 	}
-
+	
+	public void setDiscontinuedDate(LocalDateTime discontinuedDate) {
+		this.discontinuedDate = discontinuedDate;
+	}
 
 	@Override
 	public String toString() {
@@ -81,10 +81,6 @@ public class Computer {
 		}
 		str.append("]");
 		return  str.toString();
-	}
-
-	public void setDiscontinuedDate(Date discontinuedDate) {
-		this.discontinuedDate = discontinuedDate;
 	}
 
 	@Override

@@ -6,7 +6,8 @@ import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import com.excilys.cdb.model.Company;
@@ -26,9 +27,7 @@ public enum CliCommands {
 				if (keyWord.equals(pages)) {
 					listComputersPage(s);
 				} else {
-					System.out.print(invalidCommand);
-					System.out.print(" : ");
-					getHelp();
+					invalidCommand(this);
 				}
 			} else {
 				listComputers();
@@ -48,9 +47,7 @@ public enum CliCommands {
 				if (keyWord.equals(pages)) {
 					listCompaniesPage(s);
 				} else {
-					System.out.print(invalidCommand);System.out.print(invalidCommand);
-					System.out.print(" : ");
-					getHelp();
+					invalidCommand(this);
 				}
 			} else {
 				listCompanies();
@@ -73,9 +70,7 @@ public enum CliCommands {
 					System.out.println("This id does not refer to any computer");
 				}
 			} else {
-				System.out.print(invalidCommand);
-				System.out.print(" : ");
-				getHelp();
+				invalidCommand(this);
 			}
 			
 		}
@@ -88,7 +83,8 @@ public enum CliCommands {
 		@Override
 		public void execute(Scanner s) {
 			Computer computer;
-			long id;
+			Long id;
+			Long company_id = null;
 			String name = null;
 			LocalDateTime introductionDate = null;
 			LocalDateTime discontinuedDate = null;
@@ -96,16 +92,39 @@ public enum CliCommands {
 			if (s.hasNext()) {
 				id = s.nextLong();
 			} else {
-				System.out.print(invalidCommand);
-				System.out.print(" : ");
-				getHelp();
+				invalidCommand(this);
 				return;
 			}
 			
-			name = s.next();
-			introductionDate = LocalDateTime.parse(s.next(), DateTimeFormatter.ISO_LOCAL_DATE);
-			discontinuedDate = LocalDateTime.parse(s.next(), DateTimeFormatter.ISO_LOCAL_DATE);
-			
+			if (s.hasNext()) {
+				String attri = s.nextLine();
+				String[] attrib = attri.trim().split(" ");
+				for (String strg : attrib) {
+					if ( strg.startsWith("introductionDate") ) {
+						attri = strg.substring(strg.indexOf('=')+1);
+						if (ValidatorDate.INSTANCE.validateDate(attri)) {
+							introductionDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
+						} else {
+							invalidCommand(this);
+						}
+					} else if ( strg.startsWith("discontinuedDate") ) {
+						attri = strg.substring(strg.indexOf('=')+1);
+						if (ValidatorDate.INSTANCE.validateDate(attri)) {
+							discontinuedDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
+						} else {
+							invalidCommand(this);
+						}
+					} else if ( strg.startsWith("name") ) {
+						name = strg.substring(strg.indexOf('=')+1);
+					} else if ( strg.startsWith("company_id") ) {
+						company_id = Long.valueOf(strg.substring(strg.indexOf('=')+1));
+					} else {
+						invalidCommand(this);
+						return;
+					}
+				}
+			}
+
 			computer = serv.getOneComputer(id);
 			
 			if (computer != null) {
@@ -118,10 +137,11 @@ public enum CliCommands {
 				if (discontinuedDate != null) {
 					computer.setDiscontinuedDate(discontinuedDate);
 				}
+				if (company_id != null) {
+					computer.setConstructor(serv.getOneCompany(company_id));
+				}
 			} else {
-				System.out.print(invalidCommand);
-				System.out.print(" : ");
-				getHelp();
+				invalidCommand(this);
 				return;
 			}
 			
@@ -129,7 +149,7 @@ public enum CliCommands {
 		}
 		@Override
 		public String getHelp() {
-			return  this.getLabel()+" id [name [introductionDate [discontinuedDate]]]";
+			return  this.getLabel()+" id [name=new_name] [introductionDate=yyyy-MM-dd] [discontinuedDate=yyyy-MM-dd] [company_id=new_company_id]";
 		}
 	},
 	CREATE ("create") {
@@ -137,9 +157,15 @@ public enum CliCommands {
 		public void execute(Scanner s) {
 			Computer computer;
 			String name;
+			Long company_id = null;
 			LocalDateTime introductionDate = null;
 			LocalDateTime discontinuedDate = null;
-			if (s.hasNext()) {
+
+			/*
+			Pattern p = Pattern.compile("[^\"\\s]+|\"(\\\\.|[^\\\\\"])*\"");
+			if (s.hasNext(p)) {
+				name = s.next(p);
+			} else */if (s.hasNext()) {
 				name = s.next();
 			} else {
 				System.out.println(invalidCommand);
@@ -149,15 +175,29 @@ public enum CliCommands {
 			computer = new Computer(-1,name);
 			
 			if (s.hasNext()) {
-				String date = s.next();
-				if (ValidatorDate.INSTANCE.validateDate(date)) {
-					introductionDate = LocalDateTime.parse(date, DateTimeFormatter.ISO_LOCAL_DATE);
-				}
-			}
-			if (s.hasNext()) {
-				String date = s.next();
-				if (ValidatorDate.INSTANCE.validateDate(date)) {
-					discontinuedDate = LocalDateTime.parse(s.next(), DateTimeFormatter.ISO_LOCAL_DATE);
+				String attri = s.nextLine();
+				String[] attrib = attri.trim().split(" ");
+				for (String strg : attrib) {
+					if ( strg.startsWith("introductionDate") ) {
+						attri = strg.substring(strg.indexOf('=')+1);
+						if (ValidatorDate.INSTANCE.validateDate(attri)) {
+							introductionDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
+						} else {
+							invalidCommand(this);
+						}
+					} else if ( strg.startsWith("discontinuedDate") ) {
+						attri = strg.substring(strg.indexOf('=')+1);
+						if (ValidatorDate.INSTANCE.validateDate(attri)) {
+							discontinuedDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
+						} else {
+							invalidCommand(this);
+						}
+					} else if ( strg.startsWith("company_id") ) {
+						company_id = Long.valueOf(strg.substring(strg.indexOf('=')+1));
+					} else {
+						invalidCommand(this);
+						return;
+					}
 				}
 			}
 			
@@ -167,6 +207,9 @@ public enum CliCommands {
 			if (discontinuedDate != null) {
 				computer.setDiscontinuedDate(discontinuedDate);
 			}
+			if (company_id != null) {
+				computer.setConstructor(serv.getOneCompany(company_id));
+			}
 			serv.saveOneComputer(computer);
 			if (computer.getId() != -1) {
 				System.out.println("Computer created. Id = "+computer.getId());
@@ -174,7 +217,7 @@ public enum CliCommands {
 		}
 		@Override
 		public String getHelp() {
-			return this.getLabel()+" name [introductionDate [discontinuedDate]]";
+			return this.getLabel()+" name [introductionDate=yyyy-MM-dd] [discontinuedDate=yyyy-MM-dd] [company_id=new_company_id]";
 		}
 	},
 	DELETE ("delete") {
@@ -184,7 +227,7 @@ public enum CliCommands {
 				long id = s.nextLong();
 				serv.deleteOneComputer(id);
 			} else {
-				System.out.println(invalidCommand);
+				invalidCommand(this);
 			}
 		}
 		@Override
@@ -216,11 +259,22 @@ public enum CliCommands {
 		}
 	};
 	
+	
 	private final String label;
 
 	private static IService serv = new ServiceImpl();
 	private static String invalidCommand = "Invalid Command";
 	private static String pages = "pages";
+	private static String prompt = ">";
+	private static String quitPages = "q";
+	
+	private static Map<String,CliCommands> listCommands;
+	static {
+		listCommands = new HashMap<String,CliCommands>();
+		for (CliCommands cliCom : CliCommands.values()) {
+				listCommands.put(cliCom.getLabel(), cliCom);
+		}
+	}
 	
 	CliCommands(String label) {
         this.label = label;
@@ -240,10 +294,9 @@ public enum CliCommands {
 		if (s.hasNext()) {
 			String comm = s.next();
 			if (! comm.isEmpty()) {
-				for (CliCommands cliCom : CliCommands.values()) {
-					if(comm.equals(cliCom.getLabel())) {
-						return cliCom;
-					}
+				CliCommands com = listCommands.get(comm);
+				if (com != null) {
+					return com;
 				}
 			}
 		}
@@ -318,12 +371,12 @@ public enum CliCommands {
 	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		Scanner scan = null;
 		while(page.nextPage()) {
-			System.out.print(">");
+			System.out.print(prompt);
 			try{
 				scan = new Scanner(bufferRead.readLine());
 				if (scan.hasNext()) {
 					String keyWord = scan.next();
-					if(keyWord.equals("q")) {
+					if(keyWord.equals(quitPages)) {
 						break;
 					}
 				}
@@ -352,12 +405,12 @@ public enum CliCommands {
 	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		Scanner scan = null;
 		while(page.nextPage()) {
-			System.out.print(">");
+			System.out.print(prompt);
 			try{
 				scan = new Scanner(bufferRead.readLine());
 				if (scan.hasNext()) {
 					String keyWord = scan.next();
-					if(keyWord.equals("q")) {
+					if(keyWord.equals(quitPages)) {
 						break;
 					}
 				}
@@ -369,6 +422,12 @@ public enum CliCommands {
 		if (scan != null) {
 			scan.close();
 		}
+	}
+	
+	private static void invalidCommand(CliCommands comm) {
+		System.out.print(invalidCommand);
+		System.out.print(" : ");
+		System.out.println(comm.getHelp());
 	}
 	
 }

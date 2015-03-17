@@ -3,8 +3,6 @@ package com.excilys.cdb.mapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;

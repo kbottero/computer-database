@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import com.excilys.cdb.mapper.ComputerMapper;
@@ -16,16 +15,6 @@ import com.excilys.cdb.model.Computer;
 public enum ComputerDao  implements IDao<Computer, Long> {
 	
 	INSTANCE;
-	
-	private static HashSet<String> setFileds;
-	static {
-		setFileds= new HashSet<String>();
-		setFileds.add("id");
-		setFileds.add("name");
-		setFileds.add("introduced");
-		setFileds.add("discontinued");
-		setFileds.add("company_id");
-	}
 	
 	private static enum preparedStatement {
 		SELECT_ONE ("SELECT id, name,introduced, discontinued, company_id FROM computer WHERE id=?;"),
@@ -111,11 +100,11 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 			} else {
 				StringBuilder strgBuilder = new StringBuilder();
 				for (String strg : orderByCol) {
-					 if (setFileds.contains(strg)) {
+					 if (ComputerMapper.mapBDModel.containsKey(strg)) {
 						 if (strgBuilder.length() != 0) {
 							 strgBuilder.append(", ");
 						 }
-						 strgBuilder.append("strg");
+						 strgBuilder.append(ComputerMapper.mapBDModel.get(strg));
 					 } else {
 						 throw new DaoException("Incorrect field for request : "+preparedStatement.SELECT_SOME.getRequest());
 					 }

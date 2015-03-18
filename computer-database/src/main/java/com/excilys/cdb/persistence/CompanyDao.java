@@ -5,21 +5,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import com.excilys.cdb.mapper.CompanyMapper;
+import com.excilys.cdb.mapper.ComputerMapper;
 import com.excilys.cdb.model.Company;
 
 public enum CompanyDao implements IDao<Company, Long>{
 	INSTANCE;
-	
-	private static HashSet<String> setFileds;
-	static {
-		setFileds= new HashSet<String>();
-		setFileds.add("id");
-		setFileds.add("name");
-	}
 	
 	private static enum preparedStatement {
 		SELECT_ONE ("SELECT id, name FROM company WHERE id=?;"),
@@ -100,14 +93,14 @@ public enum CompanyDao implements IDao<Company, Long>{
 			} else {
 				StringBuilder strgBuilder = new StringBuilder();
 				for (String strg : orderByCol) {
-					 if (setFileds.contains(strg)) {
-						 if (strgBuilder.length() != 0) {
-							 strgBuilder.append(", ");
-						 }
-						 strgBuilder.append("strg");
-					 } else {
-						 throw new DaoException("Incorrect field for request : "+preparedStatement.SELECT_SOME.getRequest());
-					 }
+					if (CompanyMapper.mapBDModel.containsKey(strg)) {
+						if (strgBuilder.length() != 0) {
+							strgBuilder.append(", ");
+						}
+						strgBuilder.append(ComputerMapper.mapBDModel.get(strg));
+					} else {
+						throw new DaoException("Incorrect field for request : "+preparedStatement.SELECT_SOME.getRequest());
+					}
 				}
 				selectSomeCompanies.setString(1,strgBuilder.toString());
 			}

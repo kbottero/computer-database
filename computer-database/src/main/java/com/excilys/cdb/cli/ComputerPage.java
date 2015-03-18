@@ -3,6 +3,7 @@ package com.excilys.cdb.cli;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.excilys.cdb.mapper.CompanyMapper;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.IDao;
 import com.excilys.cdb.service.IService;
@@ -20,7 +21,7 @@ public class ComputerPage extends Page<Computer>{
 		}
 		sortingOrder = IDao.Order.ASC;
 		orderBy = new ArrayList<String>();
-		orderBy.add("id");
+		orderBy.add(CompanyMapper.DEFAULT_ID);
 	}
 	
 	public ComputerPage(IService serv, Long pageSize) {
@@ -39,7 +40,7 @@ public class ComputerPage extends Page<Computer>{
 		}
 		sortingOrder = IDao.Order.ASC;
 		orderBy = new ArrayList<String>();
-		orderBy.add("id");
+		orderBy.add(CompanyMapper.DEFAULT_ID);
 	}
 
 	@Override

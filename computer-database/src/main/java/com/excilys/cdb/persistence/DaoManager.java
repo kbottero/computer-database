@@ -16,9 +16,7 @@ public enum DaoManager {
 	
 	DaoManager (){
 		properties = new Properties();
-		//FileInputStream in;
 		try {
-			//in = new FileInputStream("db.properties");
 			BufferedReader in = new BufferedReader(new InputStreamReader(DaoManager.class.getClassLoader().getResourceAsStream("db.properties")));
 			properties.load(in);
 			in.close();

@@ -1,11 +1,13 @@
 package com.excilys.cdb.service;
 
 import java.util.Collection;
+import java.util.List;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.CompanyDao;
 import com.excilys.cdb.persistence.ComputerDao;
+import com.excilys.cdb.persistence.IDao.Order;
 
 public class ServiceImpl implements IService{
 
@@ -13,6 +15,18 @@ public class ServiceImpl implements IService{
 	public Collection<Computer> getAllComputer() {
 		
 		return ComputerDao.INSTANCE.getAll();
+	}
+
+	@Override
+	public Collection<Computer> getSomeComputer( List<String> orderByCol, Order order, Long limit, Long offset ) {
+		// TODO Auto-generated method stub
+		return ComputerDao.INSTANCE.getSome( orderByCol, order, limit, offset );
+	}
+
+	@Override
+	public Long getNbComputer() {
+		// TODO Auto-generated method stub
+		return ComputerDao.INSTANCE.getNb();
 	}
 
 	@Override
@@ -44,5 +58,19 @@ public class ServiceImpl implements IService{
 		// TODO Auto-generated method stub
 		return CompanyDao.INSTANCE.getById(id);
 	}
+
+	@Override
+	public Collection<Company> getSomeCompany(List<String> orderByCol,
+			Order order, Long limit, Long offset) {
+		// TODO Auto-generated method stub
+		return CompanyDao.INSTANCE.getSome( orderByCol, order, limit, offset );
+	}
+
+	@Override
+	public Long getNbCompany() {
+		// TODO Auto-generated method stub
+		return CompanyDao.INSTANCE.getNb();
+	}
+
 	
 }

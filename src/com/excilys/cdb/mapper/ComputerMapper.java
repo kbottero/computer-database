@@ -21,7 +21,7 @@ public enum ComputerMapper {
 				comp.setIntroductionDate(Timestamp.valueOf((curs.getString("introduced"))).toLocalDateTime());
 			}
 			if (curs.getString("discontinued") != null) {
-				comp.setIntroductionDate(Timestamp.valueOf((curs.getString("discontinued"))).toLocalDateTime());
+				comp.setDiscontinuedDate(Timestamp.valueOf((curs.getString("discontinued"))).toLocalDateTime());
 			}
 		} catch (SQLException e) {
 			throw new DaoException(e);

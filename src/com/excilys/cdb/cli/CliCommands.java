@@ -161,11 +161,7 @@ public enum CliCommands {
 			LocalDateTime introductionDate = null;
 			LocalDateTime discontinuedDate = null;
 
-			/*
-			Pattern p = Pattern.compile("[^\"\\s]+|\"(\\\\.|[^\\\\\"])*\"");
-			if (s.hasNext(p)) {
-				name = s.next(p);
-			} else */if (s.hasNext()) {
+			if (s.hasNext()) {
 				name = s.next();
 			} else {
 				System.out.println(invalidCommand);
@@ -265,8 +261,8 @@ public enum CliCommands {
 	private static IService serv = new ServiceImpl();
 	private static String invalidCommand = "Invalid Command";
 	private static String pages = "pages";
-	private static String prompt = ">";
-	private static String quitPages = "q";
+	public static String prompt = ">";
+	public static String quitPages = "q";
 	
 	private static Map<String,CliCommands> listCommands;
 	static {
@@ -363,10 +359,10 @@ public enum CliCommands {
 	private static void listComputersPage(Scanner s) {
 		Page<Computer> page;
 		if (s.hasNext()) {
-			int nbLine = s.nextInt();
-			page = new Page<Computer> ((ArrayList<Computer>)serv.getAllComputer(), nbLine);
+			Long nbLine = s.nextLong();
+			page = new ComputerPage (serv, nbLine);
 		} else {
-			page = new Page<Computer> ((ArrayList<Computer>)serv.getAllComputer());
+			page = new ComputerPage (serv);
 		}
 	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		Scanner scan = null;
@@ -397,10 +393,10 @@ public enum CliCommands {
 	private static void listCompaniesPage(Scanner s) {
 		Page<Company> page;
 		if (s.hasNext()) {
-			int nbLine = s.nextInt();
-			page = new Page<Company> ((ArrayList<Company>)serv.getAllCompany(), nbLine);
+			Long nbLine = s.nextLong();
+			page = new CompanyPage (serv, nbLine);
 		} else {
-			page = new Page<Company> ((ArrayList<Company>)serv.getAllCompany());
+			page = new CompanyPage (serv);
 		}
 	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		Scanner scan = null;

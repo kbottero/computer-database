@@ -1,4 +1,4 @@
-package com.excilys.cdb.test;
+package com.excilys.cdb.dao;
 
 import java.util.ArrayList;
 

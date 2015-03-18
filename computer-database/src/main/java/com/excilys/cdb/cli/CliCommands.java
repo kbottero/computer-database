@@ -18,6 +18,9 @@ import com.excilys.cdb.validation.ValidatorDate;
 
 public enum CliCommands {
 	
+	/**
+	 * Command to display computers. Can display all of them or page by page.
+	 */
 	LIST_COMPUTERS ("list_computers") {
 		@Override
 		public void execute(Scanner s) {
@@ -38,6 +41,9 @@ public enum CliCommands {
 			return this.getLabel()+" [pages [nbLinePerPages]]";
 		}
 	},
+	/**
+	 * Command to display companies. Can display all of them or page by page.
+	 */
 	LIST_COMPANIES ("list_companies") {
 		@Override
 		public void execute(Scanner s) {
@@ -58,6 +64,9 @@ public enum CliCommands {
 			return  this.getLabel()+" [pages [nbLinePerPages]]";
 		}
 	},
+	/**
+	 * Print data on one computer.
+	 */
 	SHOW ("show_details") {
 		@Override
 		public void execute(Scanner s) {
@@ -79,6 +88,9 @@ public enum CliCommands {
 			return  this.getLabel()+" id";
 		}
 	},
+	/**
+	 * Update one computers.
+	 */
 	UPDATE ("update") {
 		@Override
 		public void execute(Scanner s) {
@@ -152,6 +164,9 @@ public enum CliCommands {
 			return  this.getLabel()+" id [name=new_name] [introductionDate=yyyy-MM-dd] [discontinuedDate=yyyy-MM-dd] [company_id=new_company_id]";
 		}
 	},
+	/**
+	 * Create one computers.
+	 */
 	CREATE ("create") {
 		@Override
 		public void execute(Scanner s) {
@@ -216,6 +231,9 @@ public enum CliCommands {
 			return this.getLabel()+" name [introductionDate=yyyy-MM-dd] [discontinuedDate=yyyy-MM-dd] [company_id=new_company_id]";
 		}
 	},
+	/**
+	 * Delete one computers.
+	 */
 	DELETE ("delete") {
 		@Override
 		public void execute(Scanner s) {
@@ -231,6 +249,9 @@ public enum CliCommands {
 			return this.getLabel()+" id";
 		}
 	},
+	/**
+	 * List all the existing commands.
+	 */
 	HELP ("help") {
 		@Override
 		public void execute(Scanner s) {
@@ -244,6 +265,9 @@ public enum CliCommands {
 			return "help : return list of commands";
 		}
 	},
+	/**
+	 * Command to quit the CLI
+	 */
 	QUIT ("quit") {
 		@Override
 		public void execute(Scanner s) {
@@ -254,7 +278,6 @@ public enum CliCommands {
 			return this.getLabel();
 		}
 	};
-	
 	
 	private final String label;
 
@@ -420,6 +443,10 @@ public enum CliCommands {
 		}
 	}
 	
+	/**
+	 * Display a message relative to an invalid command.
+	 * @param comm
+	 */
 	private static void invalidCommand(CliCommands comm) {
 		System.out.print(invalidCommand);
 		System.out.print(" : ");

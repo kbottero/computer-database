@@ -7,6 +7,11 @@ public enum ValidatorDate {
 
 	INSTANCE;
 
+	/**
+	 * Date validator
+	 * @param date
+	 * @return true if the String correspond to an existing date, false otherwise.
+	 */
 	public boolean validateDate(final String date){
 
 		Pattern pattern = Pattern.compile("((19|20)\\d\\d)[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])");

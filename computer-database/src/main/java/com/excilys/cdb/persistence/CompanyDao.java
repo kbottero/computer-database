@@ -11,6 +11,11 @@ import com.excilys.cdb.mapper.CompanyMapper;
 import com.excilys.cdb.mapper.ComputerMapper;
 import com.excilys.cdb.model.Company;
 
+/**
+ * CompanyDao
+ * @author Kevin Bottero
+ *
+ */
 public enum CompanyDao implements IDao<Company, Long>{
 	INSTANCE;
 	

@@ -1,5 +1,10 @@
 package com.excilys.cdb.persistence;
 
+/**
+ * 
+ * @author Kevin Bottero
+ *
+ */
 public class DaoException extends RuntimeException{
 
 	private static final long serialVersionUID = 3930740027979797558L;

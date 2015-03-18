@@ -11,11 +11,6 @@ public class Company {
 		this.name = name;
 	}
 
-	@Override
-	public String toString() {
-		return name + "("+id+")";
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -23,7 +18,6 @@ public class Company {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
 	
 	public Long getId() {
 		return id;
@@ -33,6 +27,16 @@ public class Company {
 		this.id = id;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder strgBuil = new StringBuilder();
+		strgBuil.append(name);
+		strgBuil.append("(id:");
+		strgBuil.append(id);
+		strgBuil.append(")");
+		return strgBuil.toString();
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

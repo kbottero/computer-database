@@ -9,9 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.excilys.cdb.mapper.ComputerMapper;
-import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 
+/**
+ * ComputerDao
+ * @author Kevin Bottero
+ *
+ */
 public enum ComputerDao  implements IDao<Computer, Long> {
 	
 	INSTANCE;
@@ -41,7 +45,8 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 			conn = DaoManager.INSTANCE.getConnection();
 			curs = conn.createStatement().executeQuery("SELECT id, name,introduced, discontinued, company_id FROM computer;");
 			while ( curs.next() ) {
-				list.add(ComputerMapper.INSTANCE.parseComputer(curs, getOneCompany(curs.getLong("company_id"))));
+				list.add(ComputerMapper.INSTANCE.parseComputer(curs,
+						CompanyDao.INSTANCE.getById(curs.getLong("company_id"))));
     		}
 		} catch (SQLException | NumberFormatException e) {
 			throw new DaoException(e);
@@ -145,7 +150,8 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 			}
 			curs = selectSomeComputer.executeQuery();
 			while ( curs.next() ) {
-				list.add(ComputerMapper.INSTANCE.parseComputer(curs, getOneCompany(curs.getLong("company_id"))));
+				list.add(ComputerMapper.INSTANCE.parseComputer(curs,
+						CompanyDao.INSTANCE.getById(curs.getLong("company_id"))));
     		}
 		} catch (SQLException | NumberFormatException e) {
 			throw new DaoException(e);
@@ -172,7 +178,8 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 			selectOneComputer.setLong(1,id);
 			curs = selectOneComputer.executeQuery();
 			if ( curs.next() ) {
-				comp = ComputerMapper.INSTANCE.parseComputer(curs, getOneCompany(curs.getLong("company_id")));
+				comp = ComputerMapper.INSTANCE.parseComputer(curs, 
+						CompanyDao.INSTANCE.getById(curs.getLong("company_id")));
     		}
 		} catch (SQLException | NumberFormatException e) {
 			throw new DaoException(e);
@@ -297,25 +304,4 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		}
 		
 	}
-	
-	public Company getOneCompany(long id) {
-		Connection conn = null;
-		Company company = null;
-		try {
-			conn = DaoManager.INSTANCE.getConnection();
-			company = CompanyDao.INSTANCE.getById(id);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			if(conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					throw new DaoException(e);
-				}
-			}
-		}
-		return company;
-	}
-
 }

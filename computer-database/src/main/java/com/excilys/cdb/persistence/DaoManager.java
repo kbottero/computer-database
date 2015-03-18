@@ -8,6 +8,13 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+
+/**
+ * Singleton returning Connection to the database.
+ * Connection properties are store in the db.properties file
+ * @author Kevin Bottero
+ *
+ */
 public enum DaoManager {
 	
 	INSTANCE;

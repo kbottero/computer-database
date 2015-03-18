@@ -9,11 +9,20 @@ import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.DaoException;
 
+/**
+ * Mapper for com.excilys.cdb.Model.Computer using java.sql.ResultSet
+ * 
+ * @author Kevin Bottero
+ *
+ */
 public enum ComputerMapper {
 	INSTANCE;
-	
-	public static final HashMap<String,String> mapBDModel;
+
+	/** Primary Key.	 */
 	public static final String DEFAULT_ID = "id";
+
+	/** Map DB labels -> Model attributes. */
+	public static final HashMap<String,String> mapBDModel;
 	static {
 		mapBDModel = new HashMap<String,String>();
 		mapBDModel.put("id","id");
@@ -23,6 +32,15 @@ public enum ComputerMapper {
 		mapBDModel.put("company_id","constructor");
 	}
 	
+	/**
+	 * Create a Computer from a ResultSet and a Company.
+	 * Only id and name are mandatory to create a computer.
+	 * @param curs
+	 * 				Data on the Computer
+	 * @param company
+	 * 				Constructor of the Computer
+	 * @return Created Computer instance
+	 */
 	public Computer parseComputer(ResultSet curs, Company company) {
 
 		Computer comp;

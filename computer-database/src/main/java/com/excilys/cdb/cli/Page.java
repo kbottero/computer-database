@@ -39,6 +39,9 @@ public abstract class Page <E> {
 	 */
 	public abstract boolean nextPage();
 	
+	/**
+	 * Print information related to the current page
+	 */
 	protected void printEndOfPage () {
 		StringBuilder stgBuild = new StringBuilder();
 		stgBuild.append("Page ");

@@ -5,12 +5,10 @@ import java.time.LocalDateTime;
 public class Computer {
 	
 	private Long id;
-	
 	private String name;
-	private Company constructor;
-	
 	private LocalDateTime introductionDate;
 	private LocalDateTime discontinuedDate;
+	private Company constructor;
 	
 	public Computer(long id, String name) {
 		super();
@@ -60,8 +58,12 @@ public class Computer {
 
 	@Override
 	public String toString() {
-		StringBuilder str = new StringBuilder("id:"+id+":"+name+" [");
-		
+		StringBuilder str = new StringBuilder();
+		str.append("id:");
+		str.append(id);
+		str.append(":");
+		str.append(name);
+		str.append(" [");
 		if (constructor!=null) {
 			str.append(constructor);
 		}

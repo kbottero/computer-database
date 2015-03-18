@@ -22,7 +22,4 @@ public class TestCompanyDao {
 			System.out.println(company);
 		}
 	}
-
-
-
 }

@@ -20,9 +20,9 @@ public enum ValidatorDate {
 		if (matcher.matches()) {
 			matcher.reset();
 			if (matcher.find()) {
-				String day = matcher.group(3);
-				String month = matcher.group(2);
 				int year = Integer.parseInt(matcher.group(1));
+				String month = matcher.group(3);
+				String day = matcher.group(4);
 
 				if (day.equals("31") && 
 						(month.equals("04") || month .equals("06") || month.equals("09") || month.equals("11"))) {

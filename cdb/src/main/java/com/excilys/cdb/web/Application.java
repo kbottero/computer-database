@@ -57,7 +57,7 @@ public class Application extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		//request.setAttribute("computers", service.getAllComputer());
-		RequestDispatcher dis=this.getServletContext().getRequestDispatcher("/views/dashboard.html");
+		RequestDispatcher dis=this.getServletContext().getRequestDispatcher("/views/dashboard.jsp");
 		
 		dis.forward(request, response);
 	}

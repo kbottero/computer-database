@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
  pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,7 +23,7 @@
     <section id="main">
         <div class="container">
             <h1 id="homeTitle">
-                121 Computers found
+                ${nbComputers} Computers found
             </h1>
             <div id="actions" class="form-horizontal">
                 <div class="pull-left">
@@ -77,18 +79,20 @@
                 </thead>
                 <!-- Browse attribute computers -->
                 <tbody id="results">
-                    <tr>
-                        <td class="editMode">
-                            <input type="checkbox" name="cb" class="cb" value="0">
-                        </td>
-                        <td>
-                            <a href="editComputer.html" onclick="">MacBook Pro</a>
-                        </td>
-                        <td>2006-01-10</td>
-                        <td></td>
-                        <td>Apple Inc.</td>
-
-                    </tr>
+                	<c:forEach var="c" items="${computersPage.elements}">
+						<tr>
+							<td class="editMode">
+	                            <input type="checkbox" name="cb" class="cb" value="0">
+	                        </td>
+	                        <td>
+	                            <a href="editComputer.html" onclick="">${c.name}</a>
+	                        </td>
+	                        <td>${c.introductionDate}</td>
+	                        <td>${c.discontinuedDate}</td>
+	                        <td>${c.constructor.name}</td>
+						</tr>
+					</c:forEach>
+                    <!-- 
                     <tr>
                         <td class="editMode">
                             <input type="checkbox" name="cb" class="cb" value="0">
@@ -220,7 +224,7 @@
                         <td></td>
                         <td>Nintendo</td>
 
-                    </tr>
+                    </tr> -->
                     
                 </tbody>
             </table>
@@ -244,9 +248,10 @@
                 <a href="#" aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
                 </a>
-            </li>
-        </ul>
-
+              </li>
+            </ul>
+        </div>
+        
         <div class="btn-group btn-group-sm pull-right" role="group" >
             <button type="button" class="btn btn-default">10</button>
             <button type="button" class="btn btn-default">50</button>

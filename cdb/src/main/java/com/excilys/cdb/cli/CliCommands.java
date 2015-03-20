@@ -390,6 +390,10 @@ public enum CliCommands {
 	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		Scanner scan = null;
 		while(page.nextPage()) {
+			for (Computer computer  : page.getElements()) {
+				CliCommands.printComputer(computer);
+			}
+			printEndOfPage(page);
 			System.out.print(prompt);
 			try{
 				scan = new Scanner(bufferRead.readLine());
@@ -424,6 +428,10 @@ public enum CliCommands {
 	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		Scanner scan = null;
 		while(page.nextPage()) {
+			for (Company company  : page.getElements()) {
+				CliCommands.printCompany(company);
+			}
+			printEndOfPage(page);
 			System.out.print(prompt);
 			try{
 				scan = new Scanner(bufferRead.readLine());
@@ -453,4 +461,18 @@ public enum CliCommands {
 		System.out.println(comm.getHelp());
 	}
 	
+	/**
+	 * Print information related to the current page
+	 */
+	private static void printEndOfPage (Page<?> page) {
+		StringBuilder stgBuild = new StringBuilder();
+		stgBuild.append("Page ");
+		stgBuild.append(page.getCurrPage());
+		stgBuild.append("/");
+		stgBuild.append(page.getSize());
+		stgBuild.append("\t (enter '");
+		stgBuild.append(CliCommands.quitPages);
+		stgBuild.append("' to quit)");
+		System.out.println(stgBuild.toString());
+	}
 }

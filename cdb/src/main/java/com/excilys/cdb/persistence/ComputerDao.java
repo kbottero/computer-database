@@ -131,7 +131,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 				}
 			}
 			if (limit == null) {
-				selectSomeComputer.setLong(3,0); 
+				selectSomeComputer.setLong(3,20);
 			} else {
 				if (limit < 0) {
 					throw new DaoException("Invalid limit ("+limit+") for request : "+preparedStatement.SELECT_SOME.getRequest());

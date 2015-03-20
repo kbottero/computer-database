@@ -42,21 +42,17 @@ public class ComputerPage extends Page<Computer>{
 		orderBy = new ArrayList<String>();
 		orderBy.add(CompanyMapper.DEFAULT_ID);
 	}
+	
+	public List<Computer> getElements() {
+		return elements;
+	}
 
 	@Override
 	public boolean nextPage() {
 		if (currPage != size) {
 			elements = (List<Computer>) serv.getSomeComputer(orderBy, sortingOrder, pageSize, currPage*pageSize);
-			for (Computer computer  : elements) {
-				CliCommands.printComputer(computer);
-			}
-			printEndOfPage();
 			++currPage;
-			if (currPage == size ) {
-				return false;
-			} else {
-				return true;
-			}
+			return true;
 		} else {
 			return false;
 		}

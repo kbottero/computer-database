@@ -49,18 +49,15 @@ public class CompanyPage extends Page<Company>{
 	public boolean nextPage() {
 		if (currPage != size) {
 			elements = (List<Company>) serv.getSomeCompany(orderBy, sortingOrder, pageSize, currPage*pageSize);
-			for (Company company  : elements) {
-				CliCommands.printCompany(company);
-			}
-			printEndOfPage();
 			++currPage;
-			if (currPage == size ) {
-				return false;
-			} else {
-				return true;
-			}
+			return true;
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public List<Company> getElements() {
+		return elements;
 	}
 }

@@ -25,32 +25,27 @@ public abstract class Page <E> {
 		this.serv = serv;
 	}
 	
-	public void setSortingOrder (IDao.Order so) {
+	public void setSortingOrder(IDao.Order so) {
 		sortingOrder = so;
 	}
 	
-	public IDao.Order getSortingOrder () {
+	public IDao.Order getSortingOrder() {
 		return sortingOrder;
 	}
+	
+	public Long getCurrPage() {
+		return currPage;
+	}
+
+	public Long getSize() {
+		return size;
+	}
+	
+	public abstract List<E> getElements();
 	
 	/**
 	 * Display next page
 	 * @return true if there is still pages to display, 0 else
 	 */
 	public abstract boolean nextPage();
-	
-	/**
-	 * Print information related to the current page
-	 */
-	protected void printEndOfPage () {
-		StringBuilder stgBuild = new StringBuilder();
-		stgBuild.append("Page ");
-		stgBuild.append(currPage+1);
-		stgBuild.append("/");
-		stgBuild.append(size);
-		stgBuild.append("\t (enter '");
-		stgBuild.append(CliCommands.quitPages);
-		stgBuild.append("' to quit)");
-		System.out.println(stgBuild.toString());
-	}
 }

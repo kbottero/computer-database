@@ -23,16 +23,74 @@ public class CompaniesService implements IService<Company,Long>{
 			throw new ServiceException(e);
 		}
 	}
-
+	
 	/**
-	 * Return a limited list of companies from the database.
+	 * Return a list of all companies in the database.
+	 * Ordered according to given columns.
 	 * @return
 	 */
 	@Override
-	public List<Company> getSome(List<String> orderByCol,
-			Order order, Long limit, Long offset)  throws ServiceException{
+	public List<Company> getAll(List<String> orderByCol) throws ServiceException {
 		try {
-			return CompanyDao.INSTANCE.getSome( orderByCol, order, limit, offset );
+			return CompanyDao.INSTANCE.getAll(orderByCol);
+		} catch (DaoException e) {
+			throw new ServiceException(e);
+		}
+	}
+	
+	/**
+	 * Return a list of all companies in the database.
+	 * Ordered according to given columns. In an ascending or descending order.
+	 * @return
+	 */
+	@Override
+	public List<Company> getAll(List<String> orderByCol,
+			Order order)  throws ServiceException {
+		try {
+			return CompanyDao.INSTANCE.getAll(orderByCol, order);
+		} catch (DaoException e) {
+			throw new ServiceException(e);
+		}
+	}
+	
+	/**
+	 * Return a limited list of companies from the database.
+	 *  Ordered according to given columns. In an ascending or descending order.
+	 * @return
+	 */
+	@Override
+	public List<Company> getSome(Long limit, Long offset) throws ServiceException {
+		try {
+			return CompanyDao.INSTANCE.getSome(limit, offset);
+		} catch (DaoException e) {
+			throw new ServiceException(e);
+		}
+	}
+	
+	/**
+	 * Return a limited list of companies from the database.
+	 *  Ordered according to given columns. In an ascending or descending order.
+	 * @return
+	 */
+	@Override
+	public List<Company> getSome(Long limit, Long offset, List<String> orderByCol)  throws ServiceException {
+		try {
+			return CompanyDao.INSTANCE.getSome(limit, offset, orderByCol);
+		} catch (DaoException e) {
+			throw new ServiceException(e);
+		}
+	}
+
+	/**
+	 * Return a limited list of companies from the database.
+	 *  Ordered according to given columns. In an ascending or descending order.
+	 * @return
+	 */
+	@Override
+	public List<Company> getSome(Long limit, Long offset, List<String> orderByCol,
+			Order order) throws ServiceException {
+		try {
+			return CompanyDao.INSTANCE.getSome(limit, offset, orderByCol, order );
 		} catch (DaoException e) {
 			throw new ServiceException(e);
 		}
@@ -43,7 +101,7 @@ public class CompaniesService implements IService<Company,Long>{
 	 * @return
 	 */
 	@Override
-	public Long getNbInstance()  throws ServiceException{
+	public Long getNbInstance() throws ServiceException {
 		try {
 			return CompanyDao.INSTANCE.getNb();
 		} catch (DaoException e) {
@@ -56,7 +114,7 @@ public class CompaniesService implements IService<Company,Long>{
 	 * @return
 	 */
 	@Override
-	public Company getOne(Long id)  throws ServiceException{
+	public Company getOne(Long id) throws ServiceException {
 		try {
 			return CompanyDao.INSTANCE.getById(id);
 		} catch (DaoException e) {

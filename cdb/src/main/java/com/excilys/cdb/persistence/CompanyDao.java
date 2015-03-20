@@ -9,7 +9,6 @@ import java.util.List;
 
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.mapper.CompanyMapper;
-import com.excilys.cdb.mapper.ComputerMapper;
 import com.excilys.cdb.model.Company;
 
 /**
@@ -21,6 +20,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 	INSTANCE;
 	
 	private static enum preparedStatement {
+		SELECT_ALL_ORDERED ("SELECT id, name FROM company ORDER BY ? ?"),
 		SELECT_ONE ("SELECT id, name FROM company WHERE id=?;"),
 		SELECT_SOME ("SELECT id, name FROM company ORDER BY ? ? LIMIT ? OFFSET ?");
 		
@@ -42,7 +42,74 @@ public enum CompanyDao implements IDao<Company, Long>{
 			conn = DaoManager.INSTANCE.getConnection();
 			curs = conn.createStatement().executeQuery("SELECT id, name FROM company;");
 			while ( curs.next() ) {
-				list.add(CompanyMapper.INSTANCE.parseCompany(curs));
+				list.add(CompanyMapper.INSTANCE.mapFromRow(curs));
+    		}
+		} catch (SQLException | NumberFormatException e) {
+			throw new DaoException(e);
+		} finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					throw new DaoException(e);
+				}
+			}
+		}
+		return list;
+	}
+	
+	@Override
+	public List<Company> getAll(List<String> orderByCol) throws DaoException {
+		return this.getAll(orderByCol, null);
+	}
+	
+	@Override
+	public List<Company> getAll(List<String> orderByCol,
+			Order order) throws DaoException {
+		
+		ResultSet curs;
+		List<Company> list = new ArrayList<Company>();
+		Connection conn = null;
+		try {
+			conn = DaoManager.INSTANCE.getConnection();
+			PreparedStatement selectAllOrdredCompanies = conn.prepareStatement(preparedStatement.SELECT_ALL_ORDERED.getRequest());
+			//ORDER BY ?
+			if ((orderByCol == null) || (orderByCol.size() == 0)){
+				selectAllOrdredCompanies.setString(1,"id");
+			} else {
+				StringBuilder strgBuilder = new StringBuilder();
+				for (String strg : orderByCol) {
+					 if (CompanyMapper.mapBDModel.containsKey(strg)) {
+						 if (strgBuilder.length() != 0) {
+							 strgBuilder.append(", ");
+						 }
+						 strgBuilder.append(CompanyMapper.mapBDModel.get(strg));
+					 } else {
+						 throw new DaoException("Incorrect field for request : "+preparedStatement.SELECT_ALL_ORDERED.getRequest());
+					 }
+				}
+				selectAllOrdredCompanies.setString(1,strgBuilder.toString());
+			}
+			//ASC or DESC ?
+			if (order == null) {
+				selectAllOrdredCompanies.setString(2,"ASC"); 
+			} else {
+				switch (order) {
+				case ASC:
+					selectAllOrdredCompanies.setString(2,"ASC");
+					break;
+				case DESC:
+					selectAllOrdredCompanies.setString(2,"DESC");
+					break;
+				default:
+					throw new DaoException("Invalid order for request : "+preparedStatement.SELECT_ALL_ORDERED.getRequest());
+				}
+			}
+			//Execute Request
+			curs = selectAllOrdredCompanies.executeQuery();
+			//Mapping
+			while ( curs.next() ) {
+				list.add(CompanyMapper.INSTANCE.mapFromRow(curs));
     		}
 		} catch (SQLException | NumberFormatException e) {
 			throw new DaoException(e);
@@ -83,9 +150,22 @@ public enum CompanyDao implements IDao<Company, Long>{
 		}
 		return nbElements;
 	}
+	
+	
 
 	@Override
-	public List<Company> getSome( List<String> orderByCol, Order order, Long limit, Long offset ) throws DaoException {
+	public List<Company> getSome( Long limit, Long offset) throws DaoException {
+		return getSome( limit, offset, null, null);
+	}
+
+	@Override
+	public List<Company> getSome( Long limit, Long offset,List<String> orderByCol) throws DaoException {
+		return getSome( limit, offset,orderByCol, null);
+	}
+
+	
+	@Override
+	public List<Company> getSome( Long limit, Long offset, List<String> orderByCol, Order order ) throws DaoException {
 		
 		ResultSet curs;
 		List<Company> list = new ArrayList<Company>();
@@ -103,7 +183,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 						if (strgBuilder.length() != 0) {
 							strgBuilder.append(", ");
 						}
-						strgBuilder.append(ComputerMapper.mapBDModel.get(strg));
+						strgBuilder.append(CompanyMapper.mapBDModel.get(strg));
 					} else {
 						throw new DaoException("Incorrect field for request : "+preparedStatement.SELECT_SOME.getRequest());
 					}
@@ -144,7 +224,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 			}
 			curs = selectSomeCompanies.executeQuery();
 			while ( curs.next() ) {
-				list.add(CompanyMapper.INSTANCE.parseCompany(curs));
+				list.add(CompanyMapper.INSTANCE.mapFromRow(curs));
     		}
 		} catch (SQLException | NumberFormatException e) {
 			throw new DaoException(e);
@@ -162,7 +242,9 @@ public enum CompanyDao implements IDao<Company, Long>{
 
 	@Override
 	public Company getById(Long id) throws DaoException {
-		
+		if (id == null) {
+			throw new IllegalArgumentException();
+		}
 		ResultSet curs;
 		Company comp=null;
 		Connection conn = null;
@@ -172,7 +254,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 			selectOneCompany.setLong(1,id);
 			curs = selectOneCompany.executeQuery();
 			if ( curs.next() ) {
-				comp = CompanyMapper.INSTANCE.parseCompany(curs);
+				comp = CompanyMapper.INSTANCE.mapFromRow(curs);
     		}
 		} catch (SQLException e) {
 			throw new DaoException(e);

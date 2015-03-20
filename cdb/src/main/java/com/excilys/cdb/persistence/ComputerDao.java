@@ -22,8 +22,9 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 	INSTANCE;
 	
 	private static enum preparedStatement {
+		SELECT_ALL_ORDERED ("SELECT id, name,introduced, discontinued, company_id FROM computer ORDER BY ? ?"),
+		SELECT_SOME_ORDERED ("SELECT id, name,introduced, discontinued, company_id FROM computer ORDER BY ? ? LIMIT ? OFFSET ?"),
 		SELECT_ONE ("SELECT id, name,introduced, discontinued, company_id FROM computer WHERE id=?;"),
-		SELECT_SOME ("SELECT id, name,introduced, discontinued, company_id FROM computer ORDER BY ? ? LIMIT ? OFFSET ?"),
 		INSERT_ONE ("INSERT INTO computer (name, introduced, discontinued,company_id) VALUES (?,?,?,?) ;"),
 		UPDATE_ONE ("UPDATE computer SET name=?,introduced=?,discontinued=?,company_id=? WHERE id=?;"),
 		DELETE_ONE ("DELETE FROM computer WHERE id=?;");
@@ -46,8 +47,74 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 			conn = DaoManager.INSTANCE.getConnection();
 			curs = conn.createStatement().executeQuery("SELECT id, name,introduced, discontinued, company_id FROM computer;");
 			while ( curs.next() ) {
-				list.add(ComputerMapper.INSTANCE.parseComputer(curs,
-						CompanyDao.INSTANCE.getById(curs.getLong("company_id"))));
+				list.add(ComputerMapper.INSTANCE.mapFromRow(curs));
+    		}
+		} catch (SQLException | NumberFormatException e) {
+			throw new DaoException(e);
+		} finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					throw new DaoException(e);
+				}
+			}
+		}
+		return list;
+	}
+	
+	@Override
+	public List<Computer> getAll(List<String> orderByCol) throws DaoException {
+		return this.getAll(orderByCol, null);
+	}
+	
+	@Override
+	public List<Computer> getAll(List<String> orderByCol,
+			Order order) throws DaoException {
+		
+		ResultSet curs;
+		List<Computer> list = new ArrayList<Computer>();
+		Connection conn = null;
+		try {
+			conn = DaoManager.INSTANCE.getConnection();
+			PreparedStatement selectAllOrdredComputer = conn.prepareStatement(preparedStatement.SELECT_ALL_ORDERED.getRequest());
+			//ORDER BY ?
+			if ((orderByCol == null) || (orderByCol.size() == 0)){
+				selectAllOrdredComputer.setString(1,"id");
+			} else {
+				StringBuilder strgBuilder = new StringBuilder();
+				for (String strg : orderByCol) {
+					 if (ComputerMapper.mapBDModel.containsKey(strg)) {
+						 if (strgBuilder.length() != 0) {
+							 strgBuilder.append(", ");
+						 }
+						 strgBuilder.append(ComputerMapper.mapBDModel.get(strg));
+					 } else {
+						 throw new DaoException("Incorrect field for request : "+preparedStatement.SELECT_ALL_ORDERED.getRequest());
+					 }
+				}
+				selectAllOrdredComputer.setString(1,strgBuilder.toString());
+			}
+			//ASC or DESC ?
+			if (order == null) {
+				selectAllOrdredComputer.setString(2,"ASC"); 
+			} else {
+				switch (order) {
+				case ASC:
+					selectAllOrdredComputer.setString(2,"ASC");
+					break;
+				case DESC:
+					selectAllOrdredComputer.setString(2,"DESC");
+					break;
+				default:
+					throw new DaoException("Invalid order for request : "+preparedStatement.SELECT_ALL_ORDERED.getRequest());
+				}
+			}
+			//Execute Request
+			curs = selectAllOrdredComputer.executeQuery();
+			//Mapping
+			while ( curs.next() ) {
+				list.add(ComputerMapper.INSTANCE.mapFromRow(curs));
     		}
 		} catch (SQLException | NumberFormatException e) {
 			throw new DaoException(e);
@@ -88,19 +155,27 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		}
 		return nbElements;
 	}
+	
+	@Override
+	public List<Computer> getSome( Long limit, Long offset) throws DaoException {
+		return getSome( limit, offset, null, null);
+	}
 
 	@Override
-	public List<Computer> getSome( List<String> orderByCol, Order order, Long limit, Long offset ) throws DaoException {
+	public List<Computer> getSome( Long limit, Long offset,List<String> orderByCol) throws DaoException {
+		return getSome( limit, offset,orderByCol, null);
+	}
+
+	@Override
+	public List<Computer> getSome( Long limit, Long offset,List<String> orderByCol, Order order ) throws DaoException {
 		
 		ResultSet curs;
 		List<Computer> list = new ArrayList<Computer>();
 		Connection conn = null;
 		
-		
-		
 		try {
 			conn = DaoManager.INSTANCE.getConnection();
-			PreparedStatement selectSomeComputer = conn.prepareStatement(preparedStatement.SELECT_SOME.getRequest());
+			PreparedStatement selectSomeComputer = conn.prepareStatement(preparedStatement.SELECT_SOME_ORDERED.getRequest());
 			if ((orderByCol == null) || (orderByCol.size() == 0)){
 				selectSomeComputer.setString(1,"id");
 			} else {
@@ -112,7 +187,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 						 }
 						 strgBuilder.append(ComputerMapper.mapBDModel.get(strg));
 					 } else {
-						 throw new DaoException("Incorrect field for request : "+preparedStatement.SELECT_SOME.getRequest());
+						 throw new DaoException("Incorrect field for request : "+preparedStatement.SELECT_SOME_ORDERED.getRequest());
 					 }
 				}
 				selectSomeComputer.setString(1,strgBuilder.toString());
@@ -128,14 +203,14 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 					selectSomeComputer.setString(2,"DESC");
 					break;
 				default:
-					throw new DaoException("Invalid order for request : "+preparedStatement.SELECT_SOME.getRequest());
+					throw new DaoException("Invalid order for request : "+preparedStatement.SELECT_SOME_ORDERED.getRequest());
 				}
 			}
 			if (limit == null) {
 				selectSomeComputer.setLong(3,20);
 			} else {
 				if (limit < 0) {
-					throw new DaoException("Invalid limit ("+limit+") for request : "+preparedStatement.SELECT_SOME.getRequest());
+					throw new DaoException("Invalid limit ("+limit+") for request : "+preparedStatement.SELECT_SOME_ORDERED.getRequest());
 				} else {
 					selectSomeComputer.setLong(3,limit); 
 				}
@@ -144,15 +219,14 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 				selectSomeComputer.setLong(4,0); 
 			} else {
 				if (offset < 0) {
-					throw new DaoException("Invalid offset ("+offset+") for request : "+preparedStatement.SELECT_SOME.getRequest());
+					throw new DaoException("Invalid offset ("+offset+") for request : "+preparedStatement.SELECT_SOME_ORDERED.getRequest());
 				} else {
 					selectSomeComputer.setLong(4,offset); 
 				}
 			}
 			curs = selectSomeComputer.executeQuery();
 			while ( curs.next() ) {
-				list.add(ComputerMapper.INSTANCE.parseComputer(curs,
-						CompanyDao.INSTANCE.getById(curs.getLong("company_id"))));
+				list.add(ComputerMapper.INSTANCE.mapFromRow(curs));
     		}
 		} catch (SQLException | NumberFormatException e) {
 			throw new DaoException(e);
@@ -170,6 +244,9 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 
 	@Override
 	public Computer getById(Long id) throws DaoException {
+		if (id == null) {
+			throw new IllegalArgumentException();
+		}
 		ResultSet curs;
 		Computer comp=null;
 		Connection conn = null;
@@ -179,8 +256,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 			selectOneComputer.setLong(1,id);
 			curs = selectOneComputer.executeQuery();
 			if ( curs.next() ) {
-				comp = ComputerMapper.INSTANCE.parseComputer(curs, 
-						CompanyDao.INSTANCE.getById(curs.getLong("company_id")));
+				comp = ComputerMapper.INSTANCE.mapFromRow(curs);
     		}
 		} catch (SQLException | NumberFormatException e) {
 			throw new DaoException(e);
@@ -198,6 +274,9 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 
 	@Override
 	public void save(Computer c) throws DaoException {
+		if (c == null) {
+			throw new IllegalArgumentException();
+		}
 		boolean update=false;
 		ResultSet curs;
 
@@ -264,7 +343,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 			}
 			if(nb==0)
 			{
-				throw new DaoException("Computer update not in database.");
+				throw new DaoException("Can not Create or Update  the computer in database. id = "+c.getId());
 			}
 		} catch (SQLException e) {
 			throw new DaoException(e);
@@ -281,7 +360,9 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 
 	@Override
 	public void delete(Long id) throws DaoException {
-
+		if (id == null) {
+			throw new IllegalArgumentException();
+		}
 		Connection conn = null;
 		try {
 			conn = DaoManager.INSTANCE.getConnection();
@@ -290,7 +371,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 			int nb = deleteOneComputer.executeUpdate();
 			if(nb==0)
 			{
-				throw new DaoException("Computer not in database.");
+				throw new DaoException("Computer not in database. id = "+id);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

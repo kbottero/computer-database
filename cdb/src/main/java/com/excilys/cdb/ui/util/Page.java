@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.IDao;
 import com.excilys.cdb.service.IService;
 
@@ -20,6 +19,9 @@ public abstract class Page <E, I extends Serializable> {
 	protected ArrayList<String> orderBy; 
 
 	public Page(IService<E, I> serv){
+		if (serv == null) {
+			throw new IllegalArgumentException();
+		}
 		this.serv = serv;
 		nbElements = serv.getNbInstance();
 		currPage = 0l;
@@ -33,6 +35,9 @@ public abstract class Page <E, I extends Serializable> {
 	}
 	
 	public Page(IService<E, I> serv, Long pageSize){
+		if ((serv == null)|| (pageSize == null) || (pageSize < 1)) {
+			throw new IllegalArgumentException();
+		}
 		this.serv = serv;
 		currPage = 0l;
 		nbElements = serv.getNbInstance();
@@ -51,6 +56,9 @@ public abstract class Page <E, I extends Serializable> {
 	}
 	
 	public void setSortingOrder(IDao.Order so) {
+		if (so == null) {
+			throw new IllegalArgumentException();
+		}
 		sortingOrder = so;
 	}
 	
@@ -76,7 +84,7 @@ public abstract class Page <E, I extends Serializable> {
 	 */
 	public boolean nextPage() {
 		if (currPage != size) {
-			elements = serv.getSome(orderBy, sortingOrder, pageSize, currPage*pageSize);
+			elements = serv.getSome(pageSize, currPage*pageSize,orderBy, sortingOrder);
 			++currPage;
 			return true;
 		} else {

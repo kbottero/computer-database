@@ -29,13 +29,10 @@ public enum DaoManager {
 			BufferedReader in = new BufferedReader(new InputStreamReader(DaoManager.class.getClassLoader().getResourceAsStream("db.properties")));
 			properties.load(in);
 			in.close();
-			
 			Class.forName("com.mysql.jdbc.Driver");
-			
 		} catch (IOException e) {
 			throw new DaoException(e);
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
 	}

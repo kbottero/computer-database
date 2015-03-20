@@ -1,14 +1,9 @@
 package com.excilys.cdb.service;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang3.NotImplementedException;
-
 import com.excilys.cdb.exception.ServiceException;
-import com.excilys.cdb.model.Company;
-import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.IDao.Order;
 
 public interface IService <T, I extends Serializable> {
@@ -20,12 +15,46 @@ public interface IService <T, I extends Serializable> {
 	public default List<T> getAll() throws ServiceException {
 		throw new UnsupportedOperationException();
 	}
-
+	
 	/**
 	 * Return a limited list of instance from the database.
 	 * @return
 	 */
-	public default List<T> getSome(List<String> orderByCol, Order order, Long limit, Long offset ) throws ServiceException {
+	public default List<T> getAll(List<String> orderByCol) throws ServiceException {
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Return a limited list of instance from the database.
+	 * @return
+	 */
+	public default List<T> getAll(List<String> orderByCol, Order order) throws ServiceException {
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Return a limited list of instance from the database.
+	 * @return
+	 */
+	public default List<T> getSome(Long limit, Long offset ) throws ServiceException {
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Return a limited list of instance from the database.
+	 *  Ordered according to given columns. 
+	 * @return
+	 */
+	public default List<T> getSome(Long limit, Long offset, List<String> orderByCol) throws ServiceException {
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Return a limited list of instance from the database.
+	 *  Ordered according to given columns. In an ascending or descending order.
+	 * @return
+	 */
+	public default List<T> getSome(Long limit, Long offset, List<String> orderByCol, Order order) throws ServiceException {
 		throw new UnsupportedOperationException();
 	}
 

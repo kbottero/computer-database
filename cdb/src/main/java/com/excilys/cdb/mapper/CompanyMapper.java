@@ -13,7 +13,7 @@ import com.excilys.cdb.model.Company;
  * @author Kevin Bottero
  *
  */
-public enum CompanyMapper {
+public enum CompanyMapper implements IMapper<Company> {
 	INSTANCE;
 
 	/** Primary Key.	 */
@@ -34,7 +34,7 @@ public enum CompanyMapper {
 	 * 				Data on the Computer
 	 * @return Created Company instance
 	 */
-	public Company parseCompany(ResultSet curs) {
+	public Company mapFromRow(ResultSet curs) {
 		Company comp=null;
 		try {
 			comp = new Company(curs.getLong("id"),

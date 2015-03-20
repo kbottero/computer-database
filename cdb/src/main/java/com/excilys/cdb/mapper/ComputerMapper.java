@@ -6,8 +6,8 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 
 import com.excilys.cdb.exception.DaoException;
-import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.service.CompaniesService;
 
 /**
  * Mapper for com.excilys.cdb.Model.Computer using java.sql.ResultSet
@@ -15,7 +15,7 @@ import com.excilys.cdb.model.Computer;
  * @author Kevin Bottero
  *
  */
-public enum ComputerMapper {
+public enum ComputerMapper implements IMapper<Computer> {
 	INSTANCE;
 
 	/** Primary Key.	 */
@@ -33,15 +33,13 @@ public enum ComputerMapper {
 	}
 	
 	/**
-	 * Create a Computer from a ResultSet and a Company.
+	 * Create a Computer from a ResultSet.
 	 * Only id and name are mandatory to create a computer.
 	 * @param curs
 	 * 				Data on the Computer
-	 * @param company
-	 * 				Constructor of the Computer
 	 * @return Created Computer instance
 	 */
-	public Computer parseComputer(ResultSet curs, Company company) {
+	public Computer mapFromRow(ResultSet curs) {
 
 		Computer comp;
 		try {
@@ -53,11 +51,12 @@ public enum ComputerMapper {
 			if (curs.getString("discontinued") != null) {
 				comp.setDiscontinuedDate(Timestamp.valueOf((curs.getString("discontinued"))).toLocalDateTime());
 			}
+			if (curs.getString("company_id") != null) {
+				comp.setConstructor(new CompaniesService().getOne(curs.getLong("company_id")));
+			}
 		} catch (SQLException e) {
 			throw new DaoException(e);
 		}
-		comp.setConstructor(company);
-		
 		return comp;
 	}
 }

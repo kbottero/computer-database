@@ -8,29 +8,85 @@ import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.ComputerDao;
 import com.excilys.cdb.persistence.IDao.Order;
 
-public class ComputersService implements IService<Computer,Long>{
+public class ComputersService implements IService<Computer,Long> {
 
 	/**
 	 * Return a list of all the computers in the database.
 	 * @return
 	 */
 	@Override
-	public List<Computer> getAll()  throws ServiceException{
+	public List<Computer> getAll() throws ServiceException {
 		try {
 			return ComputerDao.INSTANCE.getAll();
 		} catch (DaoException e) {
 			throw new ServiceException(e);
 		}
 	}
-
+	
+	/**
+	 * Return a list of all the computers in the database.
+	 * Ordered according to given columns.
+	 * @return
+	 */
+	@Override
+	public List<Computer> getAll(List<String> orderByCol) throws ServiceException {
+		try {
+			return ComputerDao.INSTANCE.getAll(orderByCol);
+		} catch (DaoException e) {
+			throw new ServiceException(e);
+		}
+	}
+	
+	/**
+	 * Return a list of all the computers in the database.
+	 * Ordered according to given columns.
+	 * @return
+	 */
+	@Override
+	public List<Computer> getAll(List<String> orderByCol, Order order) throws ServiceException {
+		try {
+			return ComputerDao.INSTANCE.getAll(orderByCol, order);
+		} catch (DaoException e) {
+			throw new ServiceException(e);
+		}
+	}
+	
 	/**
 	 * Return a limited list of computers from the database.
 	 * @return
 	 */
 	@Override
-	public List<Computer> getSome( List<String> orderByCol, Order order, Long limit, Long offset )  throws ServiceException{
+	public List<Computer> getSome( Long limit, Long offset) throws ServiceException {
 		try {
-			return ComputerDao.INSTANCE.getSome( orderByCol, order, limit, offset );
+			return ComputerDao.INSTANCE.getSome( limit, offset);
+		} catch (DaoException e) {
+			throw new ServiceException(e);
+		}
+	}
+	
+	/**
+	 * Return a limited list of computers from the database. 
+	 * Ordered according to given columns.
+	 * @return
+	 */
+	@Override
+	public List<Computer> getSome( Long limit, Long offset, List<String> orderByCol) throws ServiceException {
+		try {
+			return ComputerDao.INSTANCE.getSome( limit, offset, orderByCol );
+		} catch (DaoException e) {
+			throw new ServiceException(e);
+		}
+	}
+
+	/**
+	 * Return a limited list of computers from the database. 
+	 * Ordered according to given columns. In an ascending or descending order.
+	 * @return
+	 */
+	@Override
+	public List<Computer> getSome( Long limit, Long offset, List<String> orderByCol, Order order ) throws ServiceException {
+		try {
+			return ComputerDao.INSTANCE.getSome( limit, offset, orderByCol, order );
 		} catch (DaoException e) {
 			throw new ServiceException(e);
 		}
@@ -41,7 +97,7 @@ public class ComputersService implements IService<Computer,Long>{
 	 * @return
 	 */
 	@Override
-	public Long getNbInstance()  throws ServiceException{
+	public Long getNbInstance() throws ServiceException {
 		try {
 			return ComputerDao.INSTANCE.getNb();
 		} catch (DaoException e) {
@@ -55,7 +111,7 @@ public class ComputersService implements IService<Computer,Long>{
 	 * @return
 	 */
 	@Override
-	public Computer getOne(Long id)  throws ServiceException{
+	public Computer getOne(Long id) throws ServiceException {
 		try {
 			return ComputerDao.INSTANCE.getById(id);
 		} catch (DaoException e) {
@@ -69,7 +125,7 @@ public class ComputersService implements IService<Computer,Long>{
 	 * @return
 	 */
 	@Override
-	public void saveOne(Computer c)  throws ServiceException{
+	public void saveOne(Computer c) throws ServiceException {
 		try {
 			ComputerDao.INSTANCE.save(c);
 		} catch (DaoException e) {
@@ -83,7 +139,7 @@ public class ComputersService implements IService<Computer,Long>{
 	 * @return
 	 */
 	@Override
-	public void deleteOne(Long id)  throws ServiceException{
+	public void deleteOne(Long id) throws ServiceException {
 		try {
 			ComputerDao.INSTANCE.delete(id);
 		} catch (DaoException e) {

@@ -56,7 +56,8 @@ public class Application extends HttpServlet {
 	private void doListeComputerRequest(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		//request.setAttribute("computers", service.getAllComputer());
+//		request.setAttribute("computers", service.getAllComputer());
+		request.setAttribute("nbComputers", service.getNbComputer());
 		RequestDispatcher dis=this.getServletContext().getRequestDispatcher("/views/dashboard.jsp");
 		
 		dis.forward(request, response);

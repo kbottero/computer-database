@@ -8,6 +8,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import com.excilys.cdb.exception.DaoException;
+
 
 /**
  * Singleton returning Connection to the database.

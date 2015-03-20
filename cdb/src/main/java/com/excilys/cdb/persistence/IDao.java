@@ -3,6 +3,8 @@ package com.excilys.cdb.persistence;
 import java.io.Serializable;
 import java.util.List;
 
+import com.excilys.cdb.exception.DaoException;
+
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public interface IDao <T, I extends Serializable> {
@@ -17,7 +19,7 @@ public interface IDao <T, I extends Serializable> {
 	 * @throws DaoException
 	 */
 	public default List<T> getAll() throws DaoException {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 	}
 	
 	/**
@@ -37,7 +39,7 @@ public interface IDao <T, I extends Serializable> {
 	 */
 	public default List<T> getSome(List<String> orderByCol,
 			Order order, Long limit, Long offset)  throws DaoException {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 	}
 	
 	/**
@@ -46,7 +48,7 @@ public interface IDao <T, I extends Serializable> {
 	 * @throws DaoException
 	 */
 	public default Long getNb()  throws DaoException {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 	}
 	
 	/**
@@ -56,7 +58,7 @@ public interface IDao <T, I extends Serializable> {
 	 * @throws DaoException
 	 */
 	public default T getById(I id)  throws DaoException {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 	}
 	
 	/**
@@ -66,7 +68,7 @@ public interface IDao <T, I extends Serializable> {
 	 * @throws DaoException
 	 */
 	public default void save(T c)  throws DaoException {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 	}
 	
 	/**
@@ -76,6 +78,6 @@ public interface IDao <T, I extends Serializable> {
 	 * @throws DaoException
 	 */
 	public default void delete(I id)  throws DaoException {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 	}
 }

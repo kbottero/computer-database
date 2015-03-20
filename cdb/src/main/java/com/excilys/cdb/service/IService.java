@@ -1,75 +1,66 @@
 package com.excilys.cdb.service;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.NotImplementedException;
+
+import com.excilys.cdb.exception.ServiceException;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.IDao.Order;
 
-public interface IService {
+public interface IService <T, I extends Serializable> {
 	
 	/**
-	 * Return a list of all the computers in the database.
+	 * Return a list of all the instances in the database.
 	 * @return
 	 */
-	public Collection<Computer> getAllComputer();
+	public default List<T> getAll() throws ServiceException {
+		throw new UnsupportedOperationException();
+	}
 
 	/**
-	 * Return a limited list of computers from the database.
+	 * Return a limited list of instance from the database.
 	 * @return
 	 */
-	public Collection<Computer> getSomeComputer(List<String> orderByCol, Order order, Long limit, Long offset );
+	public default List<T> getSome(List<String> orderByCol, Order order, Long limit, Long offset ) throws ServiceException {
+		throw new UnsupportedOperationException();
+	}
 
 	/**
-	 * Return the number of computer in the database.
+	 * Return the number of instance in the database.
 	 * @return
 	 */
-	public Long getNbComputer();
+	public default Long getNbInstance() throws ServiceException {
+		throw new UnsupportedOperationException();
+	}
 	
 	/**
-	 * Return a specific Computer from the database, based on its id.
+	 * Return a specific instance from the database, based on its id.
 	 * @param id
 	 * @return
 	 */
-	public Computer getOneComputer(long id);
+	public default T getOne(I id) throws ServiceException {
+		throw new UnsupportedOperationException();
+	}
 	
 	/**
-	 * Save one Computer in the database.
+	 * Save one instance in the database.
 	 * @param id
 	 * @return
 	 */
-	public void saveOneComputer(Computer c);
+	public default void saveOne(T c) throws ServiceException {
+		throw new UnsupportedOperationException();
+	}
 	
 	/**
-	 * Delete a Computer in the database.
+	 * Delete a one instance in the database base on its Id.
 	 * @param id
 	 * @return
 	 */
-	public void deleteOneComputer(long id);
-	
-	/**
-	 * Return a list of all companies in the database.
-	 * @return
-	 */
-	public Collection<Company> getAllCompany();
-
-	/**
-	 * Return a limited list of companies from the database.
-	 * @return
-	 */
-	public Collection<Company> getSomeCompany(List<String> orderByCol, Order order, Long limit, Long offset );
-
-	/**
-	 * Return the number of companies in the database.
-	 * @return
-	 */
-	public Long getNbCompany();
-	
-	/**
-	 * Return a limited list of companies from the database.
-	 * @return
-	 */
-	public Company getOneCompany(long id);
-	
+	public default void deleteOne(I id) throws ServiceException {
+		throw new UnsupportedOperationException();
+	}
 }

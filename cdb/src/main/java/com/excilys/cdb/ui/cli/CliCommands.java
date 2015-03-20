@@ -1,4 +1,4 @@
-package com.excilys.cdb.cli;
+package com.excilys.cdb.ui.cli;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,8 +12,11 @@ import java.util.Scanner;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.service.IService;
-import com.excilys.cdb.service.ServiceImpl;
+import com.excilys.cdb.service.CompaniesService;
+import com.excilys.cdb.service.ComputersService;
+import com.excilys.cdb.ui.util.CompanyPage;
+import com.excilys.cdb.ui.util.ComputerPage;
+import com.excilys.cdb.ui.util.Page;
 import com.excilys.cdb.validation.ValidatorDate;
 
 public enum CliCommands {
@@ -72,7 +75,7 @@ public enum CliCommands {
 		public void execute(Scanner s) {
 			if (s.hasNext()) {
 				long id = s.nextLong();
-				Computer computer = serv.getOneComputer(id);
+				Computer computer = servComputers.getOne(id);
 				if (computer != null) {
 					printComputer(computer);
 				} else {
@@ -137,7 +140,7 @@ public enum CliCommands {
 				}
 			}
 
-			computer = serv.getOneComputer(id);
+			computer = servComputers.getOne(id);
 			
 			if (computer != null) {
 				if (name != null) {
@@ -150,14 +153,14 @@ public enum CliCommands {
 					computer.setDiscontinuedDate(discontinuedDate);
 				}
 				if (company_id != null) {
-					computer.setConstructor(serv.getOneCompany(company_id));
+					computer.setConstructor(servCompanies.getOne(company_id));
 				}
 			} else {
 				invalidCommand(this);
 				return;
 			}
 			
-			serv.saveOneComputer(computer);
+			servComputers.saveOne(computer);
 		}
 		@Override
 		public String getHelp() {
@@ -219,9 +222,9 @@ public enum CliCommands {
 				computer.setDiscontinuedDate(discontinuedDate);
 			}
 			if (company_id != null) {
-				computer.setConstructor(serv.getOneCompany(company_id));
+				computer.setConstructor(servCompanies.getOne(company_id));
 			}
-			serv.saveOneComputer(computer);
+			servComputers.saveOne(computer);
 			if (computer.getId() != -1) {
 				System.out.println("Computer created. Id = "+computer.getId());
 			}
@@ -239,7 +242,7 @@ public enum CliCommands {
 		public void execute(Scanner s) {
 			if (s.hasNext()) {
 				long id = s.nextLong();
-				serv.deleteOneComputer(id);
+				servComputers.deleteOne(id);
 			} else {
 				invalidCommand(this);
 			}
@@ -281,7 +284,8 @@ public enum CliCommands {
 	
 	private final String label;
 
-	private static IService serv = new ServiceImpl();
+	private static ComputersService servComputers = new ComputersService();
+	private static CompaniesService servCompanies = new CompaniesService();
 	private static String invalidCommand = "Invalid Command";
 	private static String pages = "pages";
 	public static String prompt = ">";
@@ -358,7 +362,7 @@ public enum CliCommands {
 	 */
 	private static void listComputers() {
 		ArrayList<Computer> list = new ArrayList<Computer>();
-		list = (ArrayList<Computer>) serv.getAllComputer();
+		list = (ArrayList<Computer>) servComputers.getAll();
 		for (Computer computer : list) {
 			printComputer(computer);
 		}
@@ -369,7 +373,7 @@ public enum CliCommands {
 	 */
 	private static void listCompanies() {
 		ArrayList<Company> list = new ArrayList<Company>();
-		list = (ArrayList<Company>) serv.getAllCompany();
+		list = (ArrayList<Company>) servCompanies.getAll();
 		for (Company Company : list) {
 			printCompany(Company);
 		}
@@ -380,12 +384,12 @@ public enum CliCommands {
 	 * 
 	 */
 	private static void listComputersPage(Scanner s) {
-		Page<Computer> page;
+		Page<Computer, Long> page;
 		if (s.hasNext()) {
 			Long nbLine = s.nextLong();
-			page = new ComputerPage (serv, nbLine);
+			page = new ComputerPage (servComputers, nbLine);
 		} else {
-			page = new ComputerPage (serv);
+			page = new ComputerPage (servComputers);
 		}
 	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		Scanner scan = null;
@@ -418,12 +422,12 @@ public enum CliCommands {
 	 * @param s Current Scanner value
 	 */
 	private static void listCompaniesPage(Scanner s) {
-		Page<Company> page;
+		Page<Company, Long> page;
 		if (s.hasNext()) {
 			Long nbLine = s.nextLong();
-			page = new CompanyPage (serv, nbLine);
+			page = new CompanyPage (servCompanies, nbLine);
 		} else {
-			page = new CompanyPage (serv);
+			page = new CompanyPage (servCompanies);
 		}
 	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		Scanner scan = null;
@@ -464,7 +468,7 @@ public enum CliCommands {
 	/**
 	 * Print information related to the current page
 	 */
-	private static void printEndOfPage (Page<?> page) {
+	private static void printEndOfPage (Page<?,?> page) {
 		StringBuilder stgBuild = new StringBuilder();
 		stgBuild.append("Page ");
 		stgBuild.append(page.getCurrPage());

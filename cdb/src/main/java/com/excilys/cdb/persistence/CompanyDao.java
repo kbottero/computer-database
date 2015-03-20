@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.mapper.CompanyMapper;
 import com.excilys.cdb.mapper.ComputerMapper;
 import com.excilys.cdb.model.Company;
@@ -32,7 +33,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 	}
 	
 	@Override
-	public List<Company> getAll() {
+	public List<Company> getAll() throws DaoException {
 
 		ResultSet curs;
 		List<Company> list = new ArrayList<Company>();
@@ -58,7 +59,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 	}
 
 	@Override
-	public Long getNb(){
+	public Long getNb() throws DaoException {
 		
 		ResultSet curs;
 		Connection conn = null;
@@ -84,7 +85,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 	}
 
 	@Override
-	public List<Company> getSome( List<String> orderByCol, Order order, Long limit, Long offset ){
+	public List<Company> getSome( List<String> orderByCol, Order order, Long limit, Long offset ) throws DaoException {
 		
 		ResultSet curs;
 		List<Company> list = new ArrayList<Company>();
@@ -159,9 +160,8 @@ public enum CompanyDao implements IDao<Company, Long>{
 		return list;
 	}
 
-
 	@Override
-	public Company getById(Long id) {
+	public Company getById(Long id) throws DaoException {
 		
 		ResultSet curs;
 		Company comp=null;

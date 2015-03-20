@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.mapper.ComputerMapper;
 import com.excilys.cdb.model.Computer;
 
@@ -36,7 +37,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 	}
 
 	@Override
-	public List<Computer> getAll(){
+	public List<Computer> getAll() throws DaoException {
 		
 		ResultSet curs;
 		List<Computer> list = new ArrayList<Computer>();
@@ -63,7 +64,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 	}
 
 	@Override
-	public Long getNb(){
+	public Long getNb() throws DaoException {
 		
 		ResultSet curs;
 		Connection conn = null;
@@ -89,7 +90,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 	}
 
 	@Override
-	public List<Computer> getSome( List<String> orderByCol, Order order, Long limit, Long offset ){
+	public List<Computer> getSome( List<String> orderByCol, Order order, Long limit, Long offset ) throws DaoException {
 		
 		ResultSet curs;
 		List<Computer> list = new ArrayList<Computer>();
@@ -168,7 +169,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 	}
 
 	@Override
-	public Computer getById(Long id) {
+	public Computer getById(Long id) throws DaoException {
 		ResultSet curs;
 		Computer comp=null;
 		Connection conn = null;
@@ -196,7 +197,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 	}
 
 	@Override
-	public void save(Computer c) {
+	public void save(Computer c) throws DaoException {
 		boolean update=false;
 		ResultSet curs;
 
@@ -279,7 +280,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 	}
 
 	@Override
-	public void delete(Long id) {
+	public void delete(Long id) throws DaoException {
 
 		Connection conn = null;
 		try {

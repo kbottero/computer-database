@@ -4,8 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 
+import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.model.Company;
-import com.excilys.cdb.persistence.DaoException;
 
 /**
  * Mapper for com.excilys.cdb.Model.Company using java.sql.ResultSet

@@ -5,9 +5,9 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 
+import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.DaoException;
 
 /**
  * Mapper for com.excilys.cdb.Model.Computer using java.sql.ResultSet

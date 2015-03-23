@@ -69,12 +69,20 @@ public class Application extends HttpServlet {
 
 	private void doListeComputerRequest(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		ComputerPage compPage= new ComputerPage(computersService);
-		String attrib = request.getParameter("numPage");
+		String attrib = request.getParameter("search");
+		ComputerPage compPage;
+		if (attrib != null) {
+			String filter = attrib;
+			compPage= new ComputerPage(computersService,filter);
+		} else {
+			compPage= new ComputerPage(computersService);
+		}
+		attrib = request.getParameter("numPage");
 		if (attrib != null) {
 			Long numPage = Long.parseLong(attrib);
 			compPage.goToPage(numPage);
 		}
+		
 		request.setAttribute("page", compPage);
 		request.setAttribute("nbComputers", computersService.getNbInstance());
 		RequestDispatcher dis=this.getServletContext().getRequestDispatcher("/views/dashboard.jsp");

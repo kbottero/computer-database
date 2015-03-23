@@ -51,10 +51,40 @@ public interface IService <T, I extends Serializable> {
 	
 	/**
 	 * Return a limited list of instance from the database.
-	 *  Ordered according to given columns. In an ascending or descending order.
+	 * Ordered according to given columns. In an ascending or descending order.
 	 * @return
 	 */
 	public default List<T> getSome(Long limit, Long offset, List<String> orderByCol, Order order) throws ServiceException {
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Return a limited list of instance from the database.
+	 * Filtered according to a name (the instance should begin with the filter value)
+	 * Ordered according to given columns. In an ascending or descending order.
+	 * @return
+	 */
+	public default List<T> getSome(String nameFilter, Long limit, Long offset) throws ServiceException {
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Return a limited list of instance from the database.
+	 * Filtered according to a name (the instance should begin with the filter value)
+	 * Ordered according to given columns. In an ascending or descending order.
+	 * @return
+	 */
+	public default List<T> getSome(String nameFilter,Long limit, Long offset, List<String> orderByCol) throws ServiceException {
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Return a limited list of instance from the database.
+	 * Filtered according to a name (the instance should begin with the filter value)
+	 * Ordered according to given columns. In an ascending or descending order.
+	 * @return
+	 */
+	public default List<T> getSome(String nameFilter,Long limit, Long offset, List<String> orderByCol, Order order) throws ServiceException {
 		throw new UnsupportedOperationException();
 	}
 

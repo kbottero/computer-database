@@ -34,6 +34,18 @@ public class ComputerPage extends Page<Computer,ComputerDTO, Long> {
 		}
 	}	
 	
+
+	public ComputerPage(IService<Computer,Long> serv, String filter) {
+		super(serv);
+		orderBy.add(CompanyMapper.DEFAULT_ID);
+		this.filter = filter;
+		List<Computer> list = serv.getSome(filter, pageSize, (current-1)*pageSize,orderBy, sortingOrder);
+		elements = new ArrayList<ComputerDTO>();
+		for ( Computer comp : list) {
+			elements.add(ComputerMapper.INSTANCE.toDTO(comp));
+		}
+	}
+	
 	/**
 	 * Display next page
 	 * @return true if there is still pages to display, 0 else
@@ -42,7 +54,7 @@ public class ComputerPage extends Page<Computer,ComputerDTO, Long> {
 	public boolean nextPage() {
 		if (current < count) {
 			++current;
-			List<Computer> list = serv.getSome(pageSize, (current-1)*pageSize,orderBy, sortingOrder);
+			List<Computer> list = serv.getSome(filter, pageSize, (current-1)*pageSize,orderBy, sortingOrder);
 			elements = new ArrayList<ComputerDTO>();
 			for ( Computer comp : list) {
 				elements.add(ComputerMapper.INSTANCE.toDTO(comp));
@@ -57,7 +69,7 @@ public class ComputerPage extends Page<Computer,ComputerDTO, Long> {
 	public boolean previousPage() {
 		if (current > 1) {
 			--current;
-			List<Computer> list = serv.getSome(pageSize, (current-1)*pageSize,orderBy, sortingOrder);
+			List<Computer> list = serv.getSome(filter, pageSize, (current-1)*pageSize,orderBy, sortingOrder);
 			elements = new ArrayList<ComputerDTO>();
 			for ( Computer comp : list) {
 				elements.add(ComputerMapper.INSTANCE.toDTO(comp));
@@ -72,7 +84,7 @@ public class ComputerPage extends Page<Computer,ComputerDTO, Long> {
 	public boolean goToPage(Long numPage) {
 		if (numPage > 0 && numPage < count+1) {
 			current = numPage;
-			List<Computer> list = serv.getSome(pageSize, (current-1)*pageSize,orderBy, sortingOrder);
+			List<Computer> list = serv.getSome(filter, pageSize, (current-1)*pageSize,orderBy, sortingOrder);
 			elements = new ArrayList<ComputerDTO>();
 			for ( Computer comp : list) {
 				elements.add(ComputerMapper.INSTANCE.toDTO(comp));
@@ -80,6 +92,16 @@ public class ComputerPage extends Page<Computer,ComputerDTO, Long> {
 			return true;
 		} else {
 			throw new IndexOutOfBoundsException();
+		}
+	}
+	
+	@Override
+	public void setFilter (String filter) {
+		this.filter = filter;
+		List<Computer> list = serv.getSome(filter, pageSize, (current-1)*pageSize,orderBy, sortingOrder);
+		elements = new ArrayList<ComputerDTO>();
+		for ( Computer comp : list) {
+			elements.add(ComputerMapper.INSTANCE.toDTO(comp));
 		}
 	}
 }

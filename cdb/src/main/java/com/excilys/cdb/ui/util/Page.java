@@ -17,6 +17,7 @@ public abstract class Page <E,D, I extends Serializable> {
 	protected Long nbElements;
 	protected IDao.Order sortingOrder; 
 	protected ArrayList<String> orderBy; 
+	protected String filter;
 
 	public Page(IService<E, I> serv){
 		if (serv == null) {
@@ -32,6 +33,7 @@ public abstract class Page <E,D, I extends Serializable> {
 		}
 		sortingOrder = IDao.Order.ASC;
 		orderBy = new ArrayList<String>();
+		filter = null;
 	}
 	
 	public Page(IService<E, I> serv, Long pageSize){
@@ -53,6 +55,7 @@ public abstract class Page <E,D, I extends Serializable> {
 		}
 		sortingOrder = IDao.Order.ASC;
 		orderBy = new ArrayList<String>();
+		filter = null;
 	}
 	
 	public void setSortingOrder(IDao.Order so) {
@@ -77,6 +80,8 @@ public abstract class Page <E,D, I extends Serializable> {
 	public List<D> getElements() {
 		return elements;
 	}
+	
+	public abstract void setFilter(String filter);
 	
 	/**
 	 * Display next page

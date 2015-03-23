@@ -91,6 +91,51 @@ public class ComputersService implements IService<Computer,Long> {
 			throw new ServiceException(e);
 		}
 	}
+	
+	/**
+	 * Return a limited list of computers from the database. 
+	 * Filtered according to a name (the instance should begin with the filter value)
+	 * Ordered according to given columns. In an ascending or descending order.
+	 * @return
+	 */
+	@Override
+	public List<Computer> getSome( String nameFilter, Long limit, Long offset ) throws ServiceException {
+		try {
+			return ComputerDao.INSTANCE.getSome( nameFilter, limit, offset );
+		} catch (DaoException e) {
+			throw new ServiceException(e);
+		}
+	}
+	
+	/**
+	 * Return a limited list of computers from the database.
+	 * Filtered according to a name (the instance should begin with the filter value)
+	 * Ordered according to given columns. In an ascending or descending order.
+	 * @return
+	 */
+	@Override
+	public List<Computer> getSome( String nameFilter, Long limit, Long offset, List<String> orderByCol ) throws ServiceException {
+		try {
+			return ComputerDao.INSTANCE.getSome( nameFilter, limit, offset, orderByCol);
+		} catch (DaoException e) {
+			throw new ServiceException(e);
+		}
+	}
+	
+	/**
+	 * Return a limited list of computers from the database. 
+	 * Filtered according to a name (the instance should begin with the filter value)
+	 * Ordered according to given columns. In an ascending or descending order.
+	 * @return
+	 */
+	@Override
+	public List<Computer> getSome( String nameFilter, Long limit, Long offset, List<String> orderByCol, Order order ) throws ServiceException {
+		try {
+			return ComputerDao.INSTANCE.getSome( nameFilter, limit, offset, orderByCol, order );
+		} catch (DaoException e) {
+			throw new ServiceException(e);
+		}
+	}
 
 	/**
 	 * Return the number of computer in the database.

@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.mapper.ComputerMapper;
@@ -22,11 +24,12 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 	INSTANCE;
 	
 	private static enum preparedStatement {
-		SELECT_ALL_ORDERED ("SELECT id, name,introduced, discontinued, company_id FROM computer ORDER BY ? ?"),
-		SELECT_SOME_ORDERED ("SELECT id, name,introduced, discontinued, company_id FROM computer ORDER BY ? ? LIMIT ? OFFSET ?"),
+		SELECT_ALL_ORDERED ("SELECT id, name, introduced, discontinued, company_id FROM computer ORDER BY ? ?"),
+		SELECT_SOME_ORDERED ("SELECT id, name, introduced, discontinued, company_id FROM computer ORDER BY ? ? LIMIT ? OFFSET ?"),
+		SELECT_SOME_FILTERED ("SELECT id, name, introduced, discontinued, company_id FROM computer WHERE name LIKE ? ORDER BY ? ? LIMIT ? OFFSET ?"),
 		SELECT_ONE ("SELECT id, name,introduced, discontinued, company_id FROM computer WHERE id=?;"),
-		INSERT_ONE ("INSERT INTO computer (name, introduced, discontinued,company_id) VALUES (?,?,?,?) ;"),
-		UPDATE_ONE ("UPDATE computer SET name=?,introduced=?,discontinued=?,company_id=? WHERE id=?;"),
+		INSERT_ONE ("INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?,?,?,?) ;"),
+		UPDATE_ONE ("UPDATE computer SET name=?, introduced=?, discontinued=?, company_id=? WHERE id=?;"),
 		DELETE_ONE ("DELETE FROM computer WHERE id=?;");
 		
 		private final String request;
@@ -222,6 +225,107 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 					throw new DaoException("Invalid offset ("+offset+") for request : "+preparedStatement.SELECT_SOME_ORDERED.getRequest());
 				} else {
 					selectSomeComputer.setLong(4,offset); 
+				}
+			}
+			curs = selectSomeComputer.executeQuery();
+			while ( curs.next() ) {
+				list.add(ComputerMapper.INSTANCE.mapFromRow(curs));
+    		}
+		} catch (SQLException | NumberFormatException e) {
+			throw new DaoException(e);
+		} finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					throw new DaoException(e);
+				}
+			}
+		}
+		return list;
+	}
+	
+
+	@Override
+	public List<Computer> getSome( String nameFilter, Long limit, Long offset) throws DaoException {
+		return getSome(nameFilter, limit, offset, null, null);
+	}
+
+	@Override
+	public List<Computer> getSome( String nameFilter, Long limit, Long offset,List<String> orderByCol) throws DaoException {
+		return getSome(nameFilter, limit, offset,orderByCol, null);
+	}
+
+	@Override
+	public List<Computer> getSome( String nameFilter, Long limit, Long offset,List<String> orderByCol, Order order ) throws DaoException {
+		
+		ResultSet curs;
+		List<Computer> list = new ArrayList<Computer>();
+		Connection conn = null;
+		
+		if (nameFilter == null || nameFilter.isEmpty()) {
+			return getSome(limit, offset,orderByCol, order);
+		}
+		try {
+			conn = DaoManager.INSTANCE.getConnection();
+			PreparedStatement selectSomeComputer = conn.prepareStatement(preparedStatement.SELECT_SOME_FILTERED.getRequest());
+
+			Pattern patt = Pattern.compile("[a-zA-Z0-9]*");
+			Matcher matcher = patt.matcher(nameFilter);
+			
+			if (matcher.matches()) {
+				matcher.reset();
+				selectSomeComputer.setString(1,nameFilter+'%');
+			} else {
+				throw new DaoException("Illegal value for LIKE "+nameFilter);
+			}
+			
+			if ((orderByCol == null) || (orderByCol.size() == 0)){
+				selectSomeComputer.setString(2,"id");
+			} else {
+				StringBuilder strgBuilder = new StringBuilder();
+				for (String strg : orderByCol) {
+					 if (ComputerMapper.mapBDModel.containsKey(strg)) {
+						 if (strgBuilder.length() != 0) {
+							 strgBuilder.append(", ");
+						 }
+						 strgBuilder.append(ComputerMapper.mapBDModel.get(strg));
+					 } else {
+						 throw new DaoException("Incorrect field for request : "+preparedStatement.SELECT_SOME_FILTERED.getRequest());
+					 }
+				}
+				selectSomeComputer.setString(2,strgBuilder.toString());
+			}
+			if (order == null) {
+				selectSomeComputer.setString(3,"ASC"); 
+			} else {
+				switch (order) {
+				case ASC:
+					selectSomeComputer.setString(3,"ASC");
+					break;
+				case DESC:
+					selectSomeComputer.setString(3,"DESC");
+					break;
+				default:
+					throw new DaoException("Invalid order for request : "+preparedStatement.SELECT_SOME_FILTERED.getRequest());
+				}
+			}
+			if (limit == null) {
+				selectSomeComputer.setLong(4,20);
+			} else {
+				if (limit < 0) {
+					throw new DaoException("Invalid limit ("+limit+") for request : "+preparedStatement.SELECT_SOME_FILTERED.getRequest());
+				} else {
+					selectSomeComputer.setLong(4,limit); 
+				}
+			}
+			if (offset == null) {
+				selectSomeComputer.setLong(5,0); 
+			} else {
+				if (offset < 0) {
+					throw new DaoException("Invalid offset ("+offset+") for request : "+preparedStatement.SELECT_SOME_FILTERED.getRequest());
+				} else {
+					selectSomeComputer.setLong(5,offset); 
 				}
 			}
 			curs = selectSomeComputer.executeQuery();

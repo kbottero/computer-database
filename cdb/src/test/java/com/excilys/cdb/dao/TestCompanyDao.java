@@ -36,7 +36,8 @@ public class TestCompanyDao {
 	
 	@Test
 	public void getSome() {
-		ArrayList<Company> list = (ArrayList<Company>) CompanyDao.INSTANCE.getSome(null, null, null, null);
+		Long l = null;
+		ArrayList<Company> list = (ArrayList<Company>) CompanyDao.INSTANCE.getSome(l, null, null, null);
 		assertNotNull(list);
 		assertNotNull(list.size());
 	}

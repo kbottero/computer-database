@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.excilys.cdb.exception.DaoException;
+import com.excilys.cdb.model.Computer;
 
 public interface IDao <T, I extends Serializable> {
 	
@@ -141,6 +142,75 @@ public interface IDao <T, I extends Serializable> {
 	 * @throws DaoException
 	 */
 	public default void delete(I id)  throws DaoException {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * Return a List of the instances within the database.
+	 * Instances should have an attribute name and result will be filtered according to the name given.
+	 * (every instance that begin with the given string)
+	 * Ordered according to the given columns. Limited to a given number. 
+	 * Ordered in an ascending order.
+	 * 
+	 * @param nameFilter 
+	 * 				Beginning of the instance name to return
+	 * @param limit 
+	 * 				Number max of instance returned
+	 * @param offset
+	 * 				Offset
+	 * @return		List<T>
+	 * @throws DaoException
+	 */
+	public default List<T> getSome(String nameFilter, Long limit, Long offset)
+			throws DaoException {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * Return a List of the instances within the database.
+	 * Instances should have an attribute name and result will be filtered according to the name given.
+	 * (every instance that begin with the given string)
+	 * Ordered according to the given columns. Limited to a given number. 
+	 * Ordered in an ascending order.  With a given offset.
+	 * 
+	 * @param nameFilter 
+	 * 				Beginning of the instance name to return
+	 * @param limit 
+	 * 				Number max of instance returned
+	 * @param offset
+	 * 				Offset
+	 * @param orderByCol 
+	 * 				Label(s) to base the ordering. Primary Key By default.
+	 * @return		List<T>
+	 * @throws DaoException
+	 */
+	public default List<T> getSome(String nameFilter, Long limit, Long offset,
+			List<String> orderByCol) throws DaoException {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * Return a List of the instances within the database.
+	 * Instances should have an attribute name and result will be filtered according to the name given.
+	 * (every instance that begin with the given string)
+	 * Ordered according to the given columns. Limited to a given number. 
+	 * Ordered in an ascending or descending order.  With a given offset.
+	 * 
+	 * @param nameFilter 
+	 * 				Beginning of the instance name to return
+	 * @param limit 
+	 * 				Number max of instance returned
+	 * @param offset
+	 * 				Offset
+	 * @param orderByCol 
+	 * 				Label(s) to base the ordering. Primary Key By default.
+	 * @param order 
+	 * 				ASCending or DESCending
+	 * @return		List<T>
+	 * @throws DaoException
+	 */
+	public default List<T> getSome(String nameFilter, Long limit, Long offset,
+			List<String> orderByCol, Order order) throws DaoException {
 		throw new UnsupportedOperationException();
 	}
 }

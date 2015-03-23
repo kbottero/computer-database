@@ -33,6 +33,17 @@ public class CompanyPage extends Page<Company, CompanyDTO, Long> {
 		}
 	}
 	
+	public CompanyPage(IService<Company,Long> serv, String filter) {
+		super(serv);
+		orderBy.add(ComputerMapper.DEFAULT_ID);
+		this.filter = filter;
+		List<Company> list = serv.getSome(filter, pageSize, (current-1)*pageSize,orderBy, sortingOrder);
+		elements = new ArrayList<CompanyDTO>();
+		for ( Company comp : list) {
+			elements.add(CompanyMapper.INSTANCE.toDTO(comp));
+		}
+	}
+	
 	/**
 	 * Display next page
 	 * @return true if there is still pages to display, 0 else
@@ -41,7 +52,7 @@ public class CompanyPage extends Page<Company, CompanyDTO, Long> {
 	public boolean nextPage() {
 		if (current < count) {
 			++current;
-			List<Company> list = serv.getSome(pageSize, (current-1)*pageSize,orderBy, sortingOrder);
+			List<Company> list = serv.getSome(filter, pageSize, (current-1)*pageSize,orderBy, sortingOrder);
 			elements = new ArrayList<CompanyDTO>();
 			for ( Company comp : list) {
 				elements.add(CompanyMapper.INSTANCE.toDTO(comp));
@@ -56,7 +67,7 @@ public class CompanyPage extends Page<Company, CompanyDTO, Long> {
 	public boolean previousPage() {
 		if (current != 1) {
 			--current;
-			List<Company> list = serv.getSome(pageSize, (current-1)*pageSize,orderBy, sortingOrder);
+			List<Company> list = serv.getSome(filter, pageSize, (current-1)*pageSize,orderBy, sortingOrder);
 			elements = new ArrayList<CompanyDTO>();
 			for ( Company comp : list) {
 				elements.add(CompanyMapper.INSTANCE.toDTO(comp));
@@ -71,7 +82,7 @@ public class CompanyPage extends Page<Company, CompanyDTO, Long> {
 	public boolean goToPage(Long numPage) {
 		if (numPage > 0 && numPage < count+1) {
 			current = numPage;
-			List<Company> list = serv.getSome(pageSize, (current-1)*pageSize,orderBy, sortingOrder);
+			List<Company> list = serv.getSome(filter, pageSize, (current-1)*pageSize,orderBy, sortingOrder);
 			elements = new ArrayList<CompanyDTO>();
 			for ( Company comp : list) {
 				elements.add(CompanyMapper.INSTANCE.toDTO(comp));
@@ -79,6 +90,16 @@ public class CompanyPage extends Page<Company, CompanyDTO, Long> {
 			return true;
 		} else {
 			throw new IndexOutOfBoundsException();
+		}
+	}
+	
+	@Override
+	public void setFilter (String filter) {
+		this.filter = filter;
+		List<Company> list = serv.getSome(filter, pageSize, (current-1)*pageSize,orderBy, sortingOrder);
+		elements = new ArrayList<CompanyDTO>();
+		for ( Company comp : list) {
+			elements.add(CompanyMapper.INSTANCE.toDTO(comp));
 		}
 	}
 }

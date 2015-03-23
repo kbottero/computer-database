@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.mapper.CompanyMapper;
@@ -22,7 +24,8 @@ public enum CompanyDao implements IDao<Company, Long>{
 	private static enum preparedStatement {
 		SELECT_ALL_ORDERED ("SELECT id, name FROM company ORDER BY ? ?"),
 		SELECT_ONE ("SELECT id, name FROM company WHERE id=?;"),
-		SELECT_SOME ("SELECT id, name FROM company ORDER BY ? ? LIMIT ? OFFSET ?");
+		SELECT_SOME ("SELECT id, name FROM company ORDER BY ? ? LIMIT ? OFFSET ?"),
+		SELECT_SOME_FILTERED ("SELECT id, name FROM company WHERE name LIKE ? ORDER BY ? ? LIMIT ? OFFSET ?");
 		
 		private final String request;
 		
@@ -220,6 +223,109 @@ public enum CompanyDao implements IDao<Company, Long>{
 					throw new DaoException("Invalid offset ("+offset+") for request : "+preparedStatement.SELECT_SOME.getRequest());
 				} else {
 					selectSomeCompanies.setLong(4,offset); 
+				}
+			}
+			curs = selectSomeCompanies.executeQuery();
+			while ( curs.next() ) {
+				list.add(CompanyMapper.INSTANCE.mapFromRow(curs));
+    		}
+		} catch (SQLException | NumberFormatException e) {
+			throw new DaoException(e);
+		} finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					throw new DaoException(e);
+				}
+			}
+		}
+		return list;
+	}
+	
+	
+
+	@Override
+	public List<Company> getSome(String nameFilter, Long limit, Long offset) throws DaoException {
+		return getSome(nameFilter, limit, offset, null, null);
+	}
+
+	@Override
+	public List<Company> getSome(String nameFilter,  Long limit, Long offset,List<String> orderByCol) throws DaoException {
+		return getSome(nameFilter, limit, offset,orderByCol, null);
+	}
+
+	
+	@Override
+	public List<Company> getSome(String nameFilter,  Long limit, Long offset, List<String> orderByCol, Order order ) throws DaoException {
+		
+		ResultSet curs;
+		List<Company> list = new ArrayList<Company>();
+		Connection conn = null;
+		
+		if (nameFilter == null || nameFilter.isEmpty()) {
+			return getSome(limit, offset,orderByCol, order);
+		}
+		try {
+			conn = DaoManager.INSTANCE.getConnection();
+			PreparedStatement selectSomeCompanies = conn.prepareStatement(preparedStatement.SELECT_SOME_FILTERED.getRequest());
+			
+			Pattern patt = Pattern.compile("[a-zA-Z0-9]*");
+			Matcher matcher = patt.matcher(nameFilter);
+			
+			if (matcher.matches()) {
+				matcher.reset();
+				selectSomeCompanies.setString(1,nameFilter+'%');
+			} else {
+				throw new DaoException("Illegal value for LIKE "+nameFilter);
+			}
+			
+			if ((orderByCol == null) || (orderByCol.size() == 0)){
+				selectSomeCompanies.setString(2,"id");
+			} else {
+				StringBuilder strgBuilder = new StringBuilder();
+				for (String strg : orderByCol) {
+					if (CompanyMapper.mapBDModel.containsKey(strg)) {
+						if (strgBuilder.length() != 0) {
+							strgBuilder.append(", ");
+						}
+						strgBuilder.append(CompanyMapper.mapBDModel.get(strg));
+					} else {
+						throw new DaoException("Incorrect field for request : "+preparedStatement.SELECT_SOME_FILTERED.getRequest());
+					}
+				}
+				selectSomeCompanies.setString(2,strgBuilder.toString());
+			}
+			if (order == null) {
+				selectSomeCompanies.setString(3,"ASC"); 
+			} else {
+				switch (order) {
+				case ASC:
+					selectSomeCompanies.setString(3,"ASC");
+					break;
+				case DESC:
+					selectSomeCompanies.setString(3,"DESC");
+					break;
+				default:
+					throw new DaoException("Invalid order for request : "+preparedStatement.SELECT_SOME_FILTERED.getRequest());
+				}
+			}
+			if (limit == null) {
+				selectSomeCompanies.setLong(4,0); 
+			} else {
+				if (limit < 0) {
+					throw new DaoException("Invalid limit ("+limit+") for request : "+preparedStatement.SELECT_SOME_FILTERED.getRequest());
+				} else {
+					selectSomeCompanies.setLong(4,limit); 
+				}
+			}
+			if (offset == null) {
+				selectSomeCompanies.setLong(5,0); 
+			} else {
+				if (offset < 0) {
+					throw new DaoException("Invalid offset ("+offset+") for request : "+preparedStatement.SELECT_SOME_FILTERED.getRequest());
+				} else {
+					selectSomeCompanies.setLong(5,offset); 
 				}
 			}
 			curs = selectSomeCompanies.executeQuery();

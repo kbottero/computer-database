@@ -58,7 +58,12 @@ public class TestComputerDao {
 
 	@Test
 	public void getSome() {
-		ArrayList<Computer> list = (ArrayList<Computer>) ComputerDao.INSTANCE.getSome(null, null, null, null);
+		Long l = null;
+		ArrayList<Computer> list = (ArrayList<Computer>) ComputerDao.INSTANCE.getSome(l, null, null, null);
+		assertNotNull(list);
+		assertNotNull(list.size());
+		
+		list = (ArrayList<Computer>) ComputerDao.INSTANCE.getSome("M", l, null, null, null);
 		assertNotNull(list);
 		assertNotNull(list.size());
 	}

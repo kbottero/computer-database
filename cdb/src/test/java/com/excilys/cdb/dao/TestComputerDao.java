@@ -1,11 +1,9 @@
 package com.excilys.cdb.dao;
 
-import java.io.FileInputStream;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 
-import org.dbunit.DBTestCase;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,12 +16,7 @@ import com.excilys.cdb.persistence.ComputerDao;
  * @author Kevin Bottero
  *
  */
-public class TestComputerDao extends DBTestCase {
-	
-	@Override
-	protected IDataSet getDataSet() throws Exception {
-		return new FlatXmlDataSetBuilder().build(new FileInputStream("src/test/resources/dbTest.xml"));
-	}
+public class TestComputerDao {
 
 	@Before
 	public void setUp() {
@@ -36,7 +29,9 @@ public class TestComputerDao extends DBTestCase {
 	}
 	
 	@Test
-	public void testGetAll() {
+	public void getAll() {
+		
+		
 		ArrayList<Computer> list = (ArrayList<Computer>) ComputerDao.INSTANCE.getAll();
 		assertNotNull(list);
 		assertNotNull(list.size());
@@ -62,28 +57,28 @@ public class TestComputerDao extends DBTestCase {
 	}
 
 	@Test
-	public void testGetSome() {
+	public void getSome() {
 		ArrayList<Computer> list = (ArrayList<Computer>) ComputerDao.INSTANCE.getSome(null, null, null, null);
 		assertNotNull(list);
 		assertNotNull(list.size());
 	}
 	@Test
-	public void testGetNb() {
+	public void getNb() {
 		assertNotNull(ComputerDao.INSTANCE.getNb());
 	}
 	
 	@Test
-	public void testGetById() {
+	public void getById() {
 		assertNotNull(ComputerDao.INSTANCE.getById(1l));
 	}
 	
 	@Test
-	public void testSave() {
+	public void save() {
 		
 	}
 	
 	@Test
-	public void testDelete() {
+	public void delete() {
 		
 	}
 

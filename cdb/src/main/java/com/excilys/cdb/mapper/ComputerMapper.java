@@ -3,8 +3,10 @@ package com.excilys.cdb.mapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
+import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.service.CompaniesService;
@@ -59,4 +61,34 @@ public enum ComputerMapper implements IMapper<Computer> {
 		}
 		return comp;
 	}
+	
+	/**
+	 * Create a ComputerDTO from a Computer.
+	 * @param computer
+	 * 				Data on the Computer
+	 * @return Created ComputerDTO instance
+	 */
+	public ComputerDTO toDTO(Computer computer) {
+		
+		String introductionDate = "";
+		String discontinuedDate = "";
+		
+		if (computer.getIntroductionDate() != null) {
+			introductionDate = computer.getIntroductionDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+		}
+		if (computer.getDiscontinuedDate() != null) {
+			discontinuedDate = computer.getDiscontinuedDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+		}
+
+		ComputerDTO compDto = new ComputerDTO (
+				computer.getId().toString(),
+				computer.getName(),
+				introductionDate,
+				discontinuedDate,
+				CompanyMapper.INSTANCE.toDTO(computer.getConstructor())) ;
+		return compDto;
+	}
+	
+	
+	
 }

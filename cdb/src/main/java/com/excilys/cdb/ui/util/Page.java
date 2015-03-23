@@ -7,13 +7,13 @@ import java.util.List;
 import com.excilys.cdb.persistence.IDao;
 import com.excilys.cdb.service.IService;
 
-public abstract class Page <E, I extends Serializable> {
+public abstract class Page <E,D, I extends Serializable> {
 
 	protected IService<E, I> serv;
-	protected List<E> elements;
-	protected Long currPage;
+	protected List<D> elements;
+	protected Long current;
 	protected Long pageSize;
-	protected Long size;
+	protected Long count;
 	protected Long nbElements;
 	protected IDao.Order sortingOrder; 
 	protected ArrayList<String> orderBy; 
@@ -24,11 +24,11 @@ public abstract class Page <E, I extends Serializable> {
 		}
 		this.serv = serv;
 		nbElements = serv.getNbInstance();
-		currPage = 0l;
+		current = 1l;
 		pageSize = 20l;
-		size = nbElements / pageSize;
-		if (nbElements % size != 0) {
-			++size;
+		count = nbElements / pageSize;
+		if (nbElements % count != 0) {
+			++count;
 		}
 		sortingOrder = IDao.Order.ASC;
 		orderBy = new ArrayList<String>();
@@ -39,17 +39,17 @@ public abstract class Page <E, I extends Serializable> {
 			throw new IllegalArgumentException();
 		}
 		this.serv = serv;
-		currPage = 0l;
+		current = 1l;
 		nbElements = serv.getNbInstance();
 		if (pageSize < nbElements) {
 			this.pageSize = pageSize;
-			size = nbElements / pageSize;
-			if (nbElements % size != 0) {
-				++size;
+			count = nbElements / pageSize;
+			if (nbElements % count != 0) {
+				++count;
 			}
 		} else {
 			this.pageSize = nbElements;
-			size = 1l;
+			count = 1l;
 		}
 		sortingOrder = IDao.Order.ASC;
 		orderBy = new ArrayList<String>();
@@ -66,15 +66,15 @@ public abstract class Page <E, I extends Serializable> {
 		return sortingOrder;
 	}
 	
-	public Long getCurrPage() {
-		return currPage;
+	public Long getCurrent() {
+		return current;
 	}
 
-	public Long getSize() {
-		return size;
+	public Long getCount() {
+		return count;
 	}
 	
-	public List<E> getElements() {
+	public List<D> getElements() {
 		return elements;
 	}
 	
@@ -82,13 +82,32 @@ public abstract class Page <E, I extends Serializable> {
 	 * Display next page
 	 * @return true if there is still pages to display, 0 else
 	 */
-	public boolean nextPage() {
-		if (currPage != size) {
-			elements = serv.getSome(pageSize, currPage*pageSize,orderBy, sortingOrder);
-			++currPage;
-			return true;
-		} else {
-			return false;
-		}
-	}
+	public abstract boolean nextPage();
+
+	/**
+	 * Display previous page
+	 * @return true if there is still pages to display, 0 else
+	 */
+	public abstract boolean previousPage();
+	
+	/**
+	 * Go to a given page 
+	 * @return true if there is still pages to display, 0 else
+	 */
+	public abstract boolean goToPage(Long numPage);
+	
+//	
+//	/**
+//	 * Display next page
+//	 * @return true if there is still pages to display, 0 else
+//	 */
+//	public boolean nextPage() {
+//		if (currPage != size) {
+//			elements = serv.getSome(pageSize, currPage*pageSize,orderBy, sortingOrder);
+//			++currPage;
+//			return true;
+//		} else {
+//			return false;
+//		}
+//	}
 }

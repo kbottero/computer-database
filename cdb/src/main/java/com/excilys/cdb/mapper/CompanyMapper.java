@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 
+import com.excilys.cdb.dto.CompanyDTO;
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.model.Company;
 
@@ -43,5 +44,21 @@ public enum CompanyMapper implements IMapper<Company> {
 			throw new DaoException(e);
 		}
 		return comp;
+	}
+	
+	/**
+	 * Create a CompanyDTO from a Company.
+	 * @param company
+	 * 				Data on the Company
+	 * @return Created CompanyDTO instance
+	 */
+	public CompanyDTO toDTO(Company company) {
+		CompanyDTO compDto = null;
+		if (company != null) {
+			compDto = new CompanyDTO (
+					company.getId().toString(),
+					company.getName());
+		}
+		return compDto;
 	}
 }

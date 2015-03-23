@@ -10,6 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import com.excilys.cdb.dto.CompanyDTO;
+import com.excilys.cdb.dto.ComputerDTO;
+import com.excilys.cdb.mapper.CompanyMapper;
+import com.excilys.cdb.mapper.ComputerMapper;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.service.CompaniesService;
@@ -77,7 +81,7 @@ public enum CliCommands {
 				long id = s.nextLong();
 				Computer computer = servComputers.getOne(id);
 				if (computer != null) {
-					printComputer(computer);
+					printComputer(ComputerMapper.INSTANCE.toDTO(computer));
 				} else {
 					System.out.println("This id does not refer to any computer");
 				}
@@ -329,7 +333,7 @@ public enum CliCommands {
 	/**
 	 * Display a computer
 	 */
-	public static void printComputer(Computer c) {
+	public static void printComputer(ComputerDTO c) {
 		StringBuilder strBuild = new StringBuilder();
 		strBuild.append(c.getId());
 		strBuild.append("\t");
@@ -348,7 +352,7 @@ public enum CliCommands {
 	/**
 	 * Display a company
 	 */
-	public static void printCompany(Company c) {
+	public static void printCompany(CompanyDTO c) {
 		StringBuilder strBuild = new StringBuilder();
 		strBuild.append(c.getId());
 		strBuild.append("\t");
@@ -364,7 +368,7 @@ public enum CliCommands {
 		ArrayList<Computer> list = new ArrayList<Computer>();
 		list = (ArrayList<Computer>) servComputers.getAll();
 		for (Computer computer : list) {
-			printComputer(computer);
+			printComputer(ComputerMapper.INSTANCE.toDTO(computer));
 		}
 	}
 
@@ -374,8 +378,8 @@ public enum CliCommands {
 	private static void listCompanies() {
 		ArrayList<Company> list = new ArrayList<Company>();
 		list = (ArrayList<Company>) servCompanies.getAll();
-		for (Company Company : list) {
-			printCompany(Company);
+		for (Company company : list) {
+			printCompany(CompanyMapper.INSTANCE.toDTO(company));
 		}
 	}
 
@@ -384,7 +388,7 @@ public enum CliCommands {
 	 * 
 	 */
 	private static void listComputersPage(Scanner s) {
-		Page<Computer, Long> page;
+		Page<Computer, ComputerDTO, Long> page;
 		if (s.hasNext()) {
 			Long nbLine = s.nextLong();
 			page = new ComputerPage (servComputers, nbLine);
@@ -393,8 +397,8 @@ public enum CliCommands {
 		}
 	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		Scanner scan = null;
-		while(page.nextPage()) {
-			for (Computer computer  : page.getElements()) {
+		do {
+			for (ComputerDTO computer  : page.getElements()) {
 				CliCommands.printComputer(computer);
 			}
 			printEndOfPage(page);
@@ -411,7 +415,7 @@ public enum CliCommands {
 				e.printStackTrace();
 				break;
 			}
-		}
+		}while(page.nextPage());
 		if (scan != null) {
 			scan.close();
 		}
@@ -422,7 +426,7 @@ public enum CliCommands {
 	 * @param s Current Scanner value
 	 */
 	private static void listCompaniesPage(Scanner s) {
-		Page<Company, Long> page;
+		Page<Company, CompanyDTO, Long> page;
 		if (s.hasNext()) {
 			Long nbLine = s.nextLong();
 			page = new CompanyPage (servCompanies, nbLine);
@@ -431,8 +435,8 @@ public enum CliCommands {
 		}
 	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		Scanner scan = null;
-		while(page.nextPage()) {
-			for (Company company  : page.getElements()) {
+		do {
+			for (CompanyDTO company  : page.getElements()) {
 				CliCommands.printCompany(company);
 			}
 			printEndOfPage(page);
@@ -449,7 +453,7 @@ public enum CliCommands {
 				e.printStackTrace();
 				break;
 			}
-		}
+		} while(page.nextPage());
 		if (scan != null) {
 			scan.close();
 		}
@@ -468,12 +472,12 @@ public enum CliCommands {
 	/**
 	 * Print information related to the current page
 	 */
-	private static void printEndOfPage (Page<?,?> page) {
+	private static void printEndOfPage (Page<?,?,?> page) {
 		StringBuilder stgBuild = new StringBuilder();
 		stgBuild.append("Page ");
-		stgBuild.append(page.getCurrPage());
+		stgBuild.append(page.getCurrent());
 		stgBuild.append("/");
-		stgBuild.append(page.getSize());
+		stgBuild.append(page.getCount());
 		stgBuild.append("\t (enter '");
 		stgBuild.append(CliCommands.quitPages);
 		stgBuild.append("' to quit)");

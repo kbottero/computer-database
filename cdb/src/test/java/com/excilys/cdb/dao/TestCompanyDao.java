@@ -1,6 +1,6 @@
 package com.excilys.cdb.dao;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 
@@ -20,12 +20,11 @@ public class TestCompanyDao {
 
 	@Before
 	public void setUp() {
-		
+			
 	}
 	
 	@After
-	public void tearDown() {
-		
+	public void tearDown() throws Exception {
 	}
 	
 	@Test

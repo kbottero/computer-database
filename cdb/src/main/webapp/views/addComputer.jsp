@@ -1,3 +1,6 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+ pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -37,14 +40,17 @@
                             <div class="form-group">
                                 <label for="companyId">Company</label>
                                 <select class="form-control" id="companyId" >
-                                    <option value="0">--</option>
+                                  	<option value="0" selected>--</option>
+                                    <c:forEach var="c" items="${companies}">
+                                    	<option value="${c.id}">${c.name}</option>
+									</c:forEach>
                                 </select>
                             </div>                  
                         </fieldset>
                         <div class="actions pull-right">
                             <input type="submit" value="Add" class="btn btn-primary">
                             or
-                            <a href="dashboard.html" class="btn btn-default">Cancel</a>
+                            <a href="${prev}" class="btn btn-default">Cancel</a>
                         </div>
                     </form>
                 </div>

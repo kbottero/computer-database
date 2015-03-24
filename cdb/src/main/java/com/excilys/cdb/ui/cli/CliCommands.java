@@ -121,14 +121,14 @@ public enum CliCommands {
 				for (String strg : attrib) {
 					if ( strg.startsWith("introductionDate") ) {
 						attri = strg.substring(strg.indexOf('=')+1);
-						if (ValidatorDate.INSTANCE.validateDate(attri)) {
+						if (ValidatorDate.check(attri)) {
 							introductionDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
 						} else {
 							invalidCommand(this);
 						}
 					} else if ( strg.startsWith("discontinuedDate") ) {
 						attri = strg.substring(strg.indexOf('=')+1);
-						if (ValidatorDate.INSTANCE.validateDate(attri)) {
+						if (ValidatorDate.check(attri)) {
 							discontinuedDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
 						} else {
 							invalidCommand(this);
@@ -198,14 +198,14 @@ public enum CliCommands {
 				for (String strg : attrib) {
 					if ( strg.startsWith("introductionDate") ) {
 						attri = strg.substring(strg.indexOf('=')+1);
-						if (ValidatorDate.INSTANCE.validateDate(attri)) {
+						if (ValidatorDate.check(attri)) {
 							introductionDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
 						} else {
 							invalidCommand(this);
 						}
 					} else if ( strg.startsWith("discontinuedDate") ) {
 						attri = strg.substring(strg.indexOf('=')+1);
-						if (ValidatorDate.INSTANCE.validateDate(attri)) {
+						if (ValidatorDate.check(attri)) {
 							discontinuedDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
 						} else {
 							invalidCommand(this);

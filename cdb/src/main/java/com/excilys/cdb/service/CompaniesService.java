@@ -44,8 +44,7 @@ public class CompaniesService implements IService<Company,Long>{
 	 * @return
 	 */
 	@Override
-	public List<Company> getAll(List<String> orderByCol,
-			Order order)  throws ServiceException {
+	public List<Company> getAll(List<String> orderByCol, Order order)  throws ServiceException {
 		try {
 			return CompanyDao.INSTANCE.getAll(orderByCol, order);
 		} catch (DaoException e) {

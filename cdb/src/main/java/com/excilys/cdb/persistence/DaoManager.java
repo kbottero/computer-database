@@ -23,7 +23,7 @@ public enum DaoManager {
 	
 	private Properties properties;
 	
-	DaoManager (){
+	DaoManager () {
 		properties = new Properties();
 		try {
 			BufferedReader in = new BufferedReader(new InputStreamReader(DaoManager.class.getClassLoader().getResourceAsStream("db.properties")));

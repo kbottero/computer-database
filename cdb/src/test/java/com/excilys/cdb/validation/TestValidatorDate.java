@@ -60,7 +60,7 @@ public class TestValidatorDate {
 		testList.put("2000-12-31",true);
 		
 		for (Map.Entry<String,Boolean> entry : testList.entrySet()) {
-			assertEquals(entry.getKey() + " => " + entry.getValue(),ValidatorDate.INSTANCE.validateDate(entry.getKey()),entry.getValue());
+			assertEquals(entry.getKey() + " => " + entry.getValue(),ValidatorDate.check(entry.getKey()),entry.getValue());
 		}
 		
 	}

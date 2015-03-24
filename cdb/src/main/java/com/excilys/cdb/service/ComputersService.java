@@ -7,6 +7,7 @@ import com.excilys.cdb.exception.ServiceException;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.ComputerDao;
 import com.excilys.cdb.persistence.IDao.Order;
+import com.excilys.cdb.validation.ValidatorComputer;
 
 public class ComputersService implements IService<Computer,Long> {
 
@@ -171,6 +172,9 @@ public class ComputersService implements IService<Computer,Long> {
 	 */
 	@Override
 	public void saveOne(Computer c) throws ServiceException {
+		if (ValidatorComputer.check(c)) {
+			throw new ServiceException();
+		}
 		try {
 			ComputerDao.INSTANCE.save(c);
 		} catch (DaoException e) {

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -22,41 +23,36 @@ public enum CompanyDao implements IDao<Company, Long>{
 	INSTANCE;
 	
 	private static enum preparedStatement {
-		SELECT_ALL_ORDERED ("SELECT id, name FROM company ORDER BY ? ?"),
+		COUNT_ALL ("SELECT COUNT(id) FROM company;"),
+		SELECT_ALL ("SELECT id, name FROM company;"),
+		SELECT_ALL_ORDERED ("SELECT id, name FROM company ORDER BY ? ?;"),
 		SELECT_ONE ("SELECT id, name FROM company WHERE id=?;"),
-		SELECT_SOME ("SELECT id, name FROM company ORDER BY ? ? LIMIT ? OFFSET ?"),
-		SELECT_SOME_FILTERED ("SELECT id, name FROM company WHERE name LIKE ? ORDER BY ? ? LIMIT ? OFFSET ?");
+		SELECT_SOME ("SELECT id, name FROM company ORDER BY ? ? LIMIT ? OFFSET ?;"),
+		SELECT_SOME_FILTERED ("SELECT id, name FROM company WHERE name LIKE ? ORDER BY ? ? LIMIT ? OFFSET ?;");
 		
 		private final String request;
 		
 		preparedStatement(String request) {
 	        this.request = request;
 	    }
+		
 	    private String getRequest() { return request; }
 	}
 	
 	@Override
 	public List<Company> getAll() throws DaoException {
-
-		ResultSet curs;
 		List<Company> list = new ArrayList<Company>();
-		Connection conn = null;
+		Connection conn  = getConnection();
+		Statement statement = createStatement(conn);
 		try {
-			conn = DaoManager.INSTANCE.getConnection();
-			curs = conn.createStatement().executeQuery("SELECT id, name FROM company;");
+			ResultSet curs = statement.executeQuery(preparedStatement.SELECT_ALL.getRequest());
 			while ( curs.next() ) {
 				list.add(CompanyMapper.INSTANCE.mapFromRow(curs));
     		}
-		} catch (SQLException | NumberFormatException e) {
-			throw new DaoException(e);
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
-			if(conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					throw new DaoException(e);
-				}
-			}
+			closeConnAndStat(statement, conn);
 		}
 		return list;
 	}
@@ -69,16 +65,14 @@ public enum CompanyDao implements IDao<Company, Long>{
 	@Override
 	public List<Company> getAll(List<String> orderByCol,
 			Order order) throws DaoException {
-		
-		ResultSet curs;
 		List<Company> list = new ArrayList<Company>();
-		Connection conn = null;
+		Connection conn = getConnection();
+		PreparedStatement statement = createPreparedStatement(conn,preparedStatement.SELECT_ALL_ORDERED.getRequest());
+
 		try {
-			conn = DaoManager.INSTANCE.getConnection();
-			PreparedStatement selectAllOrdredCompanies = conn.prepareStatement(preparedStatement.SELECT_ALL_ORDERED.getRequest());
 			//ORDER BY ?
 			if ((orderByCol == null) || (orderByCol.size() == 0)){
-				selectAllOrdredCompanies.setString(1,"id");
+				statement.setString(1,CompanyMapper.DEFAULT_ID);
 			} else {
 				StringBuilder strgBuilder = new StringBuilder();
 				for (String strg : orderByCol) {
@@ -88,73 +82,59 @@ public enum CompanyDao implements IDao<Company, Long>{
 						 }
 						 strgBuilder.append(CompanyMapper.mapBDModel.get(strg));
 					 } else {
-						 throw new DaoException("Incorrect field for request : "+preparedStatement.SELECT_ALL_ORDERED.getRequest());
+						 throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT+preparedStatement.SELECT_ALL_ORDERED.getRequest());
 					 }
 				}
-				selectAllOrdredCompanies.setString(1,strgBuilder.toString());
+				statement.setString(1,strgBuilder.toString());
 			}
 			//ASC or DESC ?
 			if (order == null) {
-				selectAllOrdredCompanies.setString(2,"ASC"); 
+				statement.setString(2,"ASC"); 
 			} else {
 				switch (order) {
 				case ASC:
-					selectAllOrdredCompanies.setString(2,"ASC");
+					statement.setString(2,"ASC");
 					break;
 				case DESC:
-					selectAllOrdredCompanies.setString(2,"DESC");
+					statement.setString(2,"DESC");
 					break;
 				default:
 					throw new DaoException("Invalid order for request : "+preparedStatement.SELECT_ALL_ORDERED.getRequest());
 				}
 			}
 			//Execute Request
-			curs = selectAllOrdredCompanies.executeQuery();
+			ResultSet curs = statement.executeQuery();
 			//Mapping
 			while ( curs.next() ) {
 				list.add(CompanyMapper.INSTANCE.mapFromRow(curs));
-    		}
-		} catch (SQLException | NumberFormatException e) {
-			throw new DaoException(e);
-		} finally {
-			if(conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					throw new DaoException(e);
-				}
 			}
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_SET_PREPAREDSTATEMENT,e);
+		} finally {
+			closeConnAndStat(statement, conn);
 		}
 		return list;
 	}
 
 	@Override
 	public Long getNb() throws DaoException {
-		
-		ResultSet curs;
-		Connection conn = null;
-		Long nbElements = null;
+		Long nbElements;
+		Connection conn = getConnection();
+		Statement statement = createStatement(conn);
 		try {
-			conn = DaoManager.INSTANCE.getConnection();
-			curs = conn.createStatement().executeQuery("SELECT COUNT(id) FROM company;");
+			ResultSet curs = statement.executeQuery(preparedStatement.COUNT_ALL.getRequest());
 			if ( curs.next() ) {
 				nbElements = curs.getLong(1); 
+    		} else {
+    			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT);
     		}
-		} catch (SQLException | NumberFormatException e) {
-			throw new DaoException(e);
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
-			if(conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					throw new DaoException(e);
-				}
-			}
+			closeConnAndStat(statement, conn);
 		}
 		return nbElements;
 	}
-	
-	
 
 	@Override
 	public List<Company> getSome( Long limit, Long offset) throws DaoException {
@@ -170,15 +150,13 @@ public enum CompanyDao implements IDao<Company, Long>{
 	@Override
 	public List<Company> getSome( Long limit, Long offset, List<String> orderByCol, Order order ) throws DaoException {
 		
-		ResultSet curs;
 		List<Company> list = new ArrayList<Company>();
-		Connection conn = null;
+		Connection conn = getConnection();
+		PreparedStatement statement = createPreparedStatement(conn,preparedStatement.SELECT_SOME.getRequest());
 		
 		try {
-			conn = DaoManager.INSTANCE.getConnection();
-			PreparedStatement selectSomeCompanies = conn.prepareStatement(preparedStatement.SELECT_SOME.getRequest());
 			if ((orderByCol == null) || (orderByCol.size() == 0)){
-				selectSomeCompanies.setString(1,"id");
+				statement.setString(1,"id");
 			} else {
 				StringBuilder strgBuilder = new StringBuilder();
 				for (String strg : orderByCol) {
@@ -188,57 +166,55 @@ public enum CompanyDao implements IDao<Company, Long>{
 						}
 						strgBuilder.append(CompanyMapper.mapBDModel.get(strg));
 					} else {
+						closeConnAndStat(statement, conn);
 						throw new DaoException("Incorrect field for request : "+preparedStatement.SELECT_SOME.getRequest());
 					}
 				}
-				selectSomeCompanies.setString(1,strgBuilder.toString());
+				statement.setString(1,strgBuilder.toString());
 			}
 			if (order == null) {
-				selectSomeCompanies.setString(2,"ASC"); 
+				statement.setString(2,"ASC"); 
 			} else {
 				switch (order) {
 				case ASC:
-					selectSomeCompanies.setString(2,"ASC");
+					statement.setString(2,"ASC");
 					break;
 				case DESC:
-					selectSomeCompanies.setString(2,"DESC");
+					statement.setString(2,"DESC");
 					break;
 				default:
+					closeConnAndStat(statement, conn);
 					throw new DaoException("Invalid order for request : "+preparedStatement.SELECT_SOME.getRequest());
 				}
 			}
 			if (limit == null) {
-				selectSomeCompanies.setLong(3,0); 
+				statement.setLong(3,0); 
 			} else {
 				if (limit < 0) {
+					closeConnAndStat(statement, conn);
 					throw new DaoException("Invalid limit ("+limit+") for request : "+preparedStatement.SELECT_SOME.getRequest());
 				} else {
-					selectSomeCompanies.setLong(3,limit); 
+					statement.setLong(3,limit); 
 				}
 			}
 			if (offset == null) {
-				selectSomeCompanies.setLong(4,0); 
+				statement.setLong(4,0); 
 			} else {
 				if (offset < 0) {
+					closeConnAndStat(statement, conn);
 					throw new DaoException("Invalid offset ("+offset+") for request : "+preparedStatement.SELECT_SOME.getRequest());
 				} else {
-					selectSomeCompanies.setLong(4,offset); 
+					statement.setLong(4,offset); 
 				}
 			}
-			curs = selectSomeCompanies.executeQuery();
+			ResultSet curs = statement.executeQuery();
 			while ( curs.next() ) {
 				list.add(CompanyMapper.INSTANCE.mapFromRow(curs));
     		}
-		} catch (SQLException | NumberFormatException e) {
+		} catch (SQLException e) {
 			throw new DaoException(e);
 		} finally {
-			if(conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					throw new DaoException(e);
-				}
-			}
+			closeConnAndStat(statement, conn);
 		}
 		return list;
 	}
@@ -261,27 +237,25 @@ public enum CompanyDao implements IDao<Company, Long>{
 		
 		ResultSet curs;
 		List<Company> list = new ArrayList<Company>();
-		Connection conn = null;
+		Connection conn = getConnection();
+		PreparedStatement statement = createPreparedStatement(conn,preparedStatement.SELECT_SOME_FILTERED.getRequest());
 		
 		if (nameFilter == null || nameFilter.isEmpty()) {
 			return getSome(limit, offset,orderByCol, order);
 		}
 		try {
-			conn = DaoManager.INSTANCE.getConnection();
-			PreparedStatement selectSomeCompanies = conn.prepareStatement(preparedStatement.SELECT_SOME_FILTERED.getRequest());
-			
 			Pattern patt = Pattern.compile("[a-zA-Z0-9]*");
 			Matcher matcher = patt.matcher(nameFilter);
 			
 			if (matcher.matches()) {
 				matcher.reset();
-				selectSomeCompanies.setString(1,nameFilter+'%');
+				statement.setString(1,nameFilter+'%');
 			} else {
 				throw new DaoException("Illegal value for LIKE "+nameFilter);
 			}
 			
 			if ((orderByCol == null) || (orderByCol.size() == 0)){
-				selectSomeCompanies.setString(2,"id");
+				statement.setString(2,"id");
 			} else {
 				StringBuilder strgBuilder = new StringBuilder();
 				for (String strg : orderByCol) {
@@ -294,54 +268,48 @@ public enum CompanyDao implements IDao<Company, Long>{
 						throw new DaoException("Incorrect field for request : "+preparedStatement.SELECT_SOME_FILTERED.getRequest());
 					}
 				}
-				selectSomeCompanies.setString(2,strgBuilder.toString());
+				statement.setString(2,strgBuilder.toString());
 			}
 			if (order == null) {
-				selectSomeCompanies.setString(3,"ASC"); 
+				statement.setString(3,"ASC"); 
 			} else {
 				switch (order) {
 				case ASC:
-					selectSomeCompanies.setString(3,"ASC");
+					statement.setString(3,"ASC");
 					break;
 				case DESC:
-					selectSomeCompanies.setString(3,"DESC");
+					statement.setString(3,"DESC");
 					break;
 				default:
 					throw new DaoException("Invalid order for request : "+preparedStatement.SELECT_SOME_FILTERED.getRequest());
 				}
 			}
 			if (limit == null) {
-				selectSomeCompanies.setLong(4,0); 
+				statement.setLong(4,0); 
 			} else {
 				if (limit < 0) {
 					throw new DaoException("Invalid limit ("+limit+") for request : "+preparedStatement.SELECT_SOME_FILTERED.getRequest());
 				} else {
-					selectSomeCompanies.setLong(4,limit); 
+					statement.setLong(4,limit); 
 				}
 			}
 			if (offset == null) {
-				selectSomeCompanies.setLong(5,0); 
+				statement.setLong(5,0); 
 			} else {
 				if (offset < 0) {
 					throw new DaoException("Invalid offset ("+offset+") for request : "+preparedStatement.SELECT_SOME_FILTERED.getRequest());
 				} else {
-					selectSomeCompanies.setLong(5,offset); 
+					statement.setLong(5,offset); 
 				}
 			}
-			curs = selectSomeCompanies.executeQuery();
+			curs = statement.executeQuery();
 			while ( curs.next() ) {
 				list.add(CompanyMapper.INSTANCE.mapFromRow(curs));
     		}
-		} catch (SQLException | NumberFormatException e) {
+		} catch (SQLException e) {
 			throw new DaoException(e);
 		} finally {
-			if(conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					throw new DaoException(e);
-				}
-			}
+			closeConnAndStat(statement, conn);
 		}
 		return list;
 	}
@@ -353,26 +321,93 @@ public enum CompanyDao implements IDao<Company, Long>{
 		}
 		ResultSet curs;
 		Company comp=null;
-		Connection conn = null;
+		Connection conn = getConnection();
+		PreparedStatement statement = createPreparedStatement(conn,preparedStatement.SELECT_ONE.getRequest());
 		try {
-			conn = DaoManager.INSTANCE.getConnection();
-			PreparedStatement selectOneCompany = conn.prepareStatement(preparedStatement.SELECT_ONE.getRequest());
-			selectOneCompany.setLong(1,id);
-			curs = selectOneCompany.executeQuery();
+			statement.setLong(1,id);
+			curs = statement.executeQuery();
 			if ( curs.next() ) {
 				comp = CompanyMapper.INSTANCE.mapFromRow(curs);
     		}
 		} catch (SQLException e) {
 			throw new DaoException(e);
 		} finally {
-			if(conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					throw new DaoException(e);
-				}
-			}
+			closeConnAndStat(statement, conn);
 		}
 		return comp;
 	}
+	
+	private PreparedStatement createPreparedStatement (Connection conn, String request) {
+		PreparedStatement statement = null;
+		request.trim();
+		try {
+			conn = DaoManager.INSTANCE.getConnection();
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_CREATE_CONNECTION, e);
+		}
+		try {
+			statement = conn.prepareStatement(request);
+		} catch (SQLException e) {
+			try {
+				if(conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e2) {
+				throw new DaoException(DaoException.CAN_NOT_CLOSE_CONNECTION,e2);
+			}
+			throw new DaoException(DaoException.CAN_NOT_CREATE_STATEMENT,e);
+		}
+		return statement;
+	}
+	
+	private Statement createStatement (Connection conn) {
+		Statement statement = null;
+		try {
+			conn = DaoManager.INSTANCE.getConnection();
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_CREATE_CONNECTION, e);
+		}
+		try {
+			statement = conn.createStatement();
+		} catch (SQLException e) {
+			try {
+				if(conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e2) {
+				throw new DaoException(DaoException.CAN_NOT_CLOSE_CONNECTION,e2);
+			}
+			throw new DaoException(DaoException.CAN_NOT_CREATE_STATEMENT,e);
+		}
+		return statement;
+	}
+	
+	private Connection getConnection () {
+		Connection conn = null;
+		try {
+			conn = DaoManager.INSTANCE.getConnection();
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_CREATE_CONNECTION, e);
+		}
+		return conn;
+	} 
+	
+	private void closeConnAndStat (Statement statement, Connection connection) throws DaoException{
+		try {
+			if (statement != null) {
+				statement.close();
+			}
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_CLOSE_STATEMENT,e);
+		}
+		try {
+			if(connection != null) {
+				connection.close();
+			}
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_CLOSE_CONNECTION,e);
+		}
+	}
+	
+	
 }

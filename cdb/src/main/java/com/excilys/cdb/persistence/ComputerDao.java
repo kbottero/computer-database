@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,21 +47,26 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		ResultSet curs;
 		List<Computer> list = new ArrayList<Computer>();
 		Connection conn = null;
+		Statement statement = null;
 		try {
 			conn = DaoManager.INSTANCE.getConnection();
-			curs = conn.createStatement().executeQuery("SELECT id, name,introduced, discontinued, company_id FROM computer;");
+			statement = conn.createStatement();
+			curs = statement.executeQuery("SELECT id, name,introduced, discontinued, company_id FROM computer;");
 			while ( curs.next() ) {
 				list.add(ComputerMapper.INSTANCE.mapFromRow(curs));
     		}
 		} catch (SQLException | NumberFormatException e) {
 			throw new DaoException(e);
 		} finally {
-			if(conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					throw new DaoException(e);
+			try {
+				if (statement != null) {
+					statement.close();
 				}
+				if(conn != null) {
+						conn.close();
+				}
+			} catch (SQLException e) {
+				throw new DaoException(e);
 			}
 		}
 		return list;
@@ -78,9 +84,10 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		ResultSet curs;
 		List<Computer> list = new ArrayList<Computer>();
 		Connection conn = null;
+		PreparedStatement selectAllOrdredComputer = null;
 		try {
 			conn = DaoManager.INSTANCE.getConnection();
-			PreparedStatement selectAllOrdredComputer = conn.prepareStatement(preparedStatement.SELECT_ALL_ORDERED.getRequest());
+			selectAllOrdredComputer = conn.prepareStatement(preparedStatement.SELECT_ALL_ORDERED.getRequest());
 			//ORDER BY ?
 			if ((orderByCol == null) || (orderByCol.size() == 0)){
 				selectAllOrdredComputer.setString(1,"id");
@@ -122,12 +129,15 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException | NumberFormatException e) {
 			throw new DaoException(e);
 		} finally {
-			if(conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					throw new DaoException(e);
+			try {
+				if (selectAllOrdredComputer != null) {
+					selectAllOrdredComputer.close();
 				}
+				if(conn != null) {
+						conn.close();
+				}
+			} catch (SQLException e) {
+				throw new DaoException(e);
 			}
 		}
 		return list;
@@ -139,21 +149,26 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		ResultSet curs;
 		Connection conn = null;
 		Long nbElements = null;
+		Statement statement = null;
 		try {
 			conn = DaoManager.INSTANCE.getConnection();
-			curs = conn.createStatement().executeQuery("SELECT COUNT(id) FROM computer;");
+			statement = conn.createStatement();
+			curs = statement.executeQuery("SELECT COUNT(id) FROM computer;");
 			if ( curs.next() ) {
 				nbElements = curs.getLong(1); 
     		}
 		} catch (SQLException | NumberFormatException e) {
 			throw new DaoException(e);
 		} finally {
-			if(conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					throw new DaoException(e);
+			try {
+				if (statement != null) {
+					statement.close();
 				}
+				if(conn != null) {
+						conn.close();
+				}
+			} catch (SQLException e) {
+				throw new DaoException(e);
 			}
 		}
 		return nbElements;
@@ -175,10 +190,10 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		ResultSet curs;
 		List<Computer> list = new ArrayList<Computer>();
 		Connection conn = null;
-		
+		PreparedStatement selectSomeComputer = null;
 		try {
 			conn = DaoManager.INSTANCE.getConnection();
-			PreparedStatement selectSomeComputer = conn.prepareStatement(preparedStatement.SELECT_SOME_ORDERED.getRequest());
+			selectSomeComputer = conn.prepareStatement(preparedStatement.SELECT_SOME_ORDERED.getRequest());
 			if ((orderByCol == null) || (orderByCol.size() == 0)){
 				selectSomeComputer.setString(1,"id");
 			} else {
@@ -234,12 +249,15 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException | NumberFormatException e) {
 			throw new DaoException(e);
 		} finally {
-			if(conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					throw new DaoException(e);
+			try {
+				if (selectSomeComputer != null) {
+					selectSomeComputer.close();
 				}
+				if(conn != null) {
+						conn.close();
+				}
+			} catch (SQLException e) {
+				throw new DaoException(e);
 			}
 		}
 		return list;
@@ -262,13 +280,13 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		ResultSet curs;
 		List<Computer> list = new ArrayList<Computer>();
 		Connection conn = null;
-		
+		PreparedStatement selectSomeComputer = null;
 		if (nameFilter == null || nameFilter.isEmpty()) {
 			return getSome(limit, offset,orderByCol, order);
 		}
 		try {
 			conn = DaoManager.INSTANCE.getConnection();
-			PreparedStatement selectSomeComputer = conn.prepareStatement(preparedStatement.SELECT_SOME_FILTERED.getRequest());
+			selectSomeComputer = conn.prepareStatement(preparedStatement.SELECT_SOME_FILTERED.getRequest());
 
 			Pattern patt = Pattern.compile("[a-zA-Z0-9]*");
 			Matcher matcher = patt.matcher(nameFilter);
@@ -335,12 +353,15 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException | NumberFormatException e) {
 			throw new DaoException(e);
 		} finally {
-			if(conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					throw new DaoException(e);
+			try {
+				if (selectSomeComputer != null) {
+					selectSomeComputer.close();
 				}
+				if(conn != null) {
+						conn.close();
+				}
+			} catch (SQLException e) {
+				throw new DaoException(e);
 			}
 		}
 		return list;
@@ -354,9 +375,10 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		ResultSet curs;
 		Computer comp=null;
 		Connection conn = null;
+		PreparedStatement selectOneComputer = null;
 		try {
 			conn = DaoManager.INSTANCE.getConnection();
-			PreparedStatement selectOneComputer = conn.prepareStatement(preparedStatement.SELECT_ONE.getRequest());
+			selectOneComputer = conn.prepareStatement(preparedStatement.SELECT_ONE.getRequest());
 			selectOneComputer.setLong(1,id);
 			curs = selectOneComputer.executeQuery();
 			if ( curs.next() ) {
@@ -367,7 +389,12 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} finally {
 			if(conn != null) {
 				try {
-					conn.close();
+					if (selectOneComputer != null) {
+						selectOneComputer.close();
+					}
+					if(conn != null) {
+							conn.close();
+					}
 				} catch (SQLException e) {
 					throw new DaoException(e);
 				}
@@ -383,11 +410,13 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		}
 		boolean update=false;
 		ResultSet curs;
-
+		PreparedStatement updateOneComputer = null;
+		PreparedStatement insertOneComputer = null;
+		PreparedStatement selectOneComputer = null;
 		Connection conn = null;
 		try {
 			conn = DaoManager.INSTANCE.getConnection();
-			PreparedStatement selectOneComputer = conn.prepareStatement(preparedStatement.SELECT_ONE.getRequest());
+			selectOneComputer = conn.prepareStatement(preparedStatement.SELECT_ONE.getRequest());
 			selectOneComputer.setLong(1,c.getId());
 			curs = selectOneComputer.executeQuery();
 			int nb;
@@ -397,7 +426,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 			}
 			if(!update)
 			{
-				PreparedStatement insertOneComputer = conn.prepareStatement(preparedStatement.INSERT_ONE.getRequest(),
+				insertOneComputer = conn.prepareStatement(preparedStatement.INSERT_ONE.getRequest(),
 						PreparedStatement.RETURN_GENERATED_KEYS);
 				insertOneComputer.setString(1,c.getName());
 				if(c.getIntroductionDate() != null) {
@@ -425,7 +454,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 			}
 			else
 			{
-				PreparedStatement updateOneComputer = conn.prepareStatement(preparedStatement.UPDATE_ONE.getRequest());
+				updateOneComputer = conn.prepareStatement(preparedStatement.UPDATE_ONE.getRequest());
 				updateOneComputer.setString(1,c.getName());
 				if(c.getIntroductionDate() != null) {
 					updateOneComputer.setTimestamp(2, Timestamp.valueOf(c.getIntroductionDate()));
@@ -452,12 +481,21 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException e) {
 			throw new DaoException(e);
 		} finally {
-			if(conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					throw new DaoException(e);
+			try {
+				if (updateOneComputer != null) {
+					updateOneComputer.close();
 				}
+				if (insertOneComputer != null) {
+					insertOneComputer.close();
+				}
+				if (selectOneComputer != null) {
+					selectOneComputer.close();
+				}
+				if(conn != null) {
+						conn.close();
+				}
+			} catch (SQLException e) {
+				throw new DaoException(e);
 			}
 		}
 	}
@@ -468,9 +506,10 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 			throw new IllegalArgumentException();
 		}
 		Connection conn = null;
+		PreparedStatement deleteOneComputer = null;
 		try {
 			conn = DaoManager.INSTANCE.getConnection();
-			PreparedStatement deleteOneComputer = conn.prepareStatement(preparedStatement.DELETE_ONE.getRequest());
+			deleteOneComputer = conn.prepareStatement(preparedStatement.DELETE_ONE.getRequest());
 			deleteOneComputer.setLong(1, id);
 			int nb = deleteOneComputer.executeUpdate();
 			if(nb==0)
@@ -480,12 +519,15 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			if(conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					throw new DaoException(e);
+			try {
+				if (deleteOneComputer != null) {
+					deleteOneComputer.close();
 				}
+				if(conn != null) {
+						conn.close();
+				}
+			} catch (SQLException e) {
+				throw new DaoException(e);
 			}
 		}
 		

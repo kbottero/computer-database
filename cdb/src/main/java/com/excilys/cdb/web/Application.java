@@ -69,13 +69,24 @@ public class Application extends HttpServlet {
 
 	private void doListeComputerRequest(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String attrib = request.getParameter("search");
+		String attrib;
 		ComputerPage compPage;
+		Long nbCompPerPage = 10l;
+
+		attrib = request.getParameter("nbCompPerPage");
+		if (attrib != null) {
+			nbCompPerPage = Long.parseLong(attrib);
+			if (nbCompPerPage != 10l && nbCompPerPage != 50l && nbCompPerPage != 100l) {
+				nbCompPerPage = 10l;
+			}
+		}
+		request.setAttribute("nbCompPerPage", nbCompPerPage);
+		attrib = request.getParameter("search");
 		if (attrib != null) {
 			String filter = attrib;
-			compPage= new ComputerPage(computersService,filter);
+			compPage= new ComputerPage(computersService, nbCompPerPage, filter);
 		} else {
-			compPage= new ComputerPage(computersService);
+			compPage= new ComputerPage(computersService, nbCompPerPage);
 		}
 		attrib = request.getParameter("numPage");
 		if (attrib != null) {

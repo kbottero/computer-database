@@ -44,6 +44,18 @@ public class CompanyPage extends Page<Company, CompanyDTO, Long> {
 		}
 	}
 	
+	public CompanyPage(IService<Company,Long> serv, Long pageSize, String filter) {
+		super(serv, pageSize);
+		orderBy.add(ComputerMapper.DEFAULT_ID);
+		this.filter = filter;
+		this.pageSize = pageSize;
+		List<Company> list = serv.getSome(filter, pageSize, (current-1)*pageSize,orderBy, sortingOrder);
+		elements = new ArrayList<CompanyDTO>();
+		for ( Company comp : list) {
+			elements.add(CompanyMapper.INSTANCE.toDTO(comp));
+		}
+	}
+	
 	/**
 	 * Display next page
 	 * @return true if there is still pages to display, 0 else

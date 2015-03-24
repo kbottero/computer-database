@@ -102,14 +102,16 @@
     <footer class="navbar-fixed-bottom">
         <div class="container text-center">
 			<mylib:pagination page="${requestScope.page.current}" pageCount="${requestScope.page.count}"/>  
+			
+			<!-- 
+	        <div class="btn-group btn-group-sm pull-right" role="group" >
+	            <button type="button" class="btn btn-default">10</button>
+	            <button type="button" class="btn btn-default">50</button>
+	            <button type="button" class="btn btn-default">100</button>
+	        </div> -->
+	        
+	        
         </div>
-        
-        <div class="btn-group btn-group-sm pull-right" role="group" >
-            <button type="button" class="btn btn-default">10</button>
-            <button type="button" class="btn btn-default">50</button>
-            <button type="button" class="btn btn-default">100</button>
-        </div>
-
     </footer>
 <script src="${pageContext.request.contextPath}/js/jquery.min.js"></script>
 <script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>

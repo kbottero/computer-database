@@ -7,65 +7,89 @@
   <version>1.0-SNAPSHOT</version>
   <name>cdb Maven Webapp</name>
   <url>http://maven.apache.org</url>
+  <properties>
+  	<servletVersion>3.0.1</servletVersion>
+  	<jqueryVersion>2.1.3</jqueryVersion>
+  	<jstlVersion>1.2</jstlVersion>
+  	<mysqlVersion>5.1.34</mysqlVersion>
+  	<junitVersion>4.11</junitVersion>
+  	<slf4jVersion>1.7.10</slf4jVersion>
+  	<log4j12Version>1.7.10</log4j12Version>
+  	<mockitoVersion>1.9.5</mockitoVersion>
+  	<seleniumVersion>2.45.0</seleniumVersion>
+  	<dbUnitVersion>2.5.0</dbUnitVersion>
+  	<h2Version>1.4.186</h2Version>
+  </properties>
   <dependencies>
   	<!-- WEB -->
   	<dependency>
 		<groupId>javax.servlet</groupId>
 		<artifactId>javax.servlet-api</artifactId>
-		<version>3.0.1</version>
+		<version>${servletVersion}</version>
+		<scope>compile</scope>
 	</dependency>
 	<dependency>
 		<groupId>org.webjars</groupId>
 		<artifactId>jquery</artifactId>
-		<version>2.1.3</version>
+		<version>${jqueryVersion}</version>
+		<scope>runtime</scope>
 	</dependency>
 	<dependency>
 		<groupId>jstl</groupId>
 		<artifactId>jstl</artifactId>
-		<version>1.2</version>
+		<version>${jstlVersion}</version>
+		<scope>runtime</scope>
 	</dependency>
   	<!-- JAVA -->
   	<!-- BDD -->
 	<dependency>
 		<groupId>mysql</groupId>
 		<artifactId>mysql-connector-java</artifactId>
-		<version>5.1.34</version>
+		<version>${mysqlVersion}</version>
+		<scope>runtime</scope>
 	</dependency>
   	<!-- TEST -->
 	<dependency>
 		<groupId>junit</groupId>
 		<artifactId>junit</artifactId>
-		<version>4.11</version>
+		<version>${junitVersion}</version>
+		<scope>test</scope>
 	</dependency>
 	<dependency>
 		<groupId>org.slf4j</groupId>
 		<artifactId>slf4j-api</artifactId>
-		<version>1.7.10</version>
+		<version>${slf4jVersion}</version>
+		<scope>test</scope>
 	</dependency>
 	<dependency>
 		<groupId>org.slf4j</groupId>
 		<artifactId>slf4j-log4j12</artifactId>
-		<version>1.7.10</version>
+		<version>${log4j12Version}</version>
+		<scope>test</scope>
 	</dependency>
 	<dependency>
 		<groupId>org.mockito</groupId>
 		<artifactId>mockito-all</artifactId>
-		<version>1.9.5</version>
+		<version>${mockitoVersion}</version>
+		<scope>test</scope>
 	</dependency>
 	<dependency>
 		<groupId>org.seleniumhq.selenium</groupId>
 		<artifactId>selenium-java</artifactId>
-		<version>2.45.0</version>
+		<version>${seleniumVersion}</version>
+		<scope>test</scope>
 	</dependency>
 	<dependency>
 		<groupId>org.dbunit</groupId>
 		<artifactId>dbunit</artifactId>
-		<version>2.5.0</version>
+		<version>${dbUnitVersion}</version>
+		<scope>test</scope>
 	</dependency>
 	<dependency>
 		<groupId>com.h2database</groupId>
 		<artifactId>h2</artifactId>
-		<version>1.4.186</version>
+		<version>${h2Version}</version>
+		<scope>test</scope>
 	</dependency>
   </dependencies>
   

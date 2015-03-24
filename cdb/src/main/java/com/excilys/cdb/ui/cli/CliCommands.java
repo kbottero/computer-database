@@ -339,8 +339,8 @@ public enum CliCommands {
 		strBuild.append("\t");
 		strBuild.append(c.getName());
 		strBuild.append("\t");
-		if (c.getConstructor()!= null) {
-			strBuild.append(c.getConstructor().getName());
+		if (c.getConstructorName()!= null) {
+			strBuild.append(c.getConstructorName());
 			strBuild.append("\t");
 		}
 		strBuild.append(c.getIntroductionDate());

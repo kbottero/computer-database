@@ -8,8 +8,6 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.mapper.ComputerMapper;
@@ -25,9 +23,11 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 	INSTANCE;
 	
 	private static enum preparedStatement {
-		SELECT_ALL_ORDERED ("SELECT id, name, introduced, discontinued, company_id FROM computer ORDER BY ? ?"),
-		SELECT_SOME_ORDERED ("SELECT id, name, introduced, discontinued, company_id FROM computer ORDER BY ? ? LIMIT ? OFFSET ?"),
-		SELECT_SOME_FILTERED ("SELECT id, name, introduced, discontinued, company_id FROM computer WHERE name LIKE ? ORDER BY ? ? LIMIT ? OFFSET ?"),
+		COUNT_ALL ("SELECT COUNT(id) FROM computer;"),
+		SELECT_ALL ("SELECT id, name, introduced, discontinued, company_id FROM computer;"),
+		SELECT_ALL_ORDERED ("SELECT id, name, introduced, discontinued, company_id FROM computer ORDER BY ? ?;"),
+		SELECT_SOME ("SELECT id, name, introduced, discontinued, company_id FROM computer ORDER BY ? ? LIMIT ? OFFSET ?;"),
+		SELECT_SOME_FILTERED ("SELECT id, name, introduced, discontinued, company_id FROM computer WHERE name LIKE ? ORDER BY ? ? LIMIT ? OFFSET ?;"),
 		SELECT_ONE ("SELECT id, name,introduced, discontinued, company_id FROM computer WHERE id=?;"),
 		INSERT_ONE ("INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?,?,?,?) ;"),
 		UPDATE_ONE ("UPDATE computer SET name=?, introduced=?, discontinued=?, company_id=? WHERE id=?;"),
@@ -43,102 +43,73 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 
 	@Override
 	public List<Computer> getAll() throws DaoException {
-		
-		ResultSet curs;
 		List<Computer> list = new ArrayList<Computer>();
-		Connection conn = null;
-		Statement statement = null;
+		Connection conn =  DaoManager.INSTANCE.getConnection();
+		Statement statement = DaoManager.INSTANCE.createStatement(conn);
 		try {
-			conn = DaoManager.INSTANCE.getConnection();
-			statement = conn.createStatement();
-			curs = statement.executeQuery("SELECT id, name,introduced, discontinued, company_id FROM computer;");
+			ResultSet curs = statement.executeQuery(preparedStatement.SELECT_ALL.getRequest());
 			while ( curs.next() ) {
 				list.add(ComputerMapper.INSTANCE.mapFromRow(curs));
     		}
-		} catch (SQLException | NumberFormatException e) {
-			throw new DaoException(e);
+			curs.close();
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
-			try {
-				if (statement != null) {
-					statement.close();
-				}
-				if(conn != null) {
-						conn.close();
-				}
-			} catch (SQLException e) {
-				throw new DaoException(e);
-			}
+				DaoManager.INSTANCE.closeConnAndStat(statement, conn);
 		}
 		return list;
 	}
 	
 	@Override
-	public List<Computer> getAll(List<String> orderByCol) throws DaoException {
-		return this.getAll(orderByCol, null);
-	}
-	
-	@Override
-	public List<Computer> getAll(List<String> orderByCol,
-			Order order) throws DaoException {
+	public List<Computer> getAll(DaoRequestParameter param) throws DaoException {
 		
-		ResultSet curs;
 		List<Computer> list = new ArrayList<Computer>();
-		Connection conn = null;
-		PreparedStatement selectAllOrdredComputer = null;
+		Connection conn = DaoManager.INSTANCE.getConnection();
+		PreparedStatement statement = DaoManager.INSTANCE.createPreparedStatement(conn, preparedStatement.SELECT_ALL_ORDERED.getRequest());
 		try {
-			conn = DaoManager.INSTANCE.getConnection();
-			selectAllOrdredComputer = conn.prepareStatement(preparedStatement.SELECT_ALL_ORDERED.getRequest());
 			//ORDER BY ?
-			if ((orderByCol == null) || (orderByCol.size() == 0)){
-				selectAllOrdredComputer.setString(1,"id");
+			if ((param.getColToOrderBy() == null) || (param.getColToOrderBy().size() == 0)){
+				statement.setString(1,ComputerMapper.DEFAULT_ID);
 			} else {
 				StringBuilder strgBuilder = new StringBuilder();
-				for (String strg : orderByCol) {
+				for (String strg : param.getColToOrderBy()) {
 					 if (ComputerMapper.mapBDModel.containsKey(strg)) {
 						 if (strgBuilder.length() != 0) {
 							 strgBuilder.append(", ");
 						 }
 						 strgBuilder.append(ComputerMapper.mapBDModel.get(strg));
 					 } else {
-						 throw new DaoException("Incorrect field for request : "+preparedStatement.SELECT_ALL_ORDERED.getRequest());
+						 throw new DaoException(DaoException.INVALID_ARGUMENT);
 					 }
 				}
-				selectAllOrdredComputer.setString(1,strgBuilder.toString());
+				statement.setString(1,strgBuilder.toString());
 			}
 			//ASC or DESC ?
-			if (order == null) {
-				selectAllOrdredComputer.setString(2,"ASC"); 
+			if (param.getOrder() == null) {
+				statement.setString(2,"ASC"); 
 			} else {
-				switch (order) {
+				switch (param.getOrder()) {
 				case ASC:
-					selectAllOrdredComputer.setString(2,"ASC");
+					statement.setString(2,"ASC");
 					break;
 				case DESC:
-					selectAllOrdredComputer.setString(2,"DESC");
+					statement.setString(2,"DESC");
 					break;
 				default:
-					throw new DaoException("Invalid order for request : "+preparedStatement.SELECT_ALL_ORDERED.getRequest());
+					throw new DaoException(DaoException.INVALID_ARGUMENT);
 				}
 			}
 			//Execute Request
-			curs = selectAllOrdredComputer.executeQuery();
+			ResultSet curs = statement.executeQuery();
 			//Mapping
 			while ( curs.next() ) {
 				list.add(ComputerMapper.INSTANCE.mapFromRow(curs));
     		}
-		} catch (SQLException | NumberFormatException e) {
-			throw new DaoException(e);
+			curs.close();
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_SET_PREPAREDSTATEMENT,e);
 		} finally {
-			try {
-				if (selectAllOrdredComputer != null) {
-					selectAllOrdredComputer.close();
-				}
-				if(conn != null) {
-						conn.close();
-				}
-			} catch (SQLException e) {
-				throw new DaoException(e);
-			}
+			 DaoManager.INSTANCE.closeConnAndStat(statement, conn);
 		}
 		return list;
 	}
@@ -146,223 +117,111 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 	@Override
 	public Long getNb() throws DaoException {
 		
-		ResultSet curs;
-		Connection conn = null;
+		Connection conn =  DaoManager.INSTANCE.getConnection();
 		Long nbElements = null;
-		Statement statement = null;
+		Statement statement = DaoManager.INSTANCE.createStatement(conn);
 		try {
-			conn = DaoManager.INSTANCE.getConnection();
-			statement = conn.createStatement();
-			curs = statement.executeQuery("SELECT COUNT(id) FROM computer;");
+			ResultSet curs = statement.executeQuery(preparedStatement.COUNT_ALL.getRequest());
 			if ( curs.next() ) {
 				nbElements = curs.getLong(1); 
     		}
-		} catch (SQLException | NumberFormatException e) {
-			throw new DaoException(e);
+			curs.close();
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT, e);
 		} finally {
-			try {
-				if (statement != null) {
-					statement.close();
-				}
-				if(conn != null) {
-						conn.close();
-				}
-			} catch (SQLException e) {
-				throw new DaoException(e);
-			}
+			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
 		}
 		return nbElements;
 	}
 	
 	@Override
-	public List<Computer> getSome( Long limit, Long offset) throws DaoException {
-		return getSome( limit, offset, null, null);
-	}
-
-	@Override
-	public List<Computer> getSome( Long limit, Long offset,List<String> orderByCol) throws DaoException {
-		return getSome( limit, offset,orderByCol, null);
-	}
-
-	@Override
-	public List<Computer> getSome( Long limit, Long offset,List<String> orderByCol, Order order ) throws DaoException {
-		
-		ResultSet curs;
+	public List<Computer> getSome(DaoRequestParameter param) throws DaoException {
+		int numArg = 1;
 		List<Computer> list = new ArrayList<Computer>();
-		Connection conn = null;
-		PreparedStatement selectSomeComputer = null;
+		Connection conn = DaoManager.INSTANCE.getConnection();
+		PreparedStatement statement = null;
 		try {
-			conn = DaoManager.INSTANCE.getConnection();
-			selectSomeComputer = conn.prepareStatement(preparedStatement.SELECT_SOME_ORDERED.getRequest());
-			if ((orderByCol == null) || (orderByCol.size() == 0)){
-				selectSomeComputer.setString(1,"id");
+			if (param.getNameLike() != null) {
+				statement = DaoManager.INSTANCE.createPreparedStatement(conn,preparedStatement.SELECT_SOME_FILTERED.getRequest());
+				
+					StringBuilder filter = new StringBuilder();
+					switch (param.getNameFiltering()) {
+					case POST:
+						filter.append(param.getNameLike());
+						filter.append('%');
+						break;
+					case PRE:
+						filter.append('%');
+						filter.append(param.getNameLike());
+						break;
+					case POST_AND_PRE:
+						filter.append('%');
+						filter.append(param.getNameLike());
+						filter.append('%');
+						break;
+					case NONE:
+						filter.append(param.getNameLike());
+						break;
+						default:
+							throw new DaoException(DaoException.INVALID_ARGUMENT);
+					}
+					statement.setString(numArg++,filter.toString());
+			} else {		
+				statement = DaoManager.INSTANCE.createPreparedStatement(conn,preparedStatement.SELECT_SOME.getRequest());
+			}
+			if ((param.getColToOrderBy() == null) || (param.getColToOrderBy().size() == 0)){
+				statement.setString(numArg++,ComputerMapper.DEFAULT_ID);
 			} else {
 				StringBuilder strgBuilder = new StringBuilder();
-				for (String strg : orderByCol) {
-					 if (ComputerMapper.mapBDModel.containsKey(strg)) {
-						 if (strgBuilder.length() != 0) {
-							 strgBuilder.append(", ");
-						 }
-						 strgBuilder.append(ComputerMapper.mapBDModel.get(strg));
-					 } else {
-						 throw new DaoException("Incorrect field for request : "+preparedStatement.SELECT_SOME_ORDERED.getRequest());
-					 }
+				for (String strg : param.getColToOrderBy()) {
+					if (ComputerMapper.mapBDModel.containsKey(strg)) {
+						if (strgBuilder.length() != 0) {
+							strgBuilder.append(", ");
+						}
+						strgBuilder.append(ComputerMapper.mapBDModel.get(strg));
+					} else {
+						throw new DaoException(DaoException.INVALID_ARGUMENT);
+					}
 				}
-				selectSomeComputer.setString(1,strgBuilder.toString());
+				statement.setString(numArg++,strgBuilder.toString());
 			}
-			if (order == null) {
-				selectSomeComputer.setString(2,"ASC"); 
-			} else {
-				switch (order) {
-				case ASC:
-					selectSomeComputer.setString(2,"ASC");
-					break;
-				case DESC:
-					selectSomeComputer.setString(2,"DESC");
-					break;
-				default:
-					throw new DaoException("Invalid order for request : "+preparedStatement.SELECT_SOME_ORDERED.getRequest());
-				}
+			switch (param.getOrder()) {
+			case ASC:
+				statement.setString(numArg++,"ASC");
+				break;
+			case DESC:
+				statement.setString(numArg++,"DESC");
+				break;
+			default:
+				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			}
-			if (limit == null) {
-				selectSomeComputer.setLong(3,20);
+			if (param.getLimit() == null) {
+				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			} else {
-				if (limit < 0) {
-					throw new DaoException("Invalid limit ("+limit+") for request : "+preparedStatement.SELECT_SOME_ORDERED.getRequest());
+				if (param.getLimit() < 0) {
+					throw new DaoException(DaoException.INVALID_ARGUMENT);
 				} else {
-					selectSomeComputer.setLong(3,limit); 
+					statement.setLong(numArg++,param.getLimit()); 
 				}
 			}
-			if (offset == null) {
-				selectSomeComputer.setLong(4,0); 
+			if (param.getOffset() == null) {
+				statement.setLong(numArg++,0); 
 			} else {
-				if (offset < 0) {
-					throw new DaoException("Invalid offset ("+offset+") for request : "+preparedStatement.SELECT_SOME_ORDERED.getRequest());
+				if (param.getOffset() < 0) {
+					throw new DaoException(DaoException.INVALID_ARGUMENT);
 				} else {
-					selectSomeComputer.setLong(4,offset); 
+					statement.setLong(numArg++,param.getOffset()); 
 				}
 			}
-			curs = selectSomeComputer.executeQuery();
+			ResultSet curs = statement.executeQuery();
 			while ( curs.next() ) {
 				list.add(ComputerMapper.INSTANCE.mapFromRow(curs));
     		}
-		} catch (SQLException | NumberFormatException e) {
+			curs.close();
+		} catch (SQLException e) {
 			throw new DaoException(e);
 		} finally {
-			try {
-				if (selectSomeComputer != null) {
-					selectSomeComputer.close();
-				}
-				if(conn != null) {
-						conn.close();
-				}
-			} catch (SQLException e) {
-				throw new DaoException(e);
-			}
-		}
-		return list;
-	}
-	
-
-	@Override
-	public List<Computer> getSome( String nameFilter, Long limit, Long offset) throws DaoException {
-		return getSome(nameFilter, limit, offset, null, null);
-	}
-
-	@Override
-	public List<Computer> getSome( String nameFilter, Long limit, Long offset,List<String> orderByCol) throws DaoException {
-		return getSome(nameFilter, limit, offset,orderByCol, null);
-	}
-
-	@Override
-	public List<Computer> getSome( String nameFilter, Long limit, Long offset,List<String> orderByCol, Order order ) throws DaoException {
-		
-		ResultSet curs;
-		List<Computer> list = new ArrayList<Computer>();
-		Connection conn = null;
-		PreparedStatement selectSomeComputer = null;
-		if (nameFilter == null || nameFilter.isEmpty()) {
-			return getSome(limit, offset,orderByCol, order);
-		}
-		try {
-			conn = DaoManager.INSTANCE.getConnection();
-			selectSomeComputer = conn.prepareStatement(preparedStatement.SELECT_SOME_FILTERED.getRequest());
-
-			Pattern patt = Pattern.compile("[a-zA-Z0-9]*");
-			Matcher matcher = patt.matcher(nameFilter);
-			
-			if (matcher.matches()) {
-				matcher.reset();
-				selectSomeComputer.setString(1,nameFilter+'%');
-			} else {
-				throw new DaoException("Illegal value for LIKE "+nameFilter);
-			}
-			
-			if ((orderByCol == null) || (orderByCol.size() == 0)){
-				selectSomeComputer.setString(2,"id");
-			} else {
-				StringBuilder strgBuilder = new StringBuilder();
-				for (String strg : orderByCol) {
-					 if (ComputerMapper.mapBDModel.containsKey(strg)) {
-						 if (strgBuilder.length() != 0) {
-							 strgBuilder.append(", ");
-						 }
-						 strgBuilder.append(ComputerMapper.mapBDModel.get(strg));
-					 } else {
-						 throw new DaoException("Incorrect field for request : "+preparedStatement.SELECT_SOME_FILTERED.getRequest());
-					 }
-				}
-				selectSomeComputer.setString(2,strgBuilder.toString());
-			}
-			if (order == null) {
-				selectSomeComputer.setString(3,"ASC"); 
-			} else {
-				switch (order) {
-				case ASC:
-					selectSomeComputer.setString(3,"ASC");
-					break;
-				case DESC:
-					selectSomeComputer.setString(3,"DESC");
-					break;
-				default:
-					throw new DaoException("Invalid order for request : "+preparedStatement.SELECT_SOME_FILTERED.getRequest());
-				}
-			}
-			if (limit == null) {
-				selectSomeComputer.setLong(4,20);
-			} else {
-				if (limit < 0) {
-					throw new DaoException("Invalid limit ("+limit+") for request : "+preparedStatement.SELECT_SOME_FILTERED.getRequest());
-				} else {
-					selectSomeComputer.setLong(4,limit); 
-				}
-			}
-			if (offset == null) {
-				selectSomeComputer.setLong(5,0); 
-			} else {
-				if (offset < 0) {
-					throw new DaoException("Invalid offset ("+offset+") for request : "+preparedStatement.SELECT_SOME_FILTERED.getRequest());
-				} else {
-					selectSomeComputer.setLong(5,offset); 
-				}
-			}
-			curs = selectSomeComputer.executeQuery();
-			while ( curs.next() ) {
-				list.add(ComputerMapper.INSTANCE.mapFromRow(curs));
-    		}
-		} catch (SQLException | NumberFormatException e) {
-			throw new DaoException(e);
-		} finally {
-			try {
-				if (selectSomeComputer != null) {
-					selectSomeComputer.close();
-				}
-				if(conn != null) {
-						conn.close();
-				}
-			} catch (SQLException e) {
-				throw new DaoException(e);
-			}
+			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
 		}
 		return list;
 	}
@@ -372,27 +231,25 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		if (id == null) {
 			throw new IllegalArgumentException();
 		}
-		ResultSet curs;
 		Computer comp=null;
-		Connection conn = null;
-		PreparedStatement selectOneComputer = null;
+		Connection conn = DaoManager.INSTANCE.getConnection();
+		PreparedStatement selectOneComputer = DaoManager.INSTANCE.createPreparedStatement(conn, preparedStatement.SELECT_ONE.getRequest());
 		try {
-			conn = DaoManager.INSTANCE.getConnection();
-			selectOneComputer = conn.prepareStatement(preparedStatement.SELECT_ONE.getRequest());
 			selectOneComputer.setLong(1,id);
-			curs = selectOneComputer.executeQuery();
+			ResultSet curs = selectOneComputer.executeQuery();
 			if ( curs.next() ) {
 				comp = ComputerMapper.INSTANCE.mapFromRow(curs);
     		}
-		} catch (SQLException | NumberFormatException e) {
-			throw new DaoException(e);
+			curs.close();
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
-			if(conn != null) {
+			if (conn != null) {
 				try {
 					if (selectOneComputer != null) {
 						selectOneComputer.close();
 					}
-					if(conn != null) {
+					if (conn != null) {
 							conn.close();
 					}
 				} catch (SQLException e) {
@@ -408,95 +265,85 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		if (c == null) {
 			throw new IllegalArgumentException();
 		}
+		int nb;
 		boolean update=false;
-		ResultSet curs;
-		PreparedStatement updateOneComputer = null;
-		PreparedStatement insertOneComputer = null;
-		PreparedStatement selectOneComputer = null;
-		Connection conn = null;
+		Connection conn = DaoManager.INSTANCE.getConnection();
+		PreparedStatement statement = DaoManager.INSTANCE.createPreparedStatement(conn, preparedStatement.SELECT_ONE.getRequest());
 		try {
-			conn = DaoManager.INSTANCE.getConnection();
-			selectOneComputer = conn.prepareStatement(preparedStatement.SELECT_ONE.getRequest());
-			selectOneComputer.setLong(1,c.getId());
-			curs = selectOneComputer.executeQuery();
-			int nb;
-			if(curs.next())
-			{
+			statement.setLong(1,c.getId());
+			ResultSet curs = statement.executeQuery();
+			if (curs.next())	{
 				update = true;
 			}
-			if(!update)
+			curs.close();
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
+		}
+		try {
+			statement.close();
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_CLOSE_STATEMENT,e);
+		}
+		try{
+			if (!update)
 			{
-				insertOneComputer = conn.prepareStatement(preparedStatement.INSERT_ONE.getRequest(),
+				statement = DaoManager.INSTANCE.createPreparedStatement(conn, preparedStatement.INSERT_ONE.getRequest(),
 						PreparedStatement.RETURN_GENERATED_KEYS);
-				insertOneComputer.setString(1,c.getName());
-				if(c.getIntroductionDate() != null) {
-					insertOneComputer.setTimestamp(2, Timestamp.valueOf(c.getIntroductionDate()));
+				statement.setString(1,c.getName());
+				if (c.getIntroductionDate() != null) {
+					statement.setTimestamp(2, Timestamp.valueOf(c.getIntroductionDate()));
 				} else {
-					insertOneComputer.setTimestamp(2, null);
+					statement.setTimestamp(2, null);
 				}
-				if(c.getDiscontinuedDate() != null) {
-					insertOneComputer.setTimestamp(3, Timestamp.valueOf(c.getDiscontinuedDate()));
+				if (c.getDiscontinuedDate() != null) {
+					statement.setTimestamp(3, Timestamp.valueOf(c.getDiscontinuedDate()));
 				} else {
-					insertOneComputer.setTimestamp(3, null);
+					statement.setTimestamp(3, null);
 				}
-				if(c.getConstructor() != null) {
-					insertOneComputer.setLong(4,c.getConstructor().getId());
+				if (c.getConstructor() != null) {
+					statement.setLong(4,c.getConstructor().getId());
 				} else {
-					insertOneComputer.setTimestamp(4, null);
+					statement.setTimestamp(4, null);
 				}
-				nb = insertOneComputer.executeUpdate();
-				ResultSet rs = insertOneComputer.getGeneratedKeys();
+				nb = statement.executeUpdate();
+				if (nb==0) {
+					throw new DaoException(DaoException.CAN_NOT_INSERT_ELEMENT);
+				}
+				ResultSet rs = statement.getGeneratedKeys();
 
 				if (rs.next()) {
 					c.setId(rs.getLong(1));
 				}
+				rs.close();
 				
-			}
-			else
-			{
-				updateOneComputer = conn.prepareStatement(preparedStatement.UPDATE_ONE.getRequest());
-				updateOneComputer.setString(1,c.getName());
-				if(c.getIntroductionDate() != null) {
-					updateOneComputer.setTimestamp(2, Timestamp.valueOf(c.getIntroductionDate()));
+			} else {
+				statement = DaoManager.INSTANCE.createPreparedStatement(conn, preparedStatement.UPDATE_ONE.getRequest());
+				statement.setString(1,c.getName());
+				if (c.getIntroductionDate() != null) {
+					statement.setTimestamp(2, Timestamp.valueOf(c.getIntroductionDate()));
 				} else {
-					updateOneComputer.setTimestamp(2, null);
+					statement.setTimestamp(2, null);
 				}
-				if(c.getDiscontinuedDate() != null) {
-					updateOneComputer.setTimestamp(3, Timestamp.valueOf(c.getDiscontinuedDate()));
+				if (c.getDiscontinuedDate() != null) {
+					statement.setTimestamp(3, Timestamp.valueOf(c.getDiscontinuedDate()));
 				}else {
-					updateOneComputer.setTimestamp(3, null);
+					statement.setTimestamp(3, null);
 				}
-				if(c.getConstructor() != null) {
-					updateOneComputer.setLong(4,c.getConstructor().getId());
+				if (c.getConstructor() != null) {
+					statement.setLong(4,c.getConstructor().getId());
 				} else {
-					updateOneComputer.setTimestamp(4, null);
+					statement.setTimestamp(4, null);
 				}
-				updateOneComputer.setLong(5, c.getId());
-				nb = updateOneComputer.executeUpdate();
-			}
-			if(nb==0)
-			{
-				throw new DaoException("Can not Create or Update  the computer in database. id = "+c.getId());
+				statement.setLong(5, c.getId());
+				nb = statement.executeUpdate();
+				if (nb==0) {
+					throw new DaoException(DaoException.CAN_NOT_UPDATE_ELEMENT);
+				}
 			}
 		} catch (SQLException e) {
-			throw new DaoException(e);
+			throw new DaoException(DaoException.CAN_NOT_SET_PREPAREDSTATEMENT,e);
 		} finally {
-			try {
-				if (updateOneComputer != null) {
-					updateOneComputer.close();
-				}
-				if (insertOneComputer != null) {
-					insertOneComputer.close();
-				}
-				if (selectOneComputer != null) {
-					selectOneComputer.close();
-				}
-				if(conn != null) {
-						conn.close();
-				}
-			} catch (SQLException e) {
-				throw new DaoException(e);
-			}
+			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
 		}
 	}
 
@@ -505,30 +352,18 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		if (id == null) {
 			throw new IllegalArgumentException();
 		}
-		Connection conn = null;
-		PreparedStatement deleteOneComputer = null;
+		Connection conn = DaoManager.INSTANCE.getConnection();
+		PreparedStatement statement = DaoManager.INSTANCE.createPreparedStatement(conn, preparedStatement.DELETE_ONE.getRequest());
 		try {
-			conn = DaoManager.INSTANCE.getConnection();
-			deleteOneComputer = conn.prepareStatement(preparedStatement.DELETE_ONE.getRequest());
-			deleteOneComputer.setLong(1, id);
-			int nb = deleteOneComputer.executeUpdate();
-			if(nb==0)
-			{
-				throw new DaoException("Computer not in database. id = "+id);
+			statement.setLong(1, id);
+			int nb = statement.executeUpdate();
+			if (nb==0) {
+				throw new DaoException(DaoException.CAN_NOT_DELETE_ELEMENT);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DaoException(DaoException.CAN_NOT_DELETE_ELEMENT,e);
 		} finally {
-			try {
-				if (deleteOneComputer != null) {
-					deleteOneComputer.close();
-				}
-				if(conn != null) {
-						conn.close();
-				}
-			} catch (SQLException e) {
-				throw new DaoException(e);
-			}
+			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
 		}
 		
 	}

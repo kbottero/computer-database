@@ -6,7 +6,7 @@ import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.exception.ServiceException;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.persistence.CompanyDao;
-import com.excilys.cdb.persistence.IDao.Order;
+import com.excilys.cdb.persistence.DaoRequestParameter;
 
 public class CompaniesService implements IService<Company,Long>{
 
@@ -23,73 +23,15 @@ public class CompaniesService implements IService<Company,Long>{
 			throw new ServiceException(e);
 		}
 	}
-	
-	/**
-	 * Return a list of all companies in the database.
-	 * Ordered according to given columns.
-	 * @return
-	 */
-	@Override
-	public List<Company> getAll(List<String> orderByCol) throws ServiceException {
-		try {
-			return CompanyDao.INSTANCE.getAll(orderByCol);
-		} catch (DaoException e) {
-			throw new ServiceException(e);
-		}
-	}
-	
 	/**
 	 * Return a list of all companies in the database.
 	 * Ordered according to given columns. In an ascending or descending order.
 	 * @return
 	 */
 	@Override
-	public List<Company> getAll(List<String> orderByCol, Order order)  throws ServiceException {
+	public List<Company> getAll(DaoRequestParameter param) throws ServiceException {
 		try {
-			return CompanyDao.INSTANCE.getAll(orderByCol, order);
-		} catch (DaoException e) {
-			throw new ServiceException(e);
-		}
-	}
-	
-	/**
-	 * Return a limited list of companies from the database.
-	 *  Ordered according to given columns. In an ascending or descending order.
-	 * @return
-	 */
-	@Override
-	public List<Company> getSome(Long limit, Long offset) throws ServiceException {
-		try {
-			return CompanyDao.INSTANCE.getSome(limit, offset);
-		} catch (DaoException e) {
-			throw new ServiceException(e);
-		}
-	}
-	
-	/**
-	 * Return a limited list of companies from the database.
-	 *  Ordered according to given columns. In an ascending or descending order.
-	 * @return
-	 */
-	@Override
-	public List<Company> getSome(Long limit, Long offset, List<String> orderByCol)  throws ServiceException {
-		try {
-			return CompanyDao.INSTANCE.getSome(limit, offset, orderByCol);
-		} catch (DaoException e) {
-			throw new ServiceException(e);
-		}
-	}
-
-	/**
-	 * Return a limited list of companies from the database.
-	 *  Ordered according to given columns. In an ascending or descending order.
-	 * @return
-	 */
-	@Override
-	public List<Company> getSome(Long limit, Long offset, List<String> orderByCol,
-			Order order) throws ServiceException {
-		try {
-			return CompanyDao.INSTANCE.getSome(limit, offset, orderByCol, order );
+			return CompanyDao.INSTANCE.getAll(param);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
 		}
@@ -102,40 +44,9 @@ public class CompaniesService implements IService<Company,Long>{
 	 * @return
 	 */
 	@Override
-	public List<Company> getSome(String nameFilter, Long limit, Long offset ) throws ServiceException {
+	public List<Company> getSome(DaoRequestParameter param) throws ServiceException {
 		try {
-			return CompanyDao.INSTANCE.getSome(nameFilter, limit, offset);
-		} catch (DaoException e) {
-			throw new ServiceException(e);
-		}
-	}
-	
-	/**
-	 * Return a limited list of companies from the database.
-	 * Filtered according to a name (the instance should begin with the filter value)
-	 * Ordered according to given columns. In an ascending or descending order.
-	 * @return
-	 */
-	@Override
-	public List<Company> getSome(String nameFilter, Long limit, Long offset, List<String> orderByCol ) throws ServiceException {
-		try {
-			return CompanyDao.INSTANCE.getSome(nameFilter, limit, offset, orderByCol );
-		} catch (DaoException e) {
-			throw new ServiceException(e);
-		}
-	}
-	
-	/**
-	 * Return a limited list of companies from the database.
-	 * Filtered according to a name (the instance should begin with the filter value)
-	 * Ordered according to given columns. In an ascending or descending order.
-	 * @return
-	 */
-	@Override
-	public List<Company> getSome(String nameFilter, Long limit, Long offset, List<String> orderByCol,
-			Order order) throws ServiceException {
-		try {
-			return CompanyDao.INSTANCE.getSome(nameFilter, limit, offset, orderByCol, order );
+			return CompanyDao.INSTANCE.getSome(param);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
 		}

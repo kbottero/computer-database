@@ -7,6 +7,7 @@ import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.mapper.CompanyMapper;
 import com.excilys.cdb.mapper.ComputerMapper;
 import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.persistence.DaoRequestParameter;
 import com.excilys.cdb.service.IService;
 
 public class ComputerPage extends Page<Computer,ComputerDTO, Long> {
@@ -14,8 +15,9 @@ public class ComputerPage extends Page<Computer,ComputerDTO, Long> {
 	public ComputerPage(IService<Computer,Long> serv) {
 		super(serv);
 		orderBy.add(CompanyMapper.DEFAULT_ID);
-		
-		List<Computer> list = serv.getSome(pageSize, (current-1)*pageSize,orderBy, sortingOrder);
+
+		DaoRequestParameter param = new DaoRequestParameter(null, null, orderBy, sortingOrder, pageSize, (current-1)*pageSize);
+		List<Computer> list = serv.getSome(param);
 		elements = new ArrayList<ComputerDTO>();
 		for ( Computer comp : list) {
 			elements.add(ComputerMapper.INSTANCE.toDTO(comp));
@@ -26,8 +28,9 @@ public class ComputerPage extends Page<Computer,ComputerDTO, Long> {
 	public ComputerPage(IService<Computer,Long> serv, Long pageSize) {
 		super(serv,pageSize);
 		orderBy.add(CompanyMapper.DEFAULT_ID);
-		
-		List<Computer> list = serv.getSome(pageSize, (current-1)*pageSize,orderBy, sortingOrder);
+
+		DaoRequestParameter param = new DaoRequestParameter(null, null, orderBy, sortingOrder, pageSize, (current-1)*pageSize);
+		List<Computer> list = serv.getSome(param);
 		elements = new ArrayList<ComputerDTO>();
 		for ( Computer comp : list) {
 			elements.add(ComputerMapper.INSTANCE.toDTO(comp));
@@ -39,7 +42,8 @@ public class ComputerPage extends Page<Computer,ComputerDTO, Long> {
 		super(serv);
 		orderBy.add(CompanyMapper.DEFAULT_ID);
 		this.filter = filter;
-		List<Computer> list = serv.getSome(filter, pageSize, (current-1)*pageSize,orderBy, sortingOrder);
+		DaoRequestParameter param = new DaoRequestParameter(DaoRequestParameter.NameFiltering.POST, filter, orderBy, sortingOrder, pageSize, (current-1)*pageSize);
+		List<Computer> list = serv.getSome(param);
 		elements = new ArrayList<ComputerDTO>();
 		for ( Computer comp : list) {
 			elements.add(ComputerMapper.INSTANCE.toDTO(comp));
@@ -51,7 +55,8 @@ public class ComputerPage extends Page<Computer,ComputerDTO, Long> {
 		orderBy.add(CompanyMapper.DEFAULT_ID);
 		this.filter = filter;
 		this.pageSize = pageSize;
-		List<Computer> list = serv.getSome(filter, pageSize, (current-1)*pageSize,orderBy, sortingOrder);
+		DaoRequestParameter param = new DaoRequestParameter(DaoRequestParameter.NameFiltering.POST, filter, orderBy, sortingOrder, pageSize, (current-1)*pageSize);
+		List<Computer> list = serv.getSome(param);
 		elements = new ArrayList<ComputerDTO>();
 		for ( Computer comp : list) {
 			elements.add(ComputerMapper.INSTANCE.toDTO(comp));
@@ -66,7 +71,8 @@ public class ComputerPage extends Page<Computer,ComputerDTO, Long> {
 	public boolean nextPage() {
 		if (current < count) {
 			++current;
-			List<Computer> list = serv.getSome(filter, pageSize, (current-1)*pageSize,orderBy, sortingOrder);
+			DaoRequestParameter param = new DaoRequestParameter(DaoRequestParameter.NameFiltering.POST, filter, orderBy, sortingOrder, pageSize, (current-1)*pageSize);
+			List<Computer> list = serv.getSome(param);
 			elements = new ArrayList<ComputerDTO>();
 			for ( Computer comp : list) {
 				elements.add(ComputerMapper.INSTANCE.toDTO(comp));
@@ -81,7 +87,8 @@ public class ComputerPage extends Page<Computer,ComputerDTO, Long> {
 	public boolean previousPage() {
 		if (current > 1) {
 			--current;
-			List<Computer> list = serv.getSome(filter, pageSize, (current-1)*pageSize,orderBy, sortingOrder);
+			DaoRequestParameter param = new DaoRequestParameter(DaoRequestParameter.NameFiltering.POST, filter, orderBy, sortingOrder, pageSize, (current-1)*pageSize);
+			List<Computer> list = serv.getSome(param);
 			elements = new ArrayList<ComputerDTO>();
 			for ( Computer comp : list) {
 				elements.add(ComputerMapper.INSTANCE.toDTO(comp));
@@ -96,7 +103,8 @@ public class ComputerPage extends Page<Computer,ComputerDTO, Long> {
 	public boolean goToPage(Long numPage) {
 		if (numPage > 0 && numPage < count+1) {
 			current = numPage;
-			List<Computer> list = serv.getSome(filter, pageSize, (current-1)*pageSize,orderBy, sortingOrder);
+			DaoRequestParameter param = new DaoRequestParameter(DaoRequestParameter.NameFiltering.POST, filter, orderBy, sortingOrder, pageSize, (current-1)*pageSize);
+			List<Computer> list = serv.getSome(param);
 			elements = new ArrayList<ComputerDTO>();
 			for ( Computer comp : list) {
 				elements.add(ComputerMapper.INSTANCE.toDTO(comp));
@@ -110,7 +118,8 @@ public class ComputerPage extends Page<Computer,ComputerDTO, Long> {
 	@Override
 	public void setFilter (String filter) {
 		this.filter = filter;
-		List<Computer> list = serv.getSome(filter, pageSize, (current-1)*pageSize,orderBy, sortingOrder);
+		DaoRequestParameter param = new DaoRequestParameter(DaoRequestParameter.NameFiltering.POST, filter, orderBy, sortingOrder, pageSize, (current-1)*pageSize);
+		List<Computer> list = serv.getSome(param);
 		elements = new ArrayList<ComputerDTO>();
 		for ( Computer comp : list) {
 			elements.add(ComputerMapper.INSTANCE.toDTO(comp));

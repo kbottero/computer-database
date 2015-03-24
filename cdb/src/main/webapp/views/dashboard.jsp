@@ -90,7 +90,7 @@
 	                        </td>
 	                        <td>${c.introductionDate}</td>
 	                        <td>${c.discontinuedDate}</td>
-	                        <td>${c.constructor.name}</td>
+	                        <td>${c.constructorName}</td>
 						</tr>
 					</c:forEach>
                 </tbody>

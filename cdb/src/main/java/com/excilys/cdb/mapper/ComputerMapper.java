@@ -72,6 +72,7 @@ public enum ComputerMapper implements IMapper<Computer> {
 		
 		String introductionDate = "";
 		String discontinuedDate = "";
+		String constructor = "";
 		
 		if (computer.getIntroductionDate() != null) {
 			introductionDate = computer.getIntroductionDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
@@ -79,13 +80,16 @@ public enum ComputerMapper implements IMapper<Computer> {
 		if (computer.getDiscontinuedDate() != null) {
 			discontinuedDate = computer.getDiscontinuedDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
 		}
+		if (computer.getConstructor() != null) {
+			constructor = computer.getConstructor().getName();
+		}
 
 		ComputerDTO compDto = new ComputerDTO (
 				computer.getId().toString(),
 				computer.getName(),
 				introductionDate,
 				discontinuedDate,
-				CompanyMapper.INSTANCE.toDTO(computer.getConstructor())) ;
+				constructor) ;
 		return compDto;
 	}
 	

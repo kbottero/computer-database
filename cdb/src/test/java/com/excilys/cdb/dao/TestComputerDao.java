@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.ComputerDao;
+import com.excilys.cdb.persistence.DaoRequestParameter;
 
 /**
  * TODO: Complete with DbUnit
@@ -38,11 +39,10 @@ public class TestComputerDao {
 	@Test
 	public void getSome() {
 		Long l = null;
-		ArrayList<Computer> list = (ArrayList<Computer>) ComputerDao.INSTANCE.getSome(l, null, null, null);
+		ArrayList<Computer> list = (ArrayList<Computer>) ComputerDao.INSTANCE.getSome(new DaoRequestParameter(null, null, null, null, 10l, null));
 		assertNotNull(list);
 		assertNotNull(list.size());
-		
-		list = (ArrayList<Computer>) ComputerDao.INSTANCE.getSome("M", l, null, null, null);
+		list = (ArrayList<Computer>) ComputerDao.INSTANCE.getSome(new DaoRequestParameter(null, "M", null, null, 10l, null));
 		assertNotNull(list);
 		assertNotNull(list.size());
 	}

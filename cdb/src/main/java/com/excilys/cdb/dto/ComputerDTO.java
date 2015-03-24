@@ -6,16 +6,16 @@ public class ComputerDTO {
 	private String name;
 	private String introductionDate;
 	private String discontinuedDate;
-	private CompanyDTO constructor;
+	private String constructorName;
 	
 	public ComputerDTO(String id, String name, String introductionDate,
-			String discontinuedDate, CompanyDTO constructor) {
+			String discontinuedDate, String constructor) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.introductionDate = introductionDate;
 		this.discontinuedDate = discontinuedDate;
-		this.constructor = constructor;
+		this.constructorName = constructor;
 	}
 	
 	public String getId() {
@@ -42,11 +42,11 @@ public class ComputerDTO {
 	public void setDiscontinuedDate(String discontinuedDate) {
 		this.discontinuedDate = discontinuedDate;
 	}
-	public CompanyDTO getConstructor() {
-		return constructor;
+	public String getConstructorName() {
+		return constructorName;
 	}
-	public void setConstructor(CompanyDTO constructor) {
-		this.constructor = constructor;
+	public void setConstructorName(String constructorName) {
+		this.constructorName = constructorName;
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class ComputerDTO {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result
-				+ ((constructor == null) ? 0 : constructor.hashCode());
+				+ ((constructorName == null) ? 0 : constructorName.hashCode());
 		result = prime
 				* result
 				+ ((discontinuedDate == null) ? 0 : discontinuedDate.hashCode());
@@ -75,10 +75,10 @@ public class ComputerDTO {
 		if (getClass() != obj.getClass())
 			return false;
 		ComputerDTO other = (ComputerDTO) obj;
-		if (constructor == null) {
-			if (other.constructor != null)
+		if (constructorName == null) {
+			if (other.constructorName != null)
 				return false;
-		} else if (!constructor.equals(other.constructor))
+		} else if (!constructorName.equals(other.constructorName))
 			return false;
 		if (discontinuedDate == null) {
 			if (other.discontinuedDate != null)

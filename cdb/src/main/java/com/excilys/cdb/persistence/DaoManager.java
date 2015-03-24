@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 
 import com.excilys.cdb.exception.DaoException;
@@ -37,9 +39,82 @@ public enum DaoManager {
 		}
 	}
 	
-	public Connection getConnection() throws SQLException {
-	    return DriverManager.getConnection(
-	    		properties.getProperty("url")+properties.getProperty("database"),
-	    		properties);
+	public Connection getConnection() throws DaoException {
+		
+		Connection conn = null;
+		try {
+			conn = DriverManager.getConnection(
+		    		properties.getProperty("url")+properties.getProperty("database"),
+		    		properties);
+			
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_CREATE_CONNECTION, e);
+		}
+		
+	    return conn;
 	}
+	
+	public PreparedStatement createPreparedStatement (Connection conn, String request) {
+		return createPreparedStatement(conn,request, null);
+	}
+	
+	public PreparedStatement createPreparedStatement(Connection conn,
+			String request, Integer returnGeneratedKeys) {
+		PreparedStatement statement = null;
+		request.trim();
+		try {
+			if (returnGeneratedKeys != null) {
+				statement = conn.prepareStatement(request,returnGeneratedKeys);
+			} else {
+				statement = conn.prepareStatement(request);
+			}
+		} catch (SQLException e) {
+			try {
+				if(conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e2) {
+				throw new DaoException(DaoException.CAN_NOT_CLOSE_CONNECTION,e2);
+			}
+			throw new DaoException(DaoException.CAN_NOT_CREATE_STATEMENT,e);
+		}
+		return statement;
+	}
+	
+	public Statement createStatement (Connection conn) {
+		Statement statement = null;
+		try {
+			statement = conn.createStatement();
+		} catch (SQLException e) {
+			try {
+				if(conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e2) {
+				throw new DaoException(DaoException.CAN_NOT_CLOSE_CONNECTION,e2);
+			}
+			throw new DaoException(DaoException.CAN_NOT_CREATE_STATEMENT,e);
+		}
+		return statement;
+	}
+
+	public void closeConnAndStat (Statement statement, Connection connection) throws DaoException{
+		try {
+			if (statement != null) {
+				statement.close();
+			}
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_CLOSE_STATEMENT,e);
+		}
+		try {
+			if(connection != null) {
+				connection.close();
+			}
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_CLOSE_CONNECTION,e);
+		}
+	}
+
+
+	
 }

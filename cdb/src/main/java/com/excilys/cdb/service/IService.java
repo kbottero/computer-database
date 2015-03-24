@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.excilys.cdb.exception.ServiceException;
-import com.excilys.cdb.persistence.IDao.Order;
+import com.excilys.cdb.persistence.DaoRequestParameter;
 
 public interface IService <T, I extends Serializable> {
 	
@@ -16,45 +16,12 @@ public interface IService <T, I extends Serializable> {
 		throw new UnsupportedOperationException();
 	}
 	
-	/**
-	 * Return a limited list of instance from the database.
-	 * @return
-	 */
-	public default List<T> getAll(List<String> orderByCol) throws ServiceException {
-		throw new UnsupportedOperationException();
-	}
 	
 	/**
 	 * Return a limited list of instance from the database.
 	 * @return
 	 */
-	public default List<T> getAll(List<String> orderByCol, Order order) throws ServiceException {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * Return a limited list of instance from the database.
-	 * @return
-	 */
-	public default List<T> getSome(Long limit, Long offset ) throws ServiceException {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * Return a limited list of instance from the database.
-	 *  Ordered according to given columns. 
-	 * @return
-	 */
-	public default List<T> getSome(Long limit, Long offset, List<String> orderByCol) throws ServiceException {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * Return a limited list of instance from the database.
-	 * Ordered according to given columns. In an ascending or descending order.
-	 * @return
-	 */
-	public default List<T> getSome(Long limit, Long offset, List<String> orderByCol, Order order) throws ServiceException {
+	public default List<T> getAll(DaoRequestParameter param) throws ServiceException {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -64,27 +31,7 @@ public interface IService <T, I extends Serializable> {
 	 * Ordered according to given columns. In an ascending or descending order.
 	 * @return
 	 */
-	public default List<T> getSome(String nameFilter, Long limit, Long offset) throws ServiceException {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * Return a limited list of instance from the database.
-	 * Filtered according to a name (the instance should begin with the filter value)
-	 * Ordered according to given columns. In an ascending or descending order.
-	 * @return
-	 */
-	public default List<T> getSome(String nameFilter,Long limit, Long offset, List<String> orderByCol) throws ServiceException {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * Return a limited list of instance from the database.
-	 * Filtered according to a name (the instance should begin with the filter value)
-	 * Ordered according to given columns. In an ascending or descending order.
-	 * @return
-	 */
-	public default List<T> getSome(String nameFilter,Long limit, Long offset, List<String> orderByCol, Order order) throws ServiceException {
+	public default List<T> getSome(DaoRequestParameter param) throws ServiceException {
 		throw new UnsupportedOperationException();
 	}
 

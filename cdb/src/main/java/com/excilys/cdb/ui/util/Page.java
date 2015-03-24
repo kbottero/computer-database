@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.excilys.cdb.persistence.IDao;
+import com.excilys.cdb.persistence.DaoRequestParameter.Order;
 import com.excilys.cdb.service.IService;
 
 public abstract class Page <E,D, I extends Serializable> {
@@ -15,7 +15,7 @@ public abstract class Page <E,D, I extends Serializable> {
 	protected Long pageSize;
 	protected Long count;
 	protected Long nbElements;
-	protected IDao.Order sortingOrder; 
+	protected Order sortingOrder; 
 	protected ArrayList<String> orderBy; 
 	protected String filter;
 
@@ -28,10 +28,10 @@ public abstract class Page <E,D, I extends Serializable> {
 		current = 1l;
 		pageSize = 20l;
 		count = nbElements / pageSize;
-		if (nbElements % count != 0) {
+		if (nbElements % pageSize != 0) {
 			++count;
 		}
-		sortingOrder = IDao.Order.ASC;
+		sortingOrder = Order.ASC;
 		orderBy = new ArrayList<String>();
 		filter = null;
 	}
@@ -46,26 +46,26 @@ public abstract class Page <E,D, I extends Serializable> {
 		if (pageSize < nbElements) {
 			this.pageSize = pageSize;
 			count = nbElements / pageSize;
-			if (nbElements % count != 0) {
+			if (nbElements % pageSize != 0) {
 				++count;
 			}
 		} else {
 			this.pageSize = nbElements;
 			count = 1l;
 		}
-		sortingOrder = IDao.Order.ASC;
+		sortingOrder = Order.ASC;
 		orderBy = new ArrayList<String>();
 		filter = null;
 	}
 	
-	public void setSortingOrder(IDao.Order so) {
+	public void setSortingOrder(Order so) {
 		if (so == null) {
 			throw new IllegalArgumentException();
 		}
 		sortingOrder = so;
 	}
 	
-	public IDao.Order getSortingOrder() {
+	public Order getSortingOrder() {
 		return sortingOrder;
 	}
 	
@@ -100,19 +100,4 @@ public abstract class Page <E,D, I extends Serializable> {
 	 * @return true if there is still pages to display, 0 else
 	 */
 	public abstract boolean goToPage(Long numPage);
-	
-//	
-//	/**
-//	 * Display next page
-//	 * @return true if there is still pages to display, 0 else
-//	 */
-//	public boolean nextPage() {
-//		if (currPage != size) {
-//			elements = serv.getSome(pageSize, currPage*pageSize,orderBy, sortingOrder);
-//			++currPage;
-//			return true;
-//		} else {
-//			return false;
-//		}
-//	}
 }

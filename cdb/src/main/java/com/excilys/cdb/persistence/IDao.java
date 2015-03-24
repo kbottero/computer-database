@@ -4,13 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.excilys.cdb.exception.DaoException;
-import com.excilys.cdb.model.Computer;
 
 public interface IDao <T, I extends Serializable> {
-	
-	public static enum Order {
-		ASC,DESC;
-	}
 	
 	/**
 	 * Return a List of the instances within the database.
@@ -18,19 +13,6 @@ public interface IDao <T, I extends Serializable> {
 	 * @throws DaoException
 	 */
 	public default List<T> getAll() throws DaoException {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * Return a List of the instances within the database.
-	 * Ordered according to the given columns in an ascending manner.
-	 * 
-	 * @param orderByCol 
-	 * 				Label(s) to base the ordering. Primary Key By default.
-	 * @return		List<T>
-	 * @throws DaoException
-	 */
-	public default List<T> getAll(List<String> orderByCol)  throws DaoException {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -45,66 +27,9 @@ public interface IDao <T, I extends Serializable> {
 	 * @return		List<T>
 	 * @throws DaoException
 	 */
-	public default List<T> getAll(List<String> orderByCol,
-			Order order)  throws DaoException {
+	public default List<T> getAll(DaoRequestParameter param)  throws DaoException {
 		throw new UnsupportedOperationException();
 	}
-	
-	/**
-	 * Return a List of the instances within the database.
-	 * Ordered according to the primary_key. Limited to a given number. 
-	 * Ordered in an ascending order.  With a given offset.
-	 * 
-	 * @param limit 
-	 * 				Number max of instance returned
-	 * @param offset
-	 * 				Offset
-	 * @return		List<T>
-	 * @throws DaoException
-	 */
-	public default List<T> getSome(Long limit, Long offset)  throws DaoException {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * Return a List of the instances within the database.
-	 * Ordered according to the given columns. Limited to a given number. 
-	 * Ordered in an ascending order.  With a given offset.
-	 * 
-	 * @param limit 
-	 * 				Number max of instance returned
-	 * @param offset
-	 * 				Offset
-	 * @param orderByCol 
-	 * 				Label(s) to base the ordering. Primary Key By default.
-	 * @return		List<T>
-	 * @throws DaoException
-	 */
-	public default List<T> getSome(Long limit, Long offset, List<String> orderByCol)  throws DaoException {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * Return a List of the instances within the database.
-	 * Ordered according to the given columns. Limited to a given number. 
-	 * Ordered in an ascending or descending order.  With a given offset.
-	 * 
-	 * @param limit 
-	 * 				Number max of instance returned
-	 * @param offset
-	 * 				Offset
-	 * @param orderByCol 
-	 * 				Label(s) to base the ordering. Primary Key By default.
-	 * @param order 
-	 * 				ASCending or DESCending
-	 * @return		List<T>
-	 * @throws DaoException
-	 */
-	public default List<T> getSome(Long limit, Long offset, List<String> orderByCol,
-			Order order)  throws DaoException {
-		throw new UnsupportedOperationException();
-	}
-
 	
 	/**
 	 * Return the number of instances within the database.
@@ -150,67 +75,13 @@ public interface IDao <T, I extends Serializable> {
 	 * Instances should have an attribute name and result will be filtered according to the name given.
 	 * (every instance that begin with the given string)
 	 * Ordered according to the given columns. Limited to a given number. 
-	 * Ordered in an ascending order.
-	 * 
-	 * @param nameFilter 
-	 * 				Beginning of the instance name to return
-	 * @param limit 
-	 * 				Number max of instance returned
-	 * @param offset
-	 * 				Offset
-	 * @return		List<T>
-	 * @throws DaoException
-	 */
-	public default List<T> getSome(String nameFilter, Long limit, Long offset)
-			throws DaoException {
-		throw new UnsupportedOperationException();
-	}
-
-	/**
-	 * Return a List of the instances within the database.
-	 * Instances should have an attribute name and result will be filtered according to the name given.
-	 * (every instance that begin with the given string)
-	 * Ordered according to the given columns. Limited to a given number. 
-	 * Ordered in an ascending order.  With a given offset.
-	 * 
-	 * @param nameFilter 
-	 * 				Beginning of the instance name to return
-	 * @param limit 
-	 * 				Number max of instance returned
-	 * @param offset
-	 * 				Offset
-	 * @param orderByCol 
-	 * 				Label(s) to base the ordering. Primary Key By default.
-	 * @return		List<T>
-	 * @throws DaoException
-	 */
-	public default List<T> getSome(String nameFilter, Long limit, Long offset,
-			List<String> orderByCol) throws DaoException {
-		throw new UnsupportedOperationException();
-	}
-
-	/**
-	 * Return a List of the instances within the database.
-	 * Instances should have an attribute name and result will be filtered according to the name given.
-	 * (every instance that begin with the given string)
-	 * Ordered according to the given columns. Limited to a given number. 
 	 * Ordered in an ascending or descending order.  With a given offset.
 	 * 
-	 * @param nameFilter 
-	 * 				Beginning of the instance name to return
-	 * @param limit 
-	 * 				Number max of instance returned
-	 * @param offset
-	 * 				Offset
-	 * @param orderByCol 
-	 * 				Label(s) to base the ordering. Primary Key By default.
-	 * @param order 
-	 * 				ASCending or DESCending
-	 * @return		List<T>
+	 * @param param
+	 * 				All the parameters related to the request.
 	 * @throws DaoException
 	 */
-	public default List<T> getSome(String nameFilter, Long limit, Long offset,
-			List<String> orderByCol, Order order) throws DaoException {
+	public default List<T> getSome(DaoRequestParameter param) throws DaoException {
 		throw new UnsupportedOperationException();
 	}
 }

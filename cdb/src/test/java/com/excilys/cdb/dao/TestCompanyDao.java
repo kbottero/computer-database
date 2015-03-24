@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.persistence.CompanyDao;
+import com.excilys.cdb.persistence.DaoRequestParameter;
 
 /**
  * TODO: Complete with DbUnit
@@ -37,7 +38,7 @@ public class TestCompanyDao {
 	@Test
 	public void getSome() {
 		Long l = null;
-		ArrayList<Company> list = (ArrayList<Company>) CompanyDao.INSTANCE.getSome(l, null, null, null);
+		ArrayList<Company> list = (ArrayList<Company>) CompanyDao.INSTANCE.getSome(new DaoRequestParameter(null,null, null, null, 10l, null));
 		assertNotNull(list);
 		assertNotNull(list.size());
 	}

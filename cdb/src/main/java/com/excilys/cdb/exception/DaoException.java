@@ -18,6 +18,7 @@ public class DaoException extends RuntimeException{
 	public static final String CAN_NOT_INSERT_ELEMENT = "can not insert the element";
 	public static final String CAN_NOT_CLOSE_CONNECTION = "can not close connection";
 	public static final String CAN_NOT_CLOSE_STATEMENT = "can not close statement";
+	public static final String INVALID_ARGUMENT = "invalid argument";
 
 	public DaoException() {
 		super();

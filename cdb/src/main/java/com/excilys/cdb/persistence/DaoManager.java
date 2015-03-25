@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.excilys.cdb.exception.DaoException;
 
 
@@ -22,7 +25,7 @@ import com.excilys.cdb.exception.DaoException;
 public enum DaoManager {
 	
 	INSTANCE;
-	
+	private static Logger logger = LoggerFactory.getLogger(DaoManager.class); 
 	private Properties properties;
 	
 	DaoManager () {
@@ -46,7 +49,7 @@ public enum DaoManager {
 	}
 	
 	public Connection getConnection() throws DaoException {
-		
+		logger.debug("getConnection()");
 		Connection conn = null;
 		try {
 			conn = DriverManager.getConnection(

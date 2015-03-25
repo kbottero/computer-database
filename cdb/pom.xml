@@ -8,6 +8,8 @@
   <name>cdb Maven Webapp</name>
   <url>http://maven.apache.org</url>
   <properties>
+  	<mavenCompilerVersion>3.1</mavenCompilerVersion>
+  	<javaVersion>1.8</javaVersion>
   	<servletVersion>3.0.1</servletVersion>
   	<jqueryVersion>2.1.3</jqueryVersion>
   	<jstlVersion>1.2</jstlVersion>
@@ -18,6 +20,7 @@
   	<mockitoVersion>1.9.5</mockitoVersion>
   	<seleniumVersion>2.45.0</seleniumVersion>
   	<dbUnitVersion>2.5.0</dbUnitVersion>
+  	<logbackVersion>1.1.2</logbackVersion>
   </properties>
   <dependencies>
   	<!-- WEB -->
@@ -58,13 +61,19 @@
 		<groupId>org.slf4j</groupId>
 		<artifactId>slf4j-api</artifactId>
 		<version>${slf4jVersion}</version>
-		<scope>test</scope>
+		<!-- <scope>test</scope> -->
 	</dependency>
 	<dependency>
 		<groupId>org.slf4j</groupId>
 		<artifactId>slf4j-log4j12</artifactId>
 		<version>${log4j12Version}</version>
-		<scope>test</scope>
+		<!-- <scope>test</scope> -->
+	</dependency>
+	<dependency>
+		<groupId>ch.qos.logback</groupId>
+		<artifactId>logback-classic</artifactId>
+		<version>${logbackVersion}</version>
+		<!-- <scope>runtime</scope> -->
 	</dependency>
 	<dependency>
 		<groupId>org.mockito</groupId>
@@ -85,16 +94,15 @@
 		<scope>test</scope>
 	</dependency>
   </dependencies>
-  
   <build>
     <finalName>cdb</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>${mavenCompilerVersion}</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>${javaVersion}</source>
+					<target>${javaVersion}</target>
 				</configuration>
 			</plugin>
 		</plugins>

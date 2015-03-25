@@ -113,10 +113,10 @@ public enum ComputerMapper implements IMapper<Computer> {
 		LocalDateTime discontinuedDate = null;
 		Company constructor = null;
 		
-		if (computerDTO.getIntroductionDate() != null) {
+		if (computerDTO.getIntroductionDate() != null && !computerDTO.getIntroductionDate().isEmpty()) {
 			introductionDate = LocalDateTime.parse(computerDTO.getIntroductionDate()+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
 		}
-		if (computerDTO.getDiscontinuedDate() != null) {
+		if (computerDTO.getDiscontinuedDate() != null && !computerDTO.getDiscontinuedDate().isEmpty()) {
 			discontinuedDate = LocalDateTime.parse(computerDTO.getDiscontinuedDate()+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
 		}
 		if (computerDTO.getConstructorId() != null &&

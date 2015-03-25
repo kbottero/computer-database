@@ -96,7 +96,7 @@ public class Application extends HttpServlet {
 		
 		request.setAttribute("page", compPage);
 		request.setAttribute("nbComputers", computersService.getNbInstance());
-		RequestDispatcher dis=this.getServletContext().getRequestDispatcher("/views/dashboard.jsp");
+		RequestDispatcher dis=this.getServletContext().getRequestDispatcher("/WEB-INF/views/dashboard.jsp");
 		
 		dis.forward(request, response);
 	}
@@ -115,7 +115,7 @@ public class Application extends HttpServlet {
 			}
 			request.setAttribute("companies", listCompany);
 			request.setAttribute("prev", request.getHeader("Referer"));
-			RequestDispatcher dis=this.getServletContext().getRequestDispatcher("/views/editComputer.jsp");
+			RequestDispatcher dis=this.getServletContext().getRequestDispatcher("/WEB-INF/views/editComputer.jsp");
 			dis.forward(request, response);
 		}
 	}
@@ -129,7 +129,7 @@ public class Application extends HttpServlet {
 		}
 		request.setAttribute("companies", listCompany);
 		request.setAttribute("prev", request.getHeader("Referer"));
-		RequestDispatcher dis=this.getServletContext().getRequestDispatcher("/views/addComputer.jsp");
+		RequestDispatcher dis=this.getServletContext().getRequestDispatcher("/WEB-INF/views/addComputer.jsp");
 		dis.forward(request, response);
 
 	}

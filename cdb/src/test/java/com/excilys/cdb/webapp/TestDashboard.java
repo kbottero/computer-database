@@ -16,14 +16,13 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 public class TestDashboard {
 
 	private WebDriver driver; 
-	private String baseUrl; 
+	private String baseUrl;
 	private boolean acceptNextAlert = true; 
 	private StringBuffer verificationErrors = new StringBuffer(); 
 
 	@Before 
 
 	public void setUp() throws Exception { 
-
 		// On instancie notre driver, et on configure notre temps d'attente 
 		driver = new FirefoxDriver(); 
 		baseUrl = "http://localhost:8080/cdb"; 
@@ -38,13 +37,12 @@ public class TestDashboard {
 
 	@After 
 	public void tearDown() throws Exception { 
-
 		driver.quit(); 
 		String verificationErrorString = verificationErrors.toString(); 
 		if (!"".equals(verificationErrorString)) { 
 			fail(verificationErrorString); 
 		} 
-	} 
+	}
 
 	private boolean isElementPresent(By by) { 
 		try { 

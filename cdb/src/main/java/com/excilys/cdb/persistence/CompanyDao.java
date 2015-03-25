@@ -8,6 +8,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.mapper.CompanyMapper;
 import com.excilys.cdb.model.Company;
@@ -19,6 +22,8 @@ import com.excilys.cdb.model.Company;
  */
 public enum CompanyDao implements IDao<Company, Long>{
 	INSTANCE;
+	
+	private static Logger logger = LoggerFactory.getLogger(CompanyDao.class);
 	
 	private static enum preparedStatement {
 		COUNT_ALL ("SELECT COUNT(id) FROM company;"),
@@ -39,14 +44,17 @@ public enum CompanyDao implements IDao<Company, Long>{
 	
 	@Override
 	public List<Company> getAll() throws DaoException {
+		logger.info("getAll() method");
 		List<Company> list = new ArrayList<Company>();
 		Connection conn  = DaoManager.INSTANCE.getConnection();
 		Statement statement = DaoManager.INSTANCE.createStatement(conn);
 		try {
 			ResultSet curs = statement.executeQuery(preparedStatement.SELECT_ALL.getRequest());
+			logger.info("Excuted request : "+preparedStatement.SELECT_ALL.getRequest());
 			while ( curs.next() ) {
 				list.add(CompanyMapper.INSTANCE.mapFromRow(curs));
     		}
+			curs.close();
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
@@ -57,6 +65,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 	
 	@Override
 	public List<Company> getAll(DaoRequestParameter param) throws DaoException {
+		logger.info("getAll(param) method");
 		StringBuilder request = new StringBuilder();
 		List<Company> list = new ArrayList<Company>();
 		Connection conn = DaoManager.INSTANCE.getConnection();
@@ -119,6 +128,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 		try {
 			//Execute Request
 			ResultSet curs = statement.executeQuery(request.toString());
+			logger.info("Excuted request : "+request.toString());
 			//Mapping
 			while ( curs.next() ) {
 				list.add(CompanyMapper.INSTANCE.mapFromRow(curs));
@@ -133,11 +143,13 @@ public enum CompanyDao implements IDao<Company, Long>{
 
 	@Override
 	public Long getNb() throws DaoException {
+		logger.info("getNb() method");
 		Long nbElements;
 		Connection conn = DaoManager.INSTANCE.getConnection();
 		Statement statement = DaoManager.INSTANCE.createStatement(conn);
 		try {
 			ResultSet curs = statement.executeQuery(preparedStatement.COUNT_ALL.getRequest());
+			logger.debug("Executed request : "+preparedStatement.COUNT_ALL.getRequest());
 			if ( curs.next() ) {
 				nbElements = curs.getLong(1); 
     		} else {
@@ -154,6 +166,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 	
 	@Override
 	public List<Company> getSome(DaoRequestParameter param) throws DaoException {
+		logger.info("getSome(param) method");
 		int numArg = 1;
 		List<Company> list = new ArrayList<Company>();
 		Connection conn = DaoManager.INSTANCE.getConnection();
@@ -166,7 +179,6 @@ public enum CompanyDao implements IDao<Company, Long>{
 		} else {
 			request.append(preparedStatement.SELECT_SOME.getRequest());
 		}
-
 		request.append(" ");
 
 		if ((param.getColToOrderBy() == null) || (param.getColToOrderBy().size() == 0)){
@@ -223,7 +235,6 @@ public enum CompanyDao implements IDao<Company, Long>{
 		request.append(" LIMIT ? OFFSET ?;");
 		
 		statement = DaoManager.INSTANCE.createPreparedStatement(conn,request.toString());
-
 		try {
 			if (param.getNameLike() != null) {			
 					StringBuilder filter = new StringBuilder();
@@ -270,6 +281,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 				}
 			}
 			ResultSet curs = statement.executeQuery();
+			logger.debug("Excuted request : "+request.toString());
 			while ( curs.next() ) {
 				list.add(CompanyMapper.INSTANCE.mapFromRow(curs));
     		}
@@ -284,6 +296,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 
 	@Override
 	public Company getById(Long id) throws DaoException {
+		logger.info("getById(id) method");
 		if (id == null) {
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
@@ -293,6 +306,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 		try {
 			statement.setLong(1,id);
 			ResultSet curs = statement.executeQuery();
+			logger.debug("Excuted request : "+preparedStatement.SELECT_ONE.getRequest());
 			if ( curs.next() ) {
 				comp = CompanyMapper.INSTANCE.mapFromRow(curs);
     		} else {

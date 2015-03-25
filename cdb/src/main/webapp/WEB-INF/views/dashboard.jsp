@@ -36,7 +36,7 @@
                     </form>
                 </div>
                 <div class="pull-right">
-                    <a class="btn btn-success" id="addComputer" href="${pageContext.request.contextPath}/do/add">Add Computer</a> 
+                    <a class="btn btn-success" id="addComputer" href="${pageContext.request.contextPath}/addComputer">Add Computer</a> 
                     <a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();">Edit</a>
                 </div>
             </div>
@@ -86,7 +86,7 @@
 	                            <input type="checkbox" name="cb" class="cb" value="0">
 	                        </td>
 	                        <td>
-	                            <a href="${pageContext.request.contextPath}/do/edit?id=${c.id}" onclick="">${c.name}</a>
+	                            <a href="${pageContext.request.contextPath}/editComputer?id=${c.id}" onclick="">${c.name}</a>
 	                        </td>
 	                        <td>${c.introductionDate}</td>
 	                        <td>${c.discontinuedDate}</td>

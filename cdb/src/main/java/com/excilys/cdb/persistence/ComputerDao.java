@@ -9,6 +9,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.mapper.ComputerMapper;
 import com.excilys.cdb.model.Computer;
@@ -19,8 +22,9 @@ import com.excilys.cdb.model.Computer;
  *
  */
 public enum ComputerDao  implements IDao<Computer, Long> {
-
 	INSTANCE;
+	
+	private static Logger logger = LoggerFactory.getLogger(ComputerDao.class);
 
 	private static enum preparedStatement {
 		COUNT_ALL ("SELECT COUNT(id) FROM computer;"),
@@ -43,11 +47,13 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 
 	@Override
 	public List<Computer> getAll() throws DaoException {
+		logger.info("getAll() method");
 		List<Computer> list = new ArrayList<Computer>();
 		Connection conn =  DaoManager.INSTANCE.getConnection();
 		Statement statement = DaoManager.INSTANCE.createStatement(conn);
 		try {
 			ResultSet curs = statement.executeQuery(preparedStatement.SELECT_ALL.getRequest());
+			logger.debug("Excuted request : "+statement.toString());
 			while ( curs.next() ) {
 				list.add(ComputerMapper.INSTANCE.mapFromRow(curs));
 			}
@@ -62,6 +68,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 
 	@Override
 	public List<Computer> getAll(DaoRequestParameter param) throws DaoException {
+		logger.info("getAll(param) method");
 
 		StringBuilder request = new StringBuilder();
 		List<Computer> list = new ArrayList<Computer>();
@@ -124,6 +131,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		request.append(";");
 
 		Statement statement = DaoManager.INSTANCE.createStatement(conn);
+		logger.debug("Excuted request : "+statement.toString());
 		try{
 			//Execute Request
 			ResultSet curs = statement.executeQuery( request.toString());
@@ -142,12 +150,14 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 
 	@Override
 	public Long getNb() throws DaoException {
+		logger.info("getNb() method");
 
 		Connection conn =  DaoManager.INSTANCE.getConnection();
 		Long nbElements = null;
 		Statement statement = DaoManager.INSTANCE.createStatement(conn);
 		try {
 			ResultSet curs = statement.executeQuery(preparedStatement.COUNT_ALL.getRequest());
+			logger.debug("Excuted request : "+statement.toString());
 			if ( curs.next() ) {
 				nbElements = curs.getLong(1); 
 			}
@@ -162,6 +172,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 
 	@Override
 	public List<Computer> getSome(DaoRequestParameter param) throws DaoException {
+		logger.info("getSome(param) method");
 		int numArg = 1;
 		List<Computer> list = new ArrayList<Computer>();
 		Connection conn = DaoManager.INSTANCE.getConnection();
@@ -282,6 +293,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		}
 		try{
 			ResultSet curs = statement.executeQuery();
+			logger.debug("Excuted request : "+statement.toString());
 			while ( curs.next() ) {
 				list.add(ComputerMapper.INSTANCE.mapFromRow(curs));
 			}
@@ -296,6 +308,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 
 	@Override
 	public Computer getById(Long id) throws DaoException {
+		logger.info("getById(id) method");
 		if (id == null) {
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
@@ -305,6 +318,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		try {
 			statement.setLong(1,id);
 			ResultSet curs = statement.executeQuery();
+			logger.debug("Excuted request : "+statement.toString());
 			if ( curs.next() ) {
 				comp = ComputerMapper.INSTANCE.mapFromRow(curs);
 			} else {
@@ -321,6 +335,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 
 	@Override
 	public void save(Computer computer) throws DaoException {
+		logger.info("save(computer) method");
 		if (computer == null) {
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
@@ -399,6 +414,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 				}
 				statement.setLong(5, computer.getId());
 				nb = statement.executeUpdate();
+				logger.debug("Excuted request : "+statement.toString());
 				if (nb==0) {
 					throw new DaoException(DaoException.CAN_NOT_UPDATE_ELEMENT);
 				}
@@ -412,11 +428,13 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 
 	@Override
 	public void delete(Long id) throws DaoException {
+		logger.info("delete(id) method");
 		if (id == null) {
 			throw new IllegalArgumentException();
 		}
 		Connection conn = DaoManager.INSTANCE.getConnection();
 		PreparedStatement statement = DaoManager.INSTANCE.createPreparedStatement(conn, preparedStatement.DELETE_ONE.getRequest());
+		logger.debug("Excuted request : "+statement.toString());
 		try {
 			statement.setLong(1, id);
 			int nb = statement.executeUpdate();

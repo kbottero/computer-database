@@ -16,6 +16,16 @@ public class Computer {
 		this.name = name;
 	}
 	
+	public Computer(Long id, String name, LocalDateTime introductionDate,
+			LocalDateTime discontinuedDate, Company constructor) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.introductionDate = introductionDate;
+		this.discontinuedDate = discontinuedDate;
+		this.constructor = constructor;
+	}
+
 	public Company getConstructor() {
 		return constructor;
 	}

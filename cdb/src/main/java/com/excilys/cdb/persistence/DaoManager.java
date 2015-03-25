@@ -27,13 +27,19 @@ public enum DaoManager {
 	
 	DaoManager () {
 		properties = new Properties();
+		String config;
 		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(DaoManager.class.getClassLoader().getResourceAsStream("db.properties")));
+			if ("TEST".equals(System.getProperty("env"))) {
+				config = "db-test.properties";
+			} else {
+				Class.forName("com.mysql.jdbc.Driver");
+				config = "db.properties";
+			}
+			BufferedReader in = new BufferedReader(new InputStreamReader(DaoManager.class.getClassLoader().getResourceAsStream(config)));
 			properties.load(in);
 			in.close();
-			Class.forName("com.mysql.jdbc.Driver");
 		} catch (IOException e) {
-			throw new DaoException(e);
+			throw new DaoException(DaoException.CAN_NOT_LOAD_PROPERTIES, e);
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
@@ -54,12 +60,12 @@ public enum DaoManager {
 	    return conn;
 	}
 	
-	public PreparedStatement createPreparedStatement (Connection conn, String request) {
+	public PreparedStatement createPreparedStatement (Connection conn, String request) throws DaoException {
 		return createPreparedStatement(conn,request, null);
 	}
 	
 	public PreparedStatement createPreparedStatement(Connection conn,
-			String request, Integer returnGeneratedKeys) {
+			String request, Integer returnGeneratedKeys) throws DaoException {
 		PreparedStatement statement = null;
 		request.trim();
 		try {
@@ -81,7 +87,7 @@ public enum DaoManager {
 		return statement;
 	}
 	
-	public Statement createStatement (Connection conn) {
+	public Statement createStatement (Connection conn) throws DaoException{
 		Statement statement = null;
 		try {
 			statement = conn.createStatement();

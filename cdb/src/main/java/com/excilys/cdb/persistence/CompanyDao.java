@@ -23,10 +23,10 @@ public enum CompanyDao implements IDao<Company, Long>{
 	private static enum preparedStatement {
 		COUNT_ALL ("SELECT COUNT(id) FROM company;"),
 		SELECT_ALL ("SELECT id, name FROM company;"),
-		SELECT_ALL_ORDERED ("SELECT id, name FROM company ORDER BY ? ?;"),
+		SELECT_ALL_ORDERED ("SELECT id, name FROM company ORDER BY"),
 		SELECT_ONE ("SELECT id, name FROM company WHERE id=?;"),
-		SELECT_SOME ("SELECT id, name FROM company ORDER BY ? ? LIMIT ? OFFSET ?;"),
-		SELECT_SOME_FILTERED ("SELECT id, name FROM company WHERE name LIKE ? ORDER BY ? ? LIMIT ? OFFSET ?;");
+		SELECT_SOME ("SELECT id, name FROM company ORDER BY"),
+		SELECT_SOME_FILTERED ("SELECT id, name FROM company WHERE name LIKE ? ORDER BY");
 		
 		private final String request;
 		
@@ -57,45 +57,68 @@ public enum CompanyDao implements IDao<Company, Long>{
 	
 	@Override
 	public List<Company> getAll(DaoRequestParameter param) throws DaoException {
+		StringBuilder request = new StringBuilder();
 		List<Company> list = new ArrayList<Company>();
 		Connection conn = DaoManager.INSTANCE.getConnection();
-		PreparedStatement statement = DaoManager.INSTANCE.createPreparedStatement(conn,preparedStatement.SELECT_ALL_ORDERED.getRequest());
 
-		try {
-			//ORDER BY ?
-			if ((param.getColToOrderBy() == null) || (param.getColToOrderBy().size() == 0)){
-				statement.setString(1,CompanyMapper.DEFAULT_ID);
-			} else {
-				StringBuilder strgBuilder = new StringBuilder();
-				for (String strg : param.getColToOrderBy()) {
-					 if (CompanyMapper.mapBDModel.containsKey(strg)) {
-						 if (strgBuilder.length() != 0) {
-							 strgBuilder.append(", ");
-						 }
-						 strgBuilder.append(CompanyMapper.mapBDModel.get(strg));
-					 } else {
-						 throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT+preparedStatement.SELECT_ALL_ORDERED.getRequest());
-					 }
-				}
-				statement.setString(1,strgBuilder.toString());
-			}
+		request.append(preparedStatement.SELECT_ALL_ORDERED.getRequest());
+		request.append(" ");
+		if ((param.getColToOrderBy() == null) || (param.getColToOrderBy().size() == 0)){
+			request.append(CompanyMapper.DEFAULT_ID);
+			request.append(" ");
 			//ASC or DESC ?
 			if (param.getOrder() == null) {
-				statement.setString(2,"ASC"); 
+				request.append("ASC");
 			} else {
 				switch (param.getOrder()) {
 				case ASC:
-					statement.setString(2,"ASC");
+					request.append("ASC");
 					break;
 				case DESC:
-					statement.setString(2,"DESC");
+					request.append("DESC");
 					break;
 				default:
 					throw new DaoException(DaoException.INVALID_ARGUMENT);
 				}
 			}
+		} else {
+			StringBuilder strgBuild = new StringBuilder();
+			for (String strg : param.getColToOrderBy()) {
+				if (CompanyMapper.mapBDModel.containsKey(strg)) {
+					if (strgBuild.length() != 0) {
+						strgBuild.append(",");
+						strgBuild.append(CompanyMapper.mapBDModel.get(strg));
+					} else {
+						strgBuild.append(CompanyMapper.mapBDModel.get(strg));
+						strgBuild.append(" ");
+						//ASC or DESC ?
+						if (param.getOrder() == null) {
+							strgBuild.append("ASC");
+						} else {
+							switch (param.getOrder()) {
+							case ASC:
+								strgBuild.append("ASC");
+								break;
+							case DESC:
+								strgBuild.append("DESC");
+								break;
+							default:
+								throw new DaoException(DaoException.INVALID_ARGUMENT);
+							}
+						}
+					}
+				} else {
+					throw new DaoException(DaoException.INVALID_ARGUMENT);
+				}
+			}
+			request.append(strgBuild.toString());
+		}
+		request.append(";");
+		Statement statement = DaoManager.INSTANCE.createStatement(conn);
+		
+		try {
 			//Execute Request
-			ResultSet curs = statement.executeQuery();
+			ResultSet curs = statement.executeQuery(request.toString());
 			//Mapping
 			while ( curs.next() ) {
 				list.add(CompanyMapper.INSTANCE.mapFromRow(curs));
@@ -120,6 +143,7 @@ public enum CompanyDao implements IDao<Company, Long>{
     		} else {
     			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT);
     		}
+			curs.close();
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
@@ -130,15 +154,78 @@ public enum CompanyDao implements IDao<Company, Long>{
 	
 	@Override
 	public List<Company> getSome(DaoRequestParameter param) throws DaoException {
-		ResultSet curs;
 		int numArg = 1;
 		List<Company> list = new ArrayList<Company>();
 		Connection conn = DaoManager.INSTANCE.getConnection();
 		PreparedStatement statement = null;
+		
+		StringBuilder request = new StringBuilder();
+
+		if (param.getNameLike() != null) {
+			request.append(preparedStatement.SELECT_SOME_FILTERED.getRequest());	
+		} else {
+			request.append(preparedStatement.SELECT_SOME.getRequest());
+		}
+
+		request.append(" ");
+
+		if ((param.getColToOrderBy() == null) || (param.getColToOrderBy().size() == 0)){
+			request.append(CompanyMapper.DEFAULT_ID);
+			request.append(" ");
+			//ASC or DESC ?
+			if (param.getOrder() == null) {
+				request.append("ASC");
+			} else {
+				switch (param.getOrder()) {
+				case ASC:
+					request.append("ASC");
+					break;
+				case DESC:
+					request.append("DESC");
+					break;
+				default:
+					throw new DaoException(DaoException.INVALID_ARGUMENT);
+				}
+			}
+		} else {
+			StringBuilder strgBuild = new StringBuilder();
+			for (String strg : param.getColToOrderBy()) {
+				if (CompanyMapper.mapBDModel.containsKey(strg)) {
+					if (strgBuild.length() != 0) {
+						strgBuild.append(",");
+						strgBuild.append(CompanyMapper.mapBDModel.get(strg));
+					} else {
+						strgBuild.append(CompanyMapper.mapBDModel.get(strg));
+						strgBuild.append(" ");
+						//ASC or DESC ?
+						if (param.getOrder() == null) {
+							strgBuild.append("ASC");
+						} else {
+							switch (param.getOrder()) {
+							case ASC:
+								strgBuild.append("ASC");
+								break;
+							case DESC:
+								strgBuild.append("DESC");
+								break;
+							default:
+								throw new DaoException(DaoException.INVALID_ARGUMENT);
+							}
+						}
+					}
+				} else {
+					throw new DaoException(DaoException.INVALID_ARGUMENT);
+				}
+			}
+			request.append(strgBuild.toString());
+		}
+		request.append(" ");
+		request.append(" LIMIT ? OFFSET ?;");
+		
+		statement = DaoManager.INSTANCE.createPreparedStatement(conn,request.toString());
+
 		try {
-			if (param.getNameLike() != null) {
-				statement = DaoManager.INSTANCE.createPreparedStatement(conn,preparedStatement.SELECT_SOME_FILTERED.getRequest());
-				
+			if (param.getNameLike() != null) {			
 					StringBuilder filter = new StringBuilder();
 					switch (param.getNameFiltering()) {
 					case POST:
@@ -161,40 +248,13 @@ public enum CompanyDao implements IDao<Company, Long>{
 							throw new DaoException(DaoException.INVALID_ARGUMENT);
 					}
 					statement.setString(numArg++,filter.toString());
-			
-			} else {		
-				statement = DaoManager.INSTANCE.createPreparedStatement(conn,preparedStatement.SELECT_SOME.getRequest());
-			}
-			if ((param.getColToOrderBy() == null) || (param.getColToOrderBy().size() == 0)){
-				statement.setString(numArg++,CompanyMapper.DEFAULT_ID);
-			} else {
-				StringBuilder strgBuilder = new StringBuilder();
-				for (String strg : param.getColToOrderBy()) {
-					if (CompanyMapper.mapBDModel.containsKey(strg)) {
-						if (strgBuilder.length() != 0) {
-							strgBuilder.append(", ");
-						}
-						strgBuilder.append(CompanyMapper.mapBDModel.get(strg));
-					} else {
-						throw new DaoException(DaoException.INVALID_ARGUMENT);
-					}
-				}
-				statement.setString(numArg++,strgBuilder.toString());
-			}
-			switch (param.getOrder()) {
-			case ASC:
-				statement.setString(numArg++,"ASC");
-				break;
-			case DESC:
-				statement.setString(numArg++,"DESC");
-				break;
-			default:
-				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			}
 			if (param.getLimit() == null) {
+				DaoManager.INSTANCE.closeConnAndStat(statement, conn);
 				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			} else {
 				if (param.getLimit() < 0) {
+					DaoManager.INSTANCE.closeConnAndStat(statement, conn);
 					throw new DaoException(DaoException.INVALID_ARGUMENT);
 				} else {
 					statement.setLong(numArg++,param.getLimit()); 
@@ -209,12 +269,13 @@ public enum CompanyDao implements IDao<Company, Long>{
 					statement.setLong(numArg++,param.getOffset()); 
 				}
 			}
-			curs = statement.executeQuery();
+			ResultSet curs = statement.executeQuery();
 			while ( curs.next() ) {
 				list.add(CompanyMapper.INSTANCE.mapFromRow(curs));
     		}
+			curs.close();
 		} catch (SQLException e) {
-			throw new DaoException(e);
+			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
 			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
 		}
@@ -224,18 +285,20 @@ public enum CompanyDao implements IDao<Company, Long>{
 	@Override
 	public Company getById(Long id) throws DaoException {
 		if (id == null) {
-			throw new IllegalArgumentException();
+			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
-		ResultSet curs;
 		Company comp=null;
 		Connection conn = DaoManager.INSTANCE.getConnection();
 		PreparedStatement statement = DaoManager.INSTANCE.createPreparedStatement(conn,preparedStatement.SELECT_ONE.getRequest());
 		try {
 			statement.setLong(1,id);
-			curs = statement.executeQuery();
+			ResultSet curs = statement.executeQuery();
 			if ( curs.next() ) {
 				comp = CompanyMapper.INSTANCE.mapFromRow(curs);
+    		} else {
+    			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT);
     		}
+			curs.close();
 		} catch (SQLException e) {
 			throw new DaoException(e);
 		} finally {
@@ -243,9 +306,4 @@ public enum CompanyDao implements IDao<Company, Long>{
 		}
 		return comp;
 	}
-	
-	
-	
-	
-	
 }

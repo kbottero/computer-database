@@ -18,7 +18,6 @@
   	<mockitoVersion>1.9.5</mockitoVersion>
   	<seleniumVersion>2.45.0</seleniumVersion>
   	<dbUnitVersion>2.5.0</dbUnitVersion>
-  	<h2Version>1.4.186</h2Version>
   </properties>
   <dependencies>
   	<!-- WEB -->
@@ -83,12 +82,6 @@
 		<groupId>org.dbunit</groupId>
 		<artifactId>dbunit</artifactId>
 		<version>${dbUnitVersion}</version>
-		<scope>test</scope>
-	</dependency>
-	<dependency>
-		<groupId>com.h2database</groupId>
-		<artifactId>h2</artifactId>
-		<version>${h2Version}</version>
 		<scope>test</scope>
 	</dependency>
   </dependencies>

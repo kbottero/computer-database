@@ -3,11 +3,13 @@ package com.excilys.cdb.mapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.exception.DaoException;
+import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.service.CompaniesService;
 
@@ -72,8 +74,13 @@ public enum ComputerMapper implements IMapper<Computer> {
 		
 		String introductionDate = "";
 		String discontinuedDate = "";
-		String constructor = "";
+		String constructorName = "";
+		Long constructorId = 0l;
 		
+		if (computer.getConstructor() != null) {
+			constructorName = computer.getConstructor().getName();
+			constructorId = computer.getConstructor().getId();
+		}
 		if (computer.getIntroductionDate() != null) {
 			introductionDate = computer.getIntroductionDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
 		}
@@ -81,18 +88,53 @@ public enum ComputerMapper implements IMapper<Computer> {
 			discontinuedDate = computer.getDiscontinuedDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
 		}
 		if (computer.getConstructor() != null) {
-			constructor = computer.getConstructor().getName();
+			constructorName = computer.getConstructor().getName();
 		}
 
 		ComputerDTO compDto = new ComputerDTO (
-				computer.getId().toString(),
+				computer.getId(),
 				computer.getName(),
 				introductionDate,
 				discontinuedDate,
-				constructor) ;
+				constructorId,
+				constructorName) ;
 		return compDto;
 	}
 	
+	/**
+	 * Create a Computer from a ComputerDTO.
+	 * @param computerDTO
+	 * 				Data on the Computer
+	 * @return Created Computer instance
+	 */
+	public Computer fromDTO(ComputerDTO computerDTO) {
+		
+		LocalDateTime introductionDate = null;
+		LocalDateTime discontinuedDate = null;
+		Company constructor = null;
+		
+		if (computerDTO.getIntroductionDate() != null) {
+			introductionDate = LocalDateTime.parse(computerDTO.getIntroductionDate()+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
+		}
+		if (computerDTO.getDiscontinuedDate() != null) {
+			discontinuedDate = LocalDateTime.parse(computerDTO.getDiscontinuedDate()+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
+		}
+		if (computerDTO.getConstructorId() != null &&
+				!computerDTO.getConstructorId().equals(0l) &&
+				computerDTO.getConstructorName() != null &&
+				!computerDTO.getConstructorId().equals("")
+				) {
+			constructor = new Company(computerDTO.getConstructorId(), computerDTO.getConstructorName());
+		}
+
+		Computer computer = new Computer (
+				computerDTO.getId(),
+				computerDTO.getName(),
+				introductionDate,
+				discontinuedDate,
+				constructor) ;
+		return computer;
+	}
 	
 	
 }

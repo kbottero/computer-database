@@ -56,9 +56,25 @@ public enum CompanyMapper implements IMapper<Company> {
 		CompanyDTO compDto = null;
 		if (company != null) {
 			compDto = new CompanyDTO (
-					company.getId().toString(),
+					company.getId(),
 					company.getName());
 		}
 		return compDto;
+	}
+	
+	/**
+	 * Create a Company from a CompanyDTO.
+	 * @param companyDTO
+	 * 				Data on the Company
+	 * @return Created Company instance
+	 */
+	public Company fromDTO(CompanyDTO companyDTO) {
+		Company company = null;
+		if (companyDTO != null) {
+			company = new Company (
+					companyDTO.getId(),
+					companyDTO.getName());
+		}
+		return company;
 	}
 }

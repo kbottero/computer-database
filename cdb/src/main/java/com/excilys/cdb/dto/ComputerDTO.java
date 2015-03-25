@@ -1,27 +1,34 @@
 package com.excilys.cdb.dto;
 
-public class ComputerDTO {
+import java.io.Serializable;
 
-	private String id;
+public class ComputerDTO implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1685703593843456070L;
+	
+	private Long id;
 	private String name;
 	private String introductionDate;
 	private String discontinuedDate;
+	private Long  constructorId;
 	private String constructorName;
-	
-	public ComputerDTO(String id, String name, String introductionDate,
-			String discontinuedDate, String constructor) {
+	public ComputerDTO(Long id, String name, String introductionDate,
+			String discontinuedDate, Long constructorId, String constructorName) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.introductionDate = introductionDate;
 		this.discontinuedDate = discontinuedDate;
-		this.constructorName = constructor;
+		this.constructorId = constructorId;
+		this.constructorName = constructorName;
 	}
-	
-	public String getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getName() {
@@ -42,17 +49,27 @@ public class ComputerDTO {
 	public void setDiscontinuedDate(String discontinuedDate) {
 		this.discontinuedDate = discontinuedDate;
 	}
+	public Long getConstructorId() {
+		return constructorId;
+	}
+	public void setConstructorId(Long constructorId) {
+		this.constructorId = constructorId;
+	}
 	public String getConstructorName() {
 		return constructorName;
 	}
 	public void setConstructorName(String constructorName) {
 		this.constructorName = constructorName;
 	}
-
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result
+				+ ((constructorId == null) ? 0 : constructorId.hashCode());
 		result = prime * result
 				+ ((constructorName == null) ? 0 : constructorName.hashCode());
 		result = prime
@@ -65,7 +82,6 @@ public class ComputerDTO {
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
-	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -75,6 +91,11 @@ public class ComputerDTO {
 		if (getClass() != obj.getClass())
 			return false;
 		ComputerDTO other = (ComputerDTO) obj;
+		if (constructorId == null) {
+			if (other.constructorId != null)
+				return false;
+		} else if (!constructorId.equals(other.constructorId))
+			return false;
 		if (constructorName == null) {
 			if (other.constructorName != null)
 				return false;
@@ -102,4 +123,6 @@ public class ComputerDTO {
 			return false;
 		return true;
 	}
+
+	
 }

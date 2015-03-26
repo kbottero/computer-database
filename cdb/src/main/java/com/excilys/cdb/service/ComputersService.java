@@ -1,12 +1,15 @@
 package com.excilys.cdb.service;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.exception.ServiceException;
 import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.persistence.CDBTransaction;
 import com.excilys.cdb.persistence.ComputerDao;
 import com.excilys.cdb.persistence.DaoRequestParameter;
+import com.excilys.cdb.persistence.CDBTransaction.TransactionType;
 import com.excilys.cdb.validation.ValidatorComputer;
 
 public class ComputersService implements IService<Computer,Long> {
@@ -17,10 +20,20 @@ public class ComputersService implements IService<Computer,Long> {
 	 */
 	@Override
 	public List<Computer> getAll() throws ServiceException {
+		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			return ComputerDao.INSTANCE.getAll();
+			transaction.init();
+			return ComputerDao.INSTANCE.getAll(transaction);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
+		} finally {
+			if (transaction != null) {
+				try {
+					transaction.close();
+				} catch (SQLException e) {
+					throw new ServiceException(e);
+				}
+			}
 		}
 	}
 	
@@ -31,10 +44,20 @@ public class ComputersService implements IService<Computer,Long> {
 	 */
 	@Override
 	public List<Computer> getAll(DaoRequestParameter param) throws ServiceException {
+		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			return ComputerDao.INSTANCE.getAll(param);
+			transaction.init();
+			return ComputerDao.INSTANCE.getAll(transaction,param);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
+		} finally {
+			if (transaction != null) {
+				try {
+					transaction.close();
+				} catch (SQLException e) {
+					throw new ServiceException(e);
+				}
+			}
 		}
 	}
 	
@@ -46,10 +69,20 @@ public class ComputersService implements IService<Computer,Long> {
 	 */
 	@Override
 	public List<Computer> getSome(DaoRequestParameter param) throws ServiceException {
+		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			return ComputerDao.INSTANCE.getSome(param);
+			transaction.init();
+			return ComputerDao.INSTANCE.getSome(transaction,param);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
+		} finally {
+			if (transaction != null) {
+				try {
+					transaction.close();
+				} catch (SQLException e) {
+					throw new ServiceException(e);
+				}
+			}
 		}
 	}
 
@@ -59,10 +92,20 @@ public class ComputersService implements IService<Computer,Long> {
 	 */
 	@Override
 	public Long getNbInstance() throws ServiceException {
+		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			return ComputerDao.INSTANCE.getNb();
+			transaction.init();
+			return ComputerDao.INSTANCE.getNb(transaction);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
+		} finally {
+			if (transaction != null) {
+				try {
+					transaction.close();
+				} catch (SQLException e) {
+					throw new ServiceException(e);
+				}
+			}
 		}
 	}
 	
@@ -71,10 +114,20 @@ public class ComputersService implements IService<Computer,Long> {
 	 * @return
 	 */
 	public Long getNbInstance(DaoRequestParameter param) throws ServiceException {
+		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			return ComputerDao.INSTANCE.getNb(param);
+			transaction.init();
+			return ComputerDao.INSTANCE.getNb(transaction,param);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
+		} finally {
+			if (transaction != null) {
+				try {
+					transaction.close();
+				} catch (SQLException e) {
+					throw new ServiceException(e);
+				}
+			}
 		}
 	}
 
@@ -85,10 +138,20 @@ public class ComputersService implements IService<Computer,Long> {
 	 */
 	@Override
 	public Computer getOne(Long id) throws ServiceException {
+		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			return ComputerDao.INSTANCE.getById(id);
+			transaction.init();
+			return ComputerDao.INSTANCE.getById(transaction,id);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
+		} finally {
+			if (transaction != null) {
+				try {
+					transaction.close();
+				} catch (SQLException e) {
+					throw new ServiceException(e);
+				}
+			}
 		}
 	}
 
@@ -99,13 +162,23 @@ public class ComputersService implements IService<Computer,Long> {
 	 */
 	@Override
 	public void saveOne(Computer c) throws ServiceException {
+		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		if (!ValidatorComputer.check(c)) {
 			throw new ServiceException();
 		}
 		try {
-			ComputerDao.INSTANCE.save(c);
+			transaction.init();
+			ComputerDao.INSTANCE.save(transaction,c);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
+		} finally {
+			if (transaction != null) {
+				try {
+					transaction.close();
+				} catch (SQLException e) {
+					throw new ServiceException(e);
+				}
+			}
 		}
 	}
 
@@ -116,10 +189,20 @@ public class ComputersService implements IService<Computer,Long> {
 	 */
 	@Override
 	public void deleteOne(Long id) throws ServiceException {
+		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			ComputerDao.INSTANCE.delete(id);
+			transaction.init();
+			ComputerDao.INSTANCE.delete(transaction,id);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
+		} finally {
+			if (transaction != null) {
+				try {
+					transaction.close();
+				} catch (SQLException e) {
+					throw new ServiceException(e);
+				}
+			}
 		}
 	}
 

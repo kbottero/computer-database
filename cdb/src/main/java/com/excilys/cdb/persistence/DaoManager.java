@@ -99,7 +99,7 @@ public enum DaoManager {
 		return statement;
 	}
 	
-	public Statement createStatement (Connection conn) throws DaoException{
+	public Statement createStatement (Connection conn) throws DaoException {
 		Statement statement = null;
 		try {
 			statement = conn.createStatement();
@@ -116,7 +116,7 @@ public enum DaoManager {
 		return statement;
 	}
 
-	public void closeConnAndStat (Statement statement, Connection connection) throws DaoException{
+	public void closeConnAndStat (Statement statement, Connection connection) throws DaoException {
 		try {
 			if (statement != null) {
 				statement.close();

@@ -1,10 +1,13 @@
 package com.excilys.cdb.service;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.exception.ServiceException;
 import com.excilys.cdb.model.Company;
+import com.excilys.cdb.persistence.CDBTransaction;
+import com.excilys.cdb.persistence.CDBTransaction.TransactionType;
 import com.excilys.cdb.persistence.CompanyDao;
 import com.excilys.cdb.persistence.DaoRequestParameter;
 
@@ -17,10 +20,20 @@ public class CompaniesService implements IService<Company,Long>{
 	 */
 	@Override
 	public List<Company> getAll()  throws ServiceException{
+		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			return CompanyDao.INSTANCE.getAll();
+			transaction.init();
+			return CompanyDao.INSTANCE.getAll(transaction);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
+		} finally {
+			if (transaction != null) {
+				try {
+					transaction.close();
+				} catch (SQLException e) {
+					throw new ServiceException(e);
+				}
+			}
 		}
 	}
 	/**
@@ -30,10 +43,20 @@ public class CompaniesService implements IService<Company,Long>{
 	 */
 	@Override
 	public List<Company> getAll(DaoRequestParameter param) throws ServiceException {
+		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			return CompanyDao.INSTANCE.getAll(param);
+			transaction.init();
+			return CompanyDao.INSTANCE.getAll(transaction,param);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
+		} finally {
+			if (transaction != null) {
+				try {
+					transaction.close();
+				} catch (SQLException e) {
+					throw new ServiceException(e);
+				}
+			}
 		}
 	}
 	
@@ -45,10 +68,20 @@ public class CompaniesService implements IService<Company,Long>{
 	 */
 	@Override
 	public List<Company> getSome(DaoRequestParameter param) throws ServiceException {
+		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			return CompanyDao.INSTANCE.getSome(param);
+			transaction.init();
+			return CompanyDao.INSTANCE.getSome(transaction,param);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
+		} finally {
+			if (transaction != null) {
+				try {
+					transaction.close();
+				} catch (SQLException e) {
+					throw new ServiceException(e);
+				}
+			}
 		}
 	}
 
@@ -58,10 +91,20 @@ public class CompaniesService implements IService<Company,Long>{
 	 */
 	@Override
 	public Long getNbInstance() throws ServiceException {
+		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			return CompanyDao.INSTANCE.getNb();
+			transaction.init();
+			return CompanyDao.INSTANCE.getNb(transaction);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
+		} finally {
+			if (transaction != null) {
+				try {
+					transaction.close();
+				} catch (SQLException e) {
+					throw new ServiceException(e);
+				}
+			}
 		}
 	}
 	
@@ -71,10 +114,20 @@ public class CompaniesService implements IService<Company,Long>{
 	 */
 	@Override
 	public Long getNbInstance(DaoRequestParameter param) throws ServiceException {
+		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			return CompanyDao.INSTANCE.getNb(param);
+			transaction.init();
+			return CompanyDao.INSTANCE.getNb(transaction,param);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
+		} finally {
+			if (transaction != null) {
+				try {
+					transaction.close();
+				} catch (SQLException e) {
+					throw new ServiceException(e);
+				}
+			}
 		}
 	}
 	
@@ -84,10 +137,20 @@ public class CompaniesService implements IService<Company,Long>{
 	 */
 	@Override
 	public Company getOne(Long id) throws ServiceException {
+		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			return CompanyDao.INSTANCE.getById(id);
+			transaction.init();
+			return CompanyDao.INSTANCE.getById(transaction,id);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
+		} finally {
+			if (transaction != null) {
+				try {
+					transaction.close();
+				} catch (SQLException e) {
+					throw new ServiceException(e);
+				}
+			}
 		}
 	}
 	
@@ -98,10 +161,20 @@ public class CompaniesService implements IService<Company,Long>{
 	 */
 	@Override
 	public void deleteOne(Long id) throws ServiceException {
+		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			CompanyDao.INSTANCE.delete(id);
+			transaction.init();
+			CompanyDao.INSTANCE.delete(transaction,id);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
+		} finally {
+			if (transaction != null) {
+				try {
+					transaction.close();
+				} catch (SQLException e) {
+					throw new ServiceException(e);
+				}
+			}
 		}
 	}
 }

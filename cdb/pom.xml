@@ -21,8 +21,9 @@
   	<seleniumVersion>2.45.0</seleniumVersion>
   	<dbUnitVersion>2.5.0</dbUnitVersion>
   	<logbackVersion>1.1.2</logbackVersion>
+  	<bonecpVersion>0.8.0.RELEASE</bonecpVersion>
   </properties>
-  <dependencies>
+  <dependencies> 
   	<!-- WEB -->
   	<dependency>
 		<groupId>javax.servlet</groupId>
@@ -41,6 +42,11 @@
 		<artifactId>jstl</artifactId>
 		<version>${jstlVersion}</version>
 		<scope>runtime</scope>
+	</dependency>
+    <dependency>
+		<groupId>com.jolbox</groupId>
+		<artifactId>bonecp</artifactId>
+		<version>${bonecpVersion}</version>
 	</dependency>
   	<!-- JAVA -->
   	<!-- BDD -->

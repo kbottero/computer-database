@@ -62,7 +62,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
-			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+			DaoManager.INSTANCE.closeConnAndStat(statement,conn);
 		}
 		return list;
 	}
@@ -144,7 +144,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_CREATE_STATEMENT,e);
 		} finally {
-			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+			DaoManager.INSTANCE.closeConnAndStat(statement,conn);
 		}
 		return list;
 	}
@@ -166,7 +166,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT, e);
 		} finally {
-			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+			DaoManager.INSTANCE.closeConnAndStat(statement,conn);
 		}
 		return nbElements;
 	}
@@ -285,7 +285,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 					}
 				}
 			} catch (SQLException e) {
-				DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+				DaoManager.INSTANCE.closeConnAndStat(statement,conn);
 				throw new DaoException(DaoException.CAN_NOT_SET_PREPAREDSTATEMENT,e);
 			}
 		} else {
@@ -305,7 +305,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT, e);
 		} finally {
-			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+			DaoManager.INSTANCE.closeConnAndStat(statement,conn);
 		}
 		return nbElements;
 	}
@@ -428,7 +428,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 				}
 			}
 		} catch (SQLException e) {
-			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+			DaoManager.INSTANCE.closeConnAndStat(statement,conn);
 			throw new DaoException(DaoException.CAN_NOT_SET_PREPAREDSTATEMENT,e);
 		}
 		try{
@@ -441,7 +441,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
-			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+			DaoManager.INSTANCE.closeConnAndStat(statement,conn);
 		}
 		return list;
 	}
@@ -468,7 +468,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
-			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+			DaoManager.INSTANCE.closeConnAndStat(statement,conn);
 		}
 		return comp;
 	}
@@ -562,7 +562,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_SET_PREPAREDSTATEMENT,e);
 		} finally {
-			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+			DaoManager.INSTANCE.closeConnAndStat(statement,conn);
 		}
 	}
 
@@ -584,7 +584,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_DELETE_ELEMENT,e);
 		} finally {
-			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+			DaoManager.INSTANCE.closeConnAndStat(statement,conn);
 		}
 	}
 }

@@ -59,7 +59,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
-			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+			DaoManager.INSTANCE.closeConnAndStat(statement,conn);
 		}
 		return list;
 	}
@@ -137,7 +137,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_SET_PREPAREDSTATEMENT,e);
 		} finally {
-			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+			DaoManager.INSTANCE.closeConnAndStat(statement,conn);
 		}
 		return list;
 	}
@@ -160,7 +160,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
-			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+			DaoManager.INSTANCE.closeConnAndStat(statement,conn);
 		}
 		return nbElements;
 	}
@@ -262,11 +262,11 @@ public enum CompanyDao implements IDao<Company, Long>{
 					statement.setString(numArg++,filter.toString());
 			}
 			if (param.getLimit() == null) {
-				DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+				DaoManager.INSTANCE.closeConnAndStat(statement,conn);
 				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			} else {
 				if (param.getLimit() < 0) {
-					DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+					DaoManager.INSTANCE.closeConnAndStat(statement,conn);
 					throw new DaoException(DaoException.INVALID_ARGUMENT);
 				} else {
 					statement.setLong(numArg++,param.getLimit()); 
@@ -290,7 +290,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
-			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+			DaoManager.INSTANCE.closeConnAndStat(statement,conn);
 		}
 		return list;
 	}
@@ -317,7 +317,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 		} catch (SQLException e) {
 			throw new DaoException(e);
 		} finally {
-			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+			DaoManager.INSTANCE.closeConnAndStat(statement,conn);
 		}
 		return comp;
 	}
@@ -361,7 +361,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 			} catch (SQLException e1) {
 				throw new DaoException(DaoException.CAN_NOT_CHANGE_AUTOCOMMIT,e1);
 			}
-			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+			DaoManager.INSTANCE.closeConnAndStat(statement,conn);
 		}
 	}
 	

@@ -41,6 +41,15 @@ public interface IDao <T, I extends Serializable> {
 	}
 	
 	/**
+	 * Return the number of instances within the database.
+	 * @return
+	 * @throws DaoException
+	 */
+	public default Long getNb(DaoRequestParameter param)  throws DaoException {
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
 	 * Return a specific instance base on the primary key that define it.
 	 * @param id
 	 * @return

@@ -44,6 +44,14 @@ public interface IService <T, I extends Serializable> {
 	}
 	
 	/**
+	 * Return the number of instance in the database.
+	 * @return
+	 */
+	public default Long getNbInstance(DaoRequestParameter param) throws ServiceException {
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
 	 * Return a specific instance from the database, based on its id.
 	 * @param id
 	 * @return

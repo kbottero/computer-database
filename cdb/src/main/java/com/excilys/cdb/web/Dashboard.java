@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.excilys.cdb.persistence.DaoRequestParameter;
+import com.excilys.cdb.persistence.DaoRequestParameter.NameFiltering;
 import com.excilys.cdb.service.ComputersService;
 import com.excilys.cdb.ui.util.ComputerPage;
 
@@ -37,9 +39,10 @@ public class Dashboard extends HttpServlet {
 		attrib = request.getParameter("search");
 		if (attrib != null) {
 			String filter = attrib;
-			compPage= new ComputerPage(computersService, nbCompPerPage, filter);
+			DaoRequestParameter param = new DaoRequestParameter(NameFiltering.POST,filter,null,null,nbCompPerPage,0l);
+			compPage = new ComputerPage(computersService, nbCompPerPage, param);
 		} else {
-			compPage= new ComputerPage(computersService, nbCompPerPage);
+			compPage = new ComputerPage(computersService, nbCompPerPage, null);
 		}
 		attrib = request.getParameter("numPage");
 		if (attrib != null) {
@@ -48,7 +51,6 @@ public class Dashboard extends HttpServlet {
 		}
 		
 		request.setAttribute("page", compPage);
-		request.setAttribute("nbComputers", computersService.getNbInstance());
 		RequestDispatcher dis=this.getServletContext().getRequestDispatcher("/WEB-INF/views/dashboard.jsp");
 		
 		dis.forward(request, response);

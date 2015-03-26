@@ -1,30 +1,9 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
- pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="mylib" tagdir="/WEB-INF/tags/mytags"%>
-
-<!DOCTYPE html>
-<html>
-<head>
-<title>Computer Database</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta charset="utf-8">
-<!-- Bootstrap -->
-<link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="${pageContext.request.contextPath}/css/font-awesome.css" rel="stylesheet" media="screen">
-<link href="${pageContext.request.contextPath}/css/main.css" rel="stylesheet" media="screen">
-</head>
-<body>
-    <header class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="dashboard.html"> Application - Computer Database </a>
-        </div>
-    </header>
+    <%@include file="header.jsp" %>
 
     <section id="main">
         <div class="container">
             <h1 id="homeTitle">
-                ${nbComputers} Computers found
+                ${page.nbElements} Computers found
             </h1>
             <div id="actions" class="form-horizontal">
                 <div class="pull-left">
@@ -42,7 +21,7 @@
             </div>
         </div>
 
-        <form id="deleteForm" action="#" method="POST">
+        <form id="deleteForm" action="${pageContext.request.contextPath}/deleteComputer" method="POST">
             <input type="hidden" name="selection" value="">
         </form>
 
@@ -83,7 +62,7 @@
                 	<c:forEach var="c" items="${page.elements}">
 						<tr>
 							<td class="editMode">
-	                            <input type="checkbox" name="cb" class="cb" value="0">
+	                            <input type="checkbox" name="cb" class="cb" value="${c.id}">
 	                        </td>
 	                        <td>
 	                            <a href="${pageContext.request.contextPath}/editComputer?id=${c.id}" onclick="">${c.name}</a>
@@ -101,15 +80,6 @@
     <footer class="navbar-fixed-bottom">
         <div class="container text-center">
 			<mylib:pagination page="${requestScope.page.current}" pageCount="${requestScope.page.count}"/>  
-			
-			<!-- 
-	        <div class="btn-group btn-group-sm pull-right" role="group" >
-	            <button type="button" class="btn btn-default">10</button>
-	            <button type="button" class="btn btn-default">50</button>
-	            <button type="button" class="btn btn-default">100</button>
-	        </div> -->
-	        
-	        
         </div>
     </footer>
 <script src="${pageContext.request.contextPath}/js/jquery.min.js"></script>

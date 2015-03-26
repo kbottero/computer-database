@@ -66,6 +66,19 @@ public class CompaniesService implements IService<Company,Long>{
 	}
 	
 	/**
+	 * Return the number of companies in the database.
+	 * @return
+	 */
+	@Override
+	public Long getNbInstance(DaoRequestParameter param) throws ServiceException {
+		try {
+			return CompanyDao.INSTANCE.getNb(param);
+		} catch (DaoException e) {
+			throw new ServiceException(e);
+		}
+	}
+	
+	/**
 	 * Return a limited list of companies from the database.
 	 * @return
 	 */

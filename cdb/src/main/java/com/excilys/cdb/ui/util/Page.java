@@ -1,10 +1,9 @@
 package com.excilys.cdb.ui.util;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
-import com.excilys.cdb.persistence.DaoRequestParameter.Order;
+import com.excilys.cdb.persistence.DaoRequestParameter;
 import com.excilys.cdb.service.IService;
 
 public abstract class Page <E,D, I extends Serializable> {
@@ -15,36 +14,28 @@ public abstract class Page <E,D, I extends Serializable> {
 	protected Long pageSize;
 	protected Long count;
 	protected Long nbElements;
-	protected Order sortingOrder; 
-	protected ArrayList<String> orderBy; 
-	protected String filter;
-
+	protected DaoRequestParameter param;
+	
 	public Page(IService<E, I> serv){
-		if (serv == null) {
-			throw new IllegalArgumentException();
-		}
-		this.serv = serv;
-		nbElements = serv.getNbInstance();
-		current = 1l;
-		pageSize = 20l;
-		count = nbElements / pageSize;
-		if (nbElements % pageSize != 0) {
-			++count;
-		}
-		sortingOrder = Order.ASC;
-		orderBy = new ArrayList<String>();
-		filter = null;
+		this(serv,null);
 	}
 	
 	public Page(IService<E, I> serv, Long pageSize){
+		this(serv,pageSize,null);
+	}
+	
+	public Page(IService<E, I> serv, Long pageSize, DaoRequestParameter param){
 		if ((serv == null)|| (pageSize == null) || (pageSize < 1)) {
 			throw new IllegalArgumentException();
 		}
 		this.serv = serv;
 		current = 1l;
-		nbElements = serv.getNbInstance();
-		if (pageSize < nbElements) {
-			this.pageSize = pageSize;
+		this.pageSize = pageSize;
+		if (this.pageSize == null) {
+			this.pageSize = 20l;
+		}
+		nbElements = serv.getNbInstance(param);
+		if (this.pageSize < nbElements) {
 			count = nbElements / pageSize;
 			if (nbElements % pageSize != 0) {
 				++count;
@@ -53,20 +44,11 @@ public abstract class Page <E,D, I extends Serializable> {
 			this.pageSize = nbElements;
 			count = 1l;
 		}
-		sortingOrder = Order.ASC;
-		orderBy = new ArrayList<String>();
-		filter = null;
-	}
-	
-	public void setSortingOrder(Order so) {
-		if (so == null) {
-			throw new IllegalArgumentException();
+		if (param == null) {
+			this.param = new DaoRequestParameter (null, null, null,null,this.pageSize,0l);
+		} else {
+			this.param = param;
 		}
-		sortingOrder = so;
-	}
-	
-	public Order getSortingOrder() {
-		return sortingOrder;
 	}
 	
 	public Long getCurrent() {
@@ -79,6 +61,10 @@ public abstract class Page <E,D, I extends Serializable> {
 	
 	public List<D> getElements() {
 		return elements;
+	}
+	
+	public Long getNbElements() {
+		return nbElements;
 	}
 	
 	public abstract void setFilter(String filter);

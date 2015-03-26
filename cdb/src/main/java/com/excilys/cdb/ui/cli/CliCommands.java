@@ -391,9 +391,9 @@ public enum CliCommands {
 		Page<Computer, ComputerDTO, Long> page;
 		if (s.hasNext()) {
 			Long nbLine = s.nextLong();
-			page = new ComputerPage (servComputers, nbLine);
+			page = new ComputerPage (servComputers, nbLine,null);
 		} else {
-			page = new ComputerPage (servComputers);
+			page = new ComputerPage (servComputers,null,null);
 		}
 	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		Scanner scan = null;
@@ -429,9 +429,9 @@ public enum CliCommands {
 		Page<Company, CompanyDTO, Long> page;
 		if (s.hasNext()) {
 			Long nbLine = s.nextLong();
-			page = new CompanyPage (servCompanies, nbLine);
+			page = new CompanyPage (servCompanies, nbLine,null);
 		} else {
-			page = new CompanyPage (servCompanies);
+			page = new CompanyPage (servCompanies,null,null);
 		}
 	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		Scanner scan = null;

@@ -28,6 +28,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 
 	private static enum preparedStatement {
 		COUNT_ALL ("SELECT COUNT(id) FROM computer;"),
+		COUNT_ALL_FILTERED ("SELECT COUNT(id) FROM computer WHERE name LIKE ? ORDER BY"),
 		SELECT_ALL ("SELECT id, name, introduced, discontinued, company_id FROM computer;"),
 		SELECT_ALL_ORDERED ("SELECT id, name, introduced, discontinued, company_id FROM computer ORDER BY"),
 		SELECT_SOME ("SELECT id, name, introduced, discontinued, company_id FROM computer ORDER BY"),
@@ -157,6 +158,145 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		Statement statement = DaoManager.INSTANCE.createStatement(conn);
 		try {
 			ResultSet curs = statement.executeQuery(preparedStatement.COUNT_ALL.getRequest());
+			logger.debug("Excuted request : "+statement.toString());
+			if ( curs.next() ) {
+				nbElements = curs.getLong(1); 
+			}
+			curs.close();
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT, e);
+		} finally {
+			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+		}
+		return nbElements;
+	}
+	
+	@Override
+	public Long getNb(DaoRequestParameter param) throws DaoException {
+		logger.info("getNb(param) method");
+		if (param == null) {
+			return getNb();
+		}
+		int numArg = 1;
+		Connection conn =  DaoManager.INSTANCE.getConnection();
+		Long nbElements = null;
+
+		PreparedStatement statement;
+
+		StringBuilder request = new StringBuilder();
+
+		if (param.getNameLike() != null) {
+			request.append(preparedStatement.COUNT_ALL_FILTERED.getRequest());
+			request.append(" ");
+			if ((param.getColToOrderBy() == null) || (param.getColToOrderBy().size() == 0)){
+				request.append(ComputerMapper.DEFAULT_ID);
+				request.append(" ");
+				//ASC or DESC ?
+				if (param.getOrder() == null) {
+					request.append("ASC");
+				} else {
+					switch (param.getOrder()) {
+					case ASC:
+						request.append("ASC");
+						break;
+					case DESC:
+						request.append("DESC");
+						break;
+					default:
+						throw new DaoException(DaoException.INVALID_ARGUMENT);
+					}
+				}
+			} else {
+				StringBuilder strgBuild = new StringBuilder();
+				for (String strg : param.getColToOrderBy()) {
+					if (ComputerMapper.mapBDModel.containsKey(strg)) {
+						if (strgBuild.length() != 0) {
+							strgBuild.append(",");
+							strgBuild.append(ComputerMapper.mapBDModel.get(strg));
+						} else {
+							strgBuild.append(ComputerMapper.mapBDModel.get(strg));
+							strgBuild.append(" ");
+							//ASC or DESC ?
+							if (param.getOrder() == null) {
+								strgBuild.append("ASC");
+							} else {
+								switch (param.getOrder()) {
+								case ASC:
+									strgBuild.append("ASC");
+									break;
+								case DESC:
+									strgBuild.append("DESC");
+									break;
+								default:
+									throw new DaoException(DaoException.INVALID_ARGUMENT);
+								}
+							}
+						}
+					} else {
+						throw new DaoException(DaoException.INVALID_ARGUMENT);
+					}
+				}
+				request.append(strgBuild.toString());
+			}
+			request.append(" LIMIT ? OFFSET ?;");
+			statement = DaoManager.INSTANCE.createPreparedStatement(conn, request.toString());
+			try {
+				if (param.getNameLike() != null) {
+
+					StringBuilder filter = new StringBuilder();
+					switch (param.getNameFiltering()) {
+					case POST:
+						filter.append(param.getNameLike());
+						filter.append('%');
+						break;
+					case PRE:
+						filter.append('%');
+						filter.append(param.getNameLike());
+						break;
+					case POST_AND_PRE:
+						filter.append('%');
+						filter.append(param.getNameLike());
+						filter.append('%');
+						break;
+					case NONE:
+						filter.append(param.getNameLike());
+						break;
+					default:
+						throw new DaoException(DaoException.INVALID_ARGUMENT);
+					}
+					statement.setString(numArg++,filter.toString());
+				}
+				if (param.getLimit() == null) {
+					throw new DaoException(DaoException.INVALID_ARGUMENT);
+				} else {
+					if (param.getLimit() < 0) {
+						throw new DaoException(DaoException.INVALID_ARGUMENT);
+					} else {
+						statement.setLong(numArg++,param.getLimit()); 
+					}
+				}
+				if (param.getOffset() == null) {
+					statement.setLong(numArg++,0); 
+				} else {
+					if (param.getOffset() < 0) {
+						throw new DaoException(DaoException.INVALID_ARGUMENT);
+					} else {
+						statement.setLong(numArg++,param.getOffset()); 
+					}
+				}
+			} catch (SQLException e) {
+				DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+				throw new DaoException(DaoException.CAN_NOT_SET_PREPAREDSTATEMENT,e);
+			}
+		} else {
+			request.append(preparedStatement.COUNT_ALL.getRequest());
+			statement = DaoManager.INSTANCE.createPreparedStatement(conn, request.toString());
+		}
+
+		try {
+			ResultSet curs;
+			curs = statement.executeQuery();
+
 			logger.debug("Excuted request : "+statement.toString());
 			if ( curs.next() ) {
 				nbElements = curs.getLong(1); 
@@ -446,6 +586,5 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} finally {
 			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
 		}
-
 	}
 }

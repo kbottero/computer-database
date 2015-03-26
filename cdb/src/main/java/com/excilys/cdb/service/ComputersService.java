@@ -65,6 +65,18 @@ public class ComputersService implements IService<Computer,Long> {
 			throw new ServiceException(e);
 		}
 	}
+	
+	/**
+	 * Return the number of instance in the database.
+	 * @return
+	 */
+	public Long getNbInstance(DaoRequestParameter param) throws ServiceException {
+		try {
+			return ComputerDao.INSTANCE.getNb(param);
+		} catch (DaoException e) {
+			throw new ServiceException(e);
+		}
+	}
 
 	/**
 	 * Return a specific Computer from the database, based on its id.

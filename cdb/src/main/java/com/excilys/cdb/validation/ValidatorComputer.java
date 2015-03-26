@@ -6,15 +6,13 @@ public class ValidatorComputer {
 
 	public static boolean check(Computer instance) {
 		
-		if ((instance == null)  || 
+		return !((instance == null)  || 
 			(instance.getId() == null) ||
 			(instance.getName() == null) ||
 			(instance.getName().isEmpty())	||
-			(instance.getIntroductionDate().isAfter(instance.getDiscontinuedDate())) ||
-			(instance.getConstructor() != null && ValidatorCompany.check(instance.getConstructor()))){
-			return false;
-		} 
-		return true;
+			(instance.getIntroductionDate()!= null &&
+				instance.getDiscontinuedDate() != null &&
+				(instance.getIntroductionDate().isAfter(instance.getDiscontinuedDate()))) ||
+			(instance.getConstructor() != null && !ValidatorCompany.check(instance.getConstructor())));
 	}
-
 }

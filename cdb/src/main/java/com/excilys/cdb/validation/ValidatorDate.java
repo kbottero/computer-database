@@ -10,6 +10,9 @@ public class ValidatorDate {
 	 * @return true if the String correspond to an existing date, false otherwise.
 	 */
 	public static boolean check (final String date){
+		if (date == null) {
+			return false;
+		}
 
 		Pattern pattern = Pattern.compile("((19|20)\\d\\d)[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])");
 		Matcher matcher = pattern.matcher(date);

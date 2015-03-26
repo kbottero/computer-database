@@ -38,7 +38,6 @@ public enum CompanyDao implements IDao<Company, Long>{
 		preparedStatement(String request) {
 	        this.request = request;
 	    }
-		
 	    private String getRequest() { return request; }
 	}
 	

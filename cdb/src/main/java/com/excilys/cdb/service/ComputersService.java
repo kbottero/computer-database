@@ -99,7 +99,7 @@ public class ComputersService implements IService<Computer,Long> {
 	 */
 	@Override
 	public void saveOne(Computer c) throws ServiceException {
-		if (ValidatorComputer.check(c)) {
+		if (!ValidatorComputer.check(c)) {
 			throw new ServiceException();
 		}
 		try {

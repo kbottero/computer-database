@@ -241,12 +241,30 @@ public enum CliCommands {
 	/**
 	 * Delete one computers.
 	 */
-	DELETE ("delete") {
+	DELETE_COMPUTER ("delete_computer") {
 		@Override
 		public void execute(Scanner s) {
 			if (s.hasNext()) {
 				long id = s.nextLong();
 				servComputers.deleteOne(id);
+			} else {
+				invalidCommand(this);
+			}
+		}
+		@Override
+		public String getHelp() {
+			return this.getLabel()+" id";
+		}
+	},
+	/**
+	 * Delete one company.
+	 */
+	DELETE_COMPANY("delete_company") {
+		@Override
+		public void execute(Scanner s) {
+			if (s.hasNext()) {
+				long id = s.nextLong();
+				servCompanies.deleteOne(id);
 			} else {
 				invalidCommand(this);
 			}
@@ -393,7 +411,7 @@ public enum CliCommands {
 			Long nbLine = s.nextLong();
 			page = new ComputerPage (servComputers, nbLine,null);
 		} else {
-			page = new ComputerPage (servComputers,null,null);
+			page = new ComputerPage (servComputers,20l,null);
 		}
 	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		Scanner scan = null;

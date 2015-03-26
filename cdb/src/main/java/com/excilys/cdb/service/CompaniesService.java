@@ -90,4 +90,18 @@ public class CompaniesService implements IService<Company,Long>{
 			throw new ServiceException(e);
 		}
 	}
+	
+	/**
+	 * Delete a Company in the database.
+	 * @param id
+	 * @return
+	 */
+	@Override
+	public void deleteOne(Long id) throws ServiceException {
+		try {
+			CompanyDao.INSTANCE.delete(id);
+		} catch (DaoException e) {
+			throw new ServiceException(e);
+		}
+	}
 }

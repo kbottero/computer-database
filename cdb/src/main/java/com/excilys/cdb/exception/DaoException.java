@@ -20,6 +20,8 @@ public class DaoException extends RuntimeException{
 	public static final String CAN_NOT_CLOSE_STATEMENT = "can not close statement";
 	public static final String INVALID_ARGUMENT = "invalid argument";
 	public static final String CAN_NOT_LOAD_PROPERTIES = "can not load properties";
+	public static final String CAN_NOT_ROLLBACK = "can not rollback";
+	public static final String CAN_NOT_CHANGE_AUTOCOMMIT = "can not change autocommit";
 
 	public DaoException() {
 		super();

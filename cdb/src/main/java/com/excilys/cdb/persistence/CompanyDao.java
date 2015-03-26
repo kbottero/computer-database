@@ -31,7 +31,9 @@ public enum CompanyDao implements IDao<Company, Long>{
 		SELECT_ALL_ORDERED ("SELECT id, name FROM company ORDER BY"),
 		SELECT_ONE ("SELECT id, name FROM company WHERE id=?;"),
 		SELECT_SOME ("SELECT id, name FROM company ORDER BY"),
-		SELECT_SOME_FILTERED ("SELECT id, name FROM company WHERE name LIKE ? ORDER BY");
+		SELECT_SOME_FILTERED ("SELECT id, name FROM company WHERE name LIKE ? ORDER BY"), 
+		DELETE_COMPUTER ("DELETE FROM computer WHERE company_id=?;"),
+		DELETE_ONE("DELETE FROM company WHERE id=?;");
 		
 		private final String request;
 		
@@ -319,4 +321,48 @@ public enum CompanyDao implements IDao<Company, Long>{
 		}
 		return comp;
 	}
+	
+	@Override
+	public void delete(Long id)  throws DaoException {
+		logger.info("delete(id) method");
+		if (id == null) {
+			throw new IllegalArgumentException();
+		}
+		Connection conn = DaoManager.INSTANCE.getConnection();
+		try {
+			conn.setAutoCommit(false);
+		} catch (SQLException e1) {
+			throw new DaoException(DaoException.CAN_NOT_CHANGE_AUTOCOMMIT,e1);
+		}
+		PreparedStatement statement = DaoManager.INSTANCE.createPreparedStatement(conn, preparedStatement.DELETE_COMPUTER.getRequest());
+		logger.debug("Excuted request : "+statement.toString());
+		try {
+			statement.setLong(1, id);
+			statement.executeUpdate();
+			statement = DaoManager.INSTANCE.createPreparedStatement(conn, preparedStatement.DELETE_ONE.getRequest());
+			logger.debug("Excuted request : "+statement.toString());
+
+			statement.setLong(1, id);
+			int nb = statement.executeUpdate();
+			if (nb==0) {
+				throw new DaoException(DaoException.CAN_NOT_DELETE_ELEMENT);
+			}
+			conn.commit();
+		} catch (SQLException e) {
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				throw new DaoException(DaoException.CAN_NOT_ROLLBACK,e1);
+			}
+			throw new DaoException(DaoException.CAN_NOT_DELETE_ELEMENT,e);
+		} finally {
+			try {
+				conn.setAutoCommit(false);
+			} catch (SQLException e1) {
+				throw new DaoException(DaoException.CAN_NOT_CHANGE_AUTOCOMMIT,e1);
+			}
+			DaoManager.INSTANCE.closeConnAndStat(statement, conn);
+		}
+	}
+	
 }

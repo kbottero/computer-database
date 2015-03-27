@@ -65,7 +65,7 @@
 	                            <input type="checkbox" name="cb" class="cb" value="${c.id}">
 	                        </td>
 	                        <td>
-	                            <a href="${pageContext.request.contextPath}/editComputer?id=${c.id}" onclick="">${c.name}</a>
+	                            <a href="${pageContext.request.contextPath}/editComputer?id=${c.id}" id="computer_${c.id}" onclick="">${c.name}</a>
 	                        </td>
 	                        <td>${c.introductionDate}</td>
 	                        <td>${c.discontinuedDate}</td>

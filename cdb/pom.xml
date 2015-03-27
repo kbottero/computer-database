@@ -20,6 +20,7 @@
   	<seleniumVersion>2.45.0</seleniumVersion>
   	<logbackVersion>1.1.2</logbackVersion>
   	<bonecpVersion>0.8.0.RELEASE</bonecpVersion>
+  	<hsqldbVersion>2.3.2</hsqldbVersion>
   </properties>
   <dependencies> 
   	<!-- WEB -->
@@ -60,6 +61,11 @@
 		<artifactId>junit</artifactId>
 		<version>${junitVersion}</version>
 		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.hsqldb</groupId>
+		<artifactId>hsqldb</artifactId>
+		<version>${hsqldbVersion}</version>
 	</dependency>
 	<dependency>
 		<groupId>org.slf4j</groupId>

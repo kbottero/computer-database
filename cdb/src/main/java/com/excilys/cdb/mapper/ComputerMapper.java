@@ -19,7 +19,7 @@ import com.excilys.cdb.service.CompaniesService;
  * @author Kevin Bottero
  *
  */
-public enum ComputerMapper implements IMapper<Computer> {
+public enum ComputerMapper implements IMapper<Computer, ComputerDTO> {
 	INSTANCE;
 
 	/** Primary Key.	 */

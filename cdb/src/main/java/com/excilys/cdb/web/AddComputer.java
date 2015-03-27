@@ -1,7 +1,7 @@
 package com.excilys.cdb.web;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.cdb.dto.CompanyDTO;
 import com.excilys.cdb.mapper.CompanyMapper;
-import com.excilys.cdb.model.Company;
 import com.excilys.cdb.service.CompaniesService;
 
 @WebServlet(urlPatterns = "/addComputer")
@@ -25,10 +24,7 @@ public class AddComputer extends HttpServlet {
 	private CompaniesService companiesService = new CompaniesService();
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ArrayList<CompanyDTO> listCompany = new ArrayList<CompanyDTO>();
-		for (Company company : companiesService.getAll()) {
-			listCompany.add(CompanyMapper.INSTANCE.toDTO(company));
-		}
+		List<CompanyDTO> listCompany = CompanyMapper.INSTANCE.toDTOList(companiesService.getAll());
 		request.setAttribute("companies", listCompany);
 		request.setAttribute("prev", request.getHeader("Referer"));
 		RequestDispatcher dis=this.getServletContext().getRequestDispatcher("/WEB-INF/views/addComputer.jsp");

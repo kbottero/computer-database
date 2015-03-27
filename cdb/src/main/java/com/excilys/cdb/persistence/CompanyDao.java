@@ -44,10 +44,10 @@ public enum CompanyDao implements IDao<Company, Long>{
 	}
 	
 	@Override
-	public List<Company> getAll(CDBTransaction transaction) throws DaoException {
+	public List<Company> getAll() throws DaoException {
 		logger.info("getAll() method");
 		List<Company> list = new ArrayList<Company>();
-		Statement statement = transaction.createStatement();
+		Statement statement = TransactionFactory.INSTANCE.createStatement();
 		try {
 			ResultSet curs = statement.executeQuery(preparedStatement.SELECT_ALL.getRequest());
 			logger.info("Excuted request : "+preparedStatement.SELECT_ALL.getRequest());
@@ -58,13 +58,13 @@ public enum CompanyDao implements IDao<Company, Long>{
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
-			transaction.closeStat(statement);
+			TransactionFactory.INSTANCE.closeStat(statement);
 		}
 		return list;
 	}
 	
 	@Override
-	public List<Company> getAll(CDBTransaction transaction, DaoRequestParameter param) throws DaoException {
+	public List<Company> getAll(DaoRequestParameter param) throws DaoException {
 		logger.info("getAll(param) method");
 		StringBuilder request = new StringBuilder();
 		List<Company> list = new ArrayList<Company>();
@@ -74,7 +74,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 		request.append(" ");
 		addOrderByToRequest(request, param);
 		request.append(";");
-		Statement statement = transaction.createStatement();
+		Statement statement = TransactionFactory.INSTANCE.createStatement();
 		
 		try {
 			//Execute Request
@@ -87,17 +87,17 @@ public enum CompanyDao implements IDao<Company, Long>{
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_SET_PREPAREDSTATEMENT,e);
 		} finally {
-			transaction.closeStat(statement);
+			TransactionFactory.INSTANCE.closeStat(statement);
 		}
 		return list;
 	}
 
 	@Override
-	public Long getNb(CDBTransaction transaction) throws DaoException {
+	public Long getNb() throws DaoException {
 		logger.info("getNb() method");
 		Long nbElements;
 		
-		Statement statement = transaction.createStatement();
+		Statement statement = TransactionFactory.INSTANCE.createStatement();
 		try {
 			ResultSet curs = statement.executeQuery(preparedStatement.COUNT_ALL.getRequest());
 			logger.debug("Executed request : "+preparedStatement.COUNT_ALL.getRequest());
@@ -110,13 +110,13 @@ public enum CompanyDao implements IDao<Company, Long>{
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
-			transaction.closeStat(statement);
+			TransactionFactory.INSTANCE.closeStat(statement);
 		}
 		return nbElements;
 	}
 	
 	@Override
-	public List<Company> getSome(CDBTransaction transaction, DaoRequestParameter param) throws DaoException {
+	public List<Company> getSome(DaoRequestParameter param) throws DaoException {
 		logger.info("getSome(param) method");
 		int numArg = 1;
 		List<Company> list = new ArrayList<Company>();
@@ -135,17 +135,17 @@ public enum CompanyDao implements IDao<Company, Long>{
 		request.append(" ");
 		request.append(" LIMIT ? OFFSET ?;");
 		
-		statement = transaction.createPreparedStatement(request.toString());
+		statement = TransactionFactory.INSTANCE.createPreparedStatement(request.toString());
 		try {
 			if (param.getNameLike() != null) {			
 				numArg = setWhenCondition (statement,param, numArg);
 			}
 			if (param.getLimit() == null) {
-				transaction.closeStat(statement);
+				TransactionFactory.INSTANCE.closeStat(statement);
 				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			} else {
 				if (param.getLimit() < 0) {
-					transaction.closeStat(statement);
+					TransactionFactory.INSTANCE.closeStat(statement);
 					throw new DaoException(DaoException.INVALID_ARGUMENT);
 				} else {
 					statement.setLong(numArg++,param.getLimit()); 
@@ -169,20 +169,20 @@ public enum CompanyDao implements IDao<Company, Long>{
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
-			transaction.closeStat(statement);
+			TransactionFactory.INSTANCE.closeStat(statement);
 		}
 		return list;
 	}
 
 	@Override
-	public Company getById(CDBTransaction transaction, Long id) throws DaoException {
+	public Company getById(Long id) throws DaoException {
 		logger.info("getById(id) method");
 		if (id == null) {
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
 		Company comp=null;
 		
-		PreparedStatement statement = transaction.createPreparedStatement(preparedStatement.SELECT_ONE.getRequest());
+		PreparedStatement statement = TransactionFactory.INSTANCE.createPreparedStatement(preparedStatement.SELECT_ONE.getRequest());
 		try {
 			statement.setLong(1,id);
 			ResultSet curs = statement.executeQuery();
@@ -196,51 +196,30 @@ public enum CompanyDao implements IDao<Company, Long>{
 		} catch (SQLException e) {
 			throw new DaoException(e);
 		} finally {
-			transaction.closeStat(statement);
+			TransactionFactory.INSTANCE.closeStat(statement);
 		}
 		return comp;
 	}
 	
 	@Override
-	public void delete(CDBTransaction transaction, Long id)  throws DaoException {
+	public void delete(Long id)  throws DaoException {
 		logger.info("delete(id) method");
 		if (id == null) {
 			throw new IllegalArgumentException();
 		}
 		
-		try {
-			transaction.setAutoCommit(false);
-		} catch (SQLException e1) {
-			throw new DaoException(DaoException.CAN_NOT_CHANGE_AUTOCOMMIT,e1);
-		}
-		PreparedStatement statement = transaction.createPreparedStatement( preparedStatement.DELETE_COMPUTER.getRequest());
+		PreparedStatement statement = TransactionFactory.INSTANCE.createPreparedStatement( preparedStatement.DELETE_ONE.getRequest());
 		logger.debug("Excuted request : "+statement.toString());
 		try {
-			statement.setLong(1, id);
-			statement.executeUpdate();
-			statement = transaction.createPreparedStatement( preparedStatement.DELETE_ONE.getRequest());
-			logger.debug("Excuted request : "+statement.toString());
-
 			statement.setLong(1, id);
 			int nb = statement.executeUpdate();
 			if (nb==0) {
 				throw new DaoException(DaoException.CAN_NOT_DELETE_ELEMENT);
 			}
-			transaction.commit();
 		} catch (SQLException e) {
-			try {
-				transaction.rollback();
-			} catch (SQLException e1) {
-				throw new DaoException(DaoException.CAN_NOT_ROLLBACK,e1);
-			}
 			throw new DaoException(DaoException.CAN_NOT_DELETE_ELEMENT,e);
 		} finally {
-			try {
-				transaction.setAutoCommit(false);
-			} catch (SQLException e1) {
-				throw new DaoException(DaoException.CAN_NOT_CHANGE_AUTOCOMMIT,e1);
-			}
-			transaction.closeStat(statement);
+			TransactionFactory.INSTANCE.closeStat(statement);
 		}
 	}
 	

@@ -23,6 +23,7 @@ public class DaoException extends RuntimeException{
 	public static final String CAN_NOT_ROLLBACK = "can not rollback";
 	public static final String CAN_NOT_CHANGE_AUTOCOMMIT = "can not change autocommit";
 	public static final String CAN_NOT_SETUP_CONNECTION_POOL = "can not setup the connection pool.";
+	public static final String CAN_NOT_COMMIT = "can not commit.";
 
 	public DaoException() {
 		super();

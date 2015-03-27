@@ -23,14 +23,15 @@ import com.jolbox.bonecp.BoneCPConfig;
  * @author Kevin Bottero
  *
  */
-public enum DaoManager {
+public enum TransactionFactory {
 	
 	INSTANCE;
-	private static Logger logger = LoggerFactory.getLogger(DaoManager.class); 
+	private static Logger logger = LoggerFactory.getLogger(TransactionFactory.class); 
 	private Properties properties;
 	private BoneCP connectionPool = null;
+	ThreadLocal<Connection> connectionTL = new ThreadLocal<Connection>();
 	
-	DaoManager () {
+	TransactionFactory () {
 		properties = new Properties();
 		String config;
 		try {
@@ -40,7 +41,7 @@ public enum DaoManager {
 				Class.forName("com.mysql.jdbc.Driver");
 				config = "db.properties";
 			}
-			BufferedReader in = new BufferedReader(new InputStreamReader(DaoManager.class.getClassLoader().getResourceAsStream(config)));
+			BufferedReader in = new BufferedReader(new InputStreamReader(TransactionFactory.class.getClassLoader().getResourceAsStream(config)));
 			properties.load(in);
 			in.close();
 		} catch (ClassNotFoundException | IOException e) {
@@ -61,25 +62,26 @@ public enum DaoManager {
 		}
 	}
 	
-	public Connection getConnection() throws DaoException {
+	private Connection getConnection() throws DaoException {
 		logger.debug("getConnection()");
-		Connection connection;
-		try {
-			connection = connectionPool.getConnection();
-		} catch (SQLException e) {
-			throw new DaoException(DaoException.CAN_NOT_CREATE_CONNECTION, e);
+		if (connectionTL.get() == null) {
+			try {
+				connectionTL.set(connectionPool.getConnection());
+			} catch (SQLException e) {
+				throw new DaoException(DaoException.CAN_NOT_CREATE_CONNECTION, e);
+			}
 		}
-	    return connection;
+	    return connectionTL.get();
 	}
 	
-	public PreparedStatement createPreparedStatement (Connection conn, String request) throws DaoException {
-		return createPreparedStatement(conn,request, null);
+	public PreparedStatement createPreparedStatement (String request) throws DaoException {
+		return createPreparedStatement(request, null);
 	}
 	
-	public PreparedStatement createPreparedStatement(Connection conn,
-			String request, Integer returnGeneratedKeys) throws DaoException {
+	public PreparedStatement createPreparedStatement(String request, Integer returnGeneratedKeys) throws DaoException {
 		PreparedStatement statement = null;
 		request.trim();
+		Connection conn = getConnection();
 		try {
 			if (returnGeneratedKeys != null) {
 				statement = conn.prepareStatement(request,returnGeneratedKeys);
@@ -99,8 +101,9 @@ public enum DaoManager {
 		return statement;
 	}
 	
-	public Statement createStatement (Connection conn) throws DaoException {
+	public Statement createStatement () throws DaoException {
 		Statement statement = null;
+		Connection conn = getConnection();
 		try {
 			statement = conn.createStatement();
 		} catch (SQLException e) {
@@ -115,8 +118,8 @@ public enum DaoManager {
 		}
 		return statement;
 	}
-
-	public void closeConnAndStat (Statement statement, Connection connection) throws DaoException {
+	
+	public void closeStat (Statement statement) throws DaoException {
 		try {
 			if (statement != null) {
 				statement.close();
@@ -124,15 +127,37 @@ public enum DaoManager {
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_CLOSE_STATEMENT,e);
 		}
+	}
+	
+	public void startTransaction () throws DaoException {
 		try {
-			if(connection != null) {
-				connection.close();
-			}
+			getConnection().setAutoCommit(false);
 		} catch (SQLException e) {
-			throw new DaoException(DaoException.CAN_NOT_CLOSE_CONNECTION,e);
+			throw new DaoException(DaoException.CAN_NOT_CHANGE_AUTOCOMMIT,e);
 		}
 	}
-
-
 	
+	public void commitTransaction () throws DaoException {
+		try {
+			getConnection().commit();
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_COMMIT,e);
+		}
+	}
+	
+	public void cancelTransaction () throws DaoException {
+		try {
+			getConnection().rollback();
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_ROLLBACK,e);
+		}
+	}
+	
+	public void endTransaction () throws DaoException {
+		try {
+			getConnection().setAutoCommit(true);
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_CHANGE_AUTOCOMMIT,e);
+		}
+	}	
 }

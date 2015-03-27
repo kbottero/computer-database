@@ -1,7 +1,7 @@
 package com.excilys.cdb.web;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -14,7 +14,6 @@ import com.excilys.cdb.dto.CompanyDTO;
 import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.mapper.CompanyMapper;
 import com.excilys.cdb.mapper.ComputerMapper;
-import com.excilys.cdb.model.Company;
 import com.excilys.cdb.service.CompaniesService;
 import com.excilys.cdb.service.ComputersService;
 
@@ -34,10 +33,7 @@ public class EditComputer extends HttpServlet {
 			Long id = Long.parseLong(attrib);
 			ComputerDTO computer = ComputerMapper.INSTANCE.toDTO(computersService.getOne(id));
 			request.setAttribute("computer", computer);
-			ArrayList<CompanyDTO> listCompany = new ArrayList<CompanyDTO>();
-			for (Company company : companiesService.getAll()) {
-				listCompany.add(CompanyMapper.INSTANCE.toDTO(company));
-			}
+			List<CompanyDTO> listCompany = CompanyMapper.INSTANCE.toDTOList(companiesService.getAll());
 			request.setAttribute("companies", listCompany);
 			request.setAttribute("prev", request.getHeader("Referer"));
 			RequestDispatcher dis=this.getServletContext().getRequestDispatcher("/WEB-INF/views/editComputer.jsp");

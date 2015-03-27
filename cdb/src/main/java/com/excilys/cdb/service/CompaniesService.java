@@ -1,16 +1,13 @@
 package com.excilys.cdb.service;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.exception.ServiceException;
 import com.excilys.cdb.model.Company;
-import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.CDBTransaction;
-import com.excilys.cdb.persistence.CDBTransaction.TransactionType;
 import com.excilys.cdb.persistence.CompanyDao;
 import com.excilys.cdb.persistence.ComputerDao;
+import com.excilys.cdb.persistence.TransactionFactory;
 import com.excilys.cdb.persistence.DaoRequestParameter;
 
 public class CompaniesService implements IService<Company,Long>{
@@ -22,25 +19,10 @@ public class CompaniesService implements IService<Company,Long>{
 	 */
 	@Override
 	public List<Company> getAll()  throws ServiceException{
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			transaction.init();
-			return CompanyDao.INSTANCE.getAll(transaction);
+			return CompanyDao.INSTANCE.getAll();
 		} catch (DaoException e) {
-			try {
-				transaction.rollback();
-			} catch (SQLException e1) {
-				throw new ServiceException(e1);
-			}
 			throw new ServiceException(e);
-		} finally {
-			if (transaction != null) {
-				try {
-					transaction.close();
-				} catch (SQLException e) {
-					throw new ServiceException(e);
-				}
-			}
 		}
 	}
 	/**
@@ -50,25 +32,10 @@ public class CompaniesService implements IService<Company,Long>{
 	 */
 	@Override
 	public List<Company> getAll(DaoRequestParameter param) throws ServiceException {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			transaction.init();
-			return CompanyDao.INSTANCE.getAll(transaction,param);
+			return CompanyDao.INSTANCE.getAll(param);
 		} catch (DaoException e) {
-			try {
-				transaction.rollback();
-			} catch (SQLException e1) {
-				throw new ServiceException(e1);
-			}
 			throw new ServiceException(e);
-		} finally {
-			if (transaction != null) {
-				try {
-					transaction.close();
-				} catch (SQLException e) {
-					throw new ServiceException(e);
-				}
-			}
 		}
 	}
 	
@@ -80,25 +47,10 @@ public class CompaniesService implements IService<Company,Long>{
 	 */
 	@Override
 	public List<Company> getSome(DaoRequestParameter param) throws ServiceException {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			transaction.init();
-			return CompanyDao.INSTANCE.getSome(transaction,param);
+			return CompanyDao.INSTANCE.getSome(param);
 		} catch (DaoException e) {
-			try {
-				transaction.rollback();
-			} catch (SQLException e1) {
-				throw new ServiceException(e1);
-			}
 			throw new ServiceException(e);
-		} finally {
-			if (transaction != null) {
-				try {
-					transaction.close();
-				} catch (SQLException e) {
-					throw new ServiceException(e);
-				}
-			}
 		}
 	}
 
@@ -108,25 +60,10 @@ public class CompaniesService implements IService<Company,Long>{
 	 */
 	@Override
 	public Long getNbInstance() throws ServiceException {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			transaction.init();
-			return CompanyDao.INSTANCE.getNb(transaction);
+			return CompanyDao.INSTANCE.getNb();
 		} catch (DaoException e) {
-			try {
-				transaction.rollback();
-			} catch (SQLException e1) {
-				throw new ServiceException(e1);
-			}
 			throw new ServiceException(e);
-		} finally {
-			if (transaction != null) {
-				try {
-					transaction.close();
-				} catch (SQLException e) {
-					throw new ServiceException(e);
-				}
-			}
 		}
 	}
 	
@@ -136,25 +73,10 @@ public class CompaniesService implements IService<Company,Long>{
 	 */
 	@Override
 	public Long getNbInstance(DaoRequestParameter param) throws ServiceException {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			transaction.init();
-			return CompanyDao.INSTANCE.getNb(transaction,param);
+			return CompanyDao.INSTANCE.getNb(param);
 		} catch (DaoException e) {
-			try {
-				transaction.rollback();
-			} catch (SQLException e1) {
-				throw new ServiceException(e1);
-			}
 			throw new ServiceException(e);
-		} finally {
-			if (transaction != null) {
-				try {
-					transaction.close();
-				} catch (SQLException e) {
-					throw new ServiceException(e);
-				}
-			}
 		}
 	}
 	
@@ -164,25 +86,10 @@ public class CompaniesService implements IService<Company,Long>{
 	 */
 	@Override
 	public Company getOne(Long id) throws ServiceException {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			transaction.init();
-			return CompanyDao.INSTANCE.getById(transaction,id);
+			return CompanyDao.INSTANCE.getById(id);
 		} catch (DaoException e) {
-			try {
-				transaction.rollback();
-			} catch (SQLException e1) {
-				throw new ServiceException(e1);
-			}
 			throw new ServiceException(e);
-		} finally {
-			if (transaction != null) {
-				try {
-					transaction.close();
-				} catch (SQLException e) {
-					throw new ServiceException(e);
-				}
-			}
 		}
 	}
 	
@@ -193,46 +100,16 @@ public class CompaniesService implements IService<Company,Long>{
 	 */
 	@Override
 	public void deleteOne(Long id) throws ServiceException {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
-			transaction.init();
-			try {
-				transaction.setAutoCommit(false);
-			} catch (SQLException e1) {
-				throw new ServiceException(DaoException.CAN_NOT_CHANGE_AUTOCOMMIT,e1);
-			}
-//			DaoRequestParameter param = new DaoRequestParameter(nameFiltering, nameLike, colToOrderBy, order, limit, offset);
-//			List<Computer> list = ComputerDao.INSTANCE.getSome(transaction, param);
-//			for (Computer computer : list) {
-//				ComputerDao.INSTANCE.delete(transaction, computer.getId());
-//			}
-			CompanyDao.INSTANCE.delete(transaction,id);
-			try {
-				transaction.commit();
-			} catch (SQLException e) {
-				throw new ServiceException(e);
-			}
-			
+			TransactionFactory.INSTANCE.startTransaction();
+			ComputerDao.INSTANCE.deleteByCompany(id);
+			CompanyDao.INSTANCE.delete(id);
+			TransactionFactory.INSTANCE.commitTransaction();
 		} catch (DaoException e) {
-			try {
-				transaction.rollback();
-			} catch (SQLException e1) {
-				throw new ServiceException(e1);
-			}
+			TransactionFactory.INSTANCE.cancelTransaction();
 			throw new ServiceException(e);
 		} finally {
-			if (transaction != null) {
-				try {
-					transaction.setAutoCommit(true);
-				} catch (SQLException e1) {
-					throw new ServiceException(DaoException.CAN_NOT_CHANGE_AUTOCOMMIT,e1);
-				}
-				try {
-					transaction.close();
-				} catch (SQLException e) {
-					throw new ServiceException(e);
-				}
-			}
+			TransactionFactory.INSTANCE.endTransaction();
 		}
 	}
 }

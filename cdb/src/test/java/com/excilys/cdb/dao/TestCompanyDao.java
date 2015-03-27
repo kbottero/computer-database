@@ -24,11 +24,9 @@ import org.junit.Test;
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.CDBTransaction;
 import com.excilys.cdb.persistence.CompanyDao;
-import com.excilys.cdb.persistence.DaoManager;
+import com.excilys.cdb.persistence.TransactionFactory;
 import com.excilys.cdb.persistence.DaoRequestParameter;
-import com.excilys.cdb.persistence.CDBTransaction.TransactionType;
 import com.excilys.cdb.persistence.DaoRequestParameter.Order;
 
 /**
@@ -40,7 +38,6 @@ public class TestCompanyDao {
 
 	private Connection connection;
 	private Statement statement;
-	CDBTransaction transaction;
 	
 	@BeforeClass
 	public static void setUpDB () {
@@ -50,7 +47,7 @@ public class TestCompanyDao {
 	@Before
 	public void setUp() throws Exception {
 		
-		BufferedReader in = new BufferedReader(new InputStreamReader(DaoManager.class.getClassLoader().getResourceAsStream("db-test.properties")));
+		BufferedReader in = new BufferedReader(new InputStreamReader(TransactionFactory.class.getClassLoader().getResourceAsStream("db-test.properties")));
 		Properties properties = new Properties();
 		properties.load(in);
 		in.close();
@@ -66,13 +63,10 @@ public class TestCompanyDao {
 			line = in.readLine();
 		}
 		in.close();
-		transaction = new CDBTransaction(TransactionType.ATOMIC);
-		transaction.init();
 	}
 	
 	@After
 	public void tearDown() throws Exception {
-		transaction.close();
 		if (statement != null) {
 			statement.close();
 		}
@@ -87,7 +81,7 @@ public class TestCompanyDao {
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
 		
-		ArrayList<Company> result = (ArrayList<Company>) CompanyDao.INSTANCE.getAll(transaction);
+		ArrayList<Company> result = (ArrayList<Company>) CompanyDao.INSTANCE.getAll();
 		
 		assertTrue(	listCompany.size() == result.size());
 		for (int i=0; i<listCompany.size() ;++i) {
@@ -99,7 +93,7 @@ public class TestCompanyDao {
 	public void getAllOnEmptyDatabase() throws Exception {
 		statement.execute("drop table if exists computer;");
 		statement.execute("drop table if exists company;");
-		CompanyDao.INSTANCE.getAll(transaction);
+		CompanyDao.INSTANCE.getAll();
 	}
 	
 	@Test(expected = NullPointerException.class)
@@ -107,7 +101,7 @@ public class TestCompanyDao {
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
-		CompanyDao.INSTANCE.getAll(transaction,null);
+		CompanyDao.INSTANCE.getAll(null);
 	}
 	
 	@Test
@@ -118,7 +112,7 @@ public class TestCompanyDao {
 		ArrayList<String> list = new ArrayList<String>();
 		list.add("name");
 		DaoRequestParameter param = new DaoRequestParameter (null,null,list,Order.DESC,null,null);
-		ArrayList<Company> result = (ArrayList<Company>) CompanyDao.INSTANCE.getAll(transaction,param);
+		ArrayList<Company> result = (ArrayList<Company>) CompanyDao.INSTANCE.getAll(param);
 		
 		ArrayList<String> nameList = new ArrayList<String>();
 		for (int i=0; i<listCompany.size() ;++i) {
@@ -142,7 +136,7 @@ public class TestCompanyDao {
 		list.add("name");
 		list.add("id");
 		DaoRequestParameter param = new DaoRequestParameter (null,null,list,Order.DESC,null,null);
-		ArrayList<Company> result = (ArrayList<Company>) CompanyDao.INSTANCE.getAll(transaction,param);
+		ArrayList<Company> result = (ArrayList<Company>) CompanyDao.INSTANCE.getAll(param);
 		
 		ArrayList<String> nameList = new ArrayList<String>();
 		for (int i=0; i<listCompany.size() ;++i) {
@@ -159,12 +153,12 @@ public class TestCompanyDao {
 	
 	@Test(expected = NullPointerException.class)
 	public void getSomeWithNullParameter() throws Exception {
-		CompanyDao.INSTANCE.getSome(transaction,null);
+		CompanyDao.INSTANCE.getSome(null);
 	}
 
 	@Test(expected = DaoException.class)
 	public void getSomeWithRequestParameterAttributeNull() throws Exception {
-		ArrayList<Company> list = (ArrayList<Company>) CompanyDao.INSTANCE.getSome(transaction,new DaoRequestParameter(null, null, null, null, null, null));
+		ArrayList<Company> list = (ArrayList<Company>) CompanyDao.INSTANCE.getSome(new DaoRequestParameter(null, null, null, null, null, null));
 		assertNotNull(list);
 		assertNotNull(list.size());
 	}
@@ -174,7 +168,7 @@ public class TestCompanyDao {
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
-		ArrayList<Company> list = (ArrayList<Company>) CompanyDao.INSTANCE.getSome(transaction,new DaoRequestParameter(DaoRequestParameter.NameFiltering.POST, "T", null, null, 10l, null));
+		ArrayList<Company> list = (ArrayList<Company>) CompanyDao.INSTANCE.getSome(new DaoRequestParameter(DaoRequestParameter.NameFiltering.POST, "T", null, null, 10l, null));
 		assertEquals(list.size(),2);
 	}
 	
@@ -182,7 +176,7 @@ public class TestCompanyDao {
 	public void getSomeOnEmptyDatabase() throws Exception {
 		statement.execute("drop table if exists computer;");
 		statement.execute("drop table if exists company;");
-		CompanyDao.INSTANCE.getSome(transaction,new DaoRequestParameter(null, null, null, null, 10l, null));
+		CompanyDao.INSTANCE.getSome(new DaoRequestParameter(null, null, null, null, 10l, null));
 	}
 	
 	@Test
@@ -193,7 +187,7 @@ public class TestCompanyDao {
 		ArrayList<String> list = new ArrayList<String>();
 		list.add("name");
 		DaoRequestParameter param = new DaoRequestParameter (null,null,list,Order.DESC,4l,null);
-		ArrayList<Company> result = (ArrayList<Company>) CompanyDao.INSTANCE.getSome(transaction,param);
+		ArrayList<Company> result = (ArrayList<Company>) CompanyDao.INSTANCE.getSome(param);
 		
 		ArrayList<String> nameList = new ArrayList<String>();
 		for (int i=0; i<listCompany.size(); ++i) {
@@ -216,7 +210,7 @@ public class TestCompanyDao {
 		ArrayList<String> list = new ArrayList<String>();
 		list.add("name");
 		DaoRequestParameter param = new DaoRequestParameter (null,null,list,Order.DESC,4l,1l);
-		ArrayList<Company> result = (ArrayList<Company>) CompanyDao.INSTANCE.getSome(transaction,param);
+		ArrayList<Company> result = (ArrayList<Company>) CompanyDao.INSTANCE.getSome(param);
 		
 		ArrayList<String> nameList = new ArrayList<String>();
 		for (int i=0; i<listCompany.size() ;++i) {
@@ -236,19 +230,19 @@ public class TestCompanyDao {
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
-		assertTrue(CompanyDao.INSTANCE.getNb(transaction) == listCompany.size());
+		assertTrue(CompanyDao.INSTANCE.getNb() == listCompany.size());
 	}
 	
 	@Test
 	public void getNbOnEmptyTable() throws Exception {
-		assertEquals(new Long (0l),CompanyDao.INSTANCE.getNb(transaction));
+		assertEquals(new Long (0l),CompanyDao.INSTANCE.getNb());
 	}
 
 	@Test(expected = DaoException.class)
 	public void getNbOnEmptyDatabase() throws Exception {
 		statement.execute("drop table if exists computer;");
 		statement.execute("drop table if exists company;");
-		CompanyDao.INSTANCE.getNb(transaction);
+		CompanyDao.INSTANCE.getNb();
 	}
 	
 	@Test
@@ -256,7 +250,7 @@ public class TestCompanyDao {
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
-		assertTrue(CompanyDao.INSTANCE.getById(transaction,1l).equals(listCompany.get(0)));
+		assertTrue(CompanyDao.INSTANCE.getById(1l).equals(listCompany.get(0)));
 	}
 	
 	@Test(expected = DaoException.class)
@@ -264,19 +258,19 @@ public class TestCompanyDao {
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
-		CompanyDao.INSTANCE.getById(transaction,null);
+		CompanyDao.INSTANCE.getById(null);
 	}
 	
 	@Test(expected = DaoException.class)
 	public void getByIdOnEmptyTable() throws Exception {
-		assertNull(CompanyDao.INSTANCE.getById(transaction,1l));
+		assertNull(CompanyDao.INSTANCE.getById(1l));
 	}
 	
 	@Test(expected = DaoException.class)
 	public void getByIdOnEmptyDatabase() throws Exception {
 		statement.execute("drop table if exists computer;");
 		statement.execute("drop table if exists company;");
-		CompanyDao.INSTANCE.getById(transaction,1l);
+		CompanyDao.INSTANCE.getById(1l);
 	}
 	
 

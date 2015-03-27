@@ -22,7 +22,7 @@ import org.junit.Test;
 import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.DaoManager;
+import com.excilys.cdb.persistence.TransactionFactory;
 
 public class TestComputerMapper {
 
@@ -45,7 +45,7 @@ public class TestComputerMapper {
 
 	@Test
 	public void mapFromRow() throws Exception {
-		BufferedReader in = new BufferedReader(new InputStreamReader(DaoManager.class.getClassLoader().getResourceAsStream("db-test.properties")));
+		BufferedReader in = new BufferedReader(new InputStreamReader(TransactionFactory.class.getClassLoader().getResourceAsStream("db-test.properties")));
 		Properties properties = new Properties();
 		properties.load(in);
 		in.close();

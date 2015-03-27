@@ -59,7 +59,7 @@
                 </thead>
                 <!-- Browse attribute computers -->
                 <tbody id="results">
-                	<c:forEach var="c" items="${page.elements}">
+                	<c:forEach var="c" items="${computers}">
 						<tr>
 							<td class="editMode">
 	                            <input type="checkbox" name="cb" class="cb" value="${c.id}">

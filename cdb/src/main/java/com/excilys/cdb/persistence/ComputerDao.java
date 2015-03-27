@@ -35,7 +35,8 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		SELECT_ONE ("SELECT id, name,introduced, discontinued, company_id FROM computer WHERE id=?;"),
 		INSERT_ONE ("INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?,?,?,?) ;"),
 		UPDATE_ONE ("UPDATE computer SET name=?, introduced=?, discontinued=?, company_id=? WHERE id=?;"),
-		DELETE_ONE ("DELETE FROM computer WHERE id=?;");
+		DELETE_ONE ("DELETE FROM computer WHERE id=?;"),
+		DELETE_BY_COMPANY("DELETE FROM computer WHERE company_id=?;");
 
 		private final String request;
 
@@ -46,10 +47,10 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 	}
 
 	@Override
-	public List<Computer> getAll(CDBTransaction transaction) throws DaoException {
+	public List<Computer> getAll() throws DaoException {
 		logger.info("getAll() method");
 		List<Computer> list = new ArrayList<Computer>();
-		Statement statement = transaction.createStatement();
+		Statement statement = TransactionFactory.INSTANCE.createStatement();
 		try {
 			ResultSet curs = statement.executeQuery(preparedStatement.SELECT_ALL.getRequest());
 			logger.debug("Excuted request : "+statement.toString());
@@ -60,13 +61,13 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
-			transaction.closeStat(statement);
+			TransactionFactory.INSTANCE.closeStat(statement);
 		}
 		return list;
 	}
 
 	@Override
-	public List<Computer> getAll(CDBTransaction transaction, DaoRequestParameter param) throws DaoException {
+	public List<Computer> getAll(DaoRequestParameter param) throws DaoException {
 		logger.info("getAll(param) method");
 
 		StringBuilder request = new StringBuilder();
@@ -78,7 +79,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 
 		request.append(";");
 
-		Statement statement = transaction.createStatement();
+		Statement statement = TransactionFactory.INSTANCE.createStatement();
 		logger.debug("Excuted request : "+statement.toString());
 		try{
 			//Execute Request
@@ -91,17 +92,17 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_CREATE_STATEMENT,e);
 		} finally {
-			transaction.closeStat(statement);
+			TransactionFactory.INSTANCE.closeStat(statement);
 		}
 		return list;
 	}
 
 	@Override
-	public Long getNb(CDBTransaction transaction) throws DaoException {
+	public Long getNb() throws DaoException {
 		logger.info("getNb() method");
 
 		Long nbElements = null;
-		Statement statement = transaction.createStatement();
+		Statement statement = TransactionFactory.INSTANCE.createStatement();
 		try {
 			ResultSet curs = statement.executeQuery(preparedStatement.COUNT_ALL.getRequest());
 			logger.debug("Excuted request : "+statement.toString());
@@ -112,16 +113,16 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT, e);
 		} finally {
-			transaction.closeStat(statement);
+			TransactionFactory.INSTANCE.closeStat(statement);
 		}
 		return nbElements;
 	}
 	
 	@Override
-	public Long getNb(CDBTransaction transaction, DaoRequestParameter param) throws DaoException {
+	public Long getNb(DaoRequestParameter param) throws DaoException {
 		logger.info("getNb(param) method");
 		if (param == null) {
-			return getNb(transaction);
+			return getNb();
 		}
 		Integer numArg = new Integer(1);
 		Long nbElements = null;
@@ -135,7 +136,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 			request.append(" ");
 			addOrderByToRequest(request, param);
 			request.append(" LIMIT ? OFFSET ?;");
-			statement = transaction.createPreparedStatement( request.toString());
+			statement = TransactionFactory.INSTANCE.createPreparedStatement( request.toString());
 			try {
 				if (param.getNameLike() != null) {
 					numArg = setWhenCondition (statement, param, numArg);
@@ -159,12 +160,12 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 					}
 				}
 			} catch (SQLException e) {
-				transaction.closeStat(statement);
+				TransactionFactory.INSTANCE.closeStat(statement);
 				throw new DaoException(DaoException.CAN_NOT_SET_PREPAREDSTATEMENT,e);
 			}
 		} else {
 			request.append(preparedStatement.COUNT_ALL.getRequest());
-			statement = transaction.createPreparedStatement( request.toString());
+			statement = TransactionFactory.INSTANCE.createPreparedStatement( request.toString());
 		}
 
 		try {
@@ -179,13 +180,13 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT, e);
 		} finally {
-			transaction.closeStat(statement);
+			TransactionFactory.INSTANCE.closeStat(statement);
 		}
 		return nbElements;
 	}
 
 	@Override
-	public List<Computer> getSome(CDBTransaction transaction, DaoRequestParameter param) throws DaoException {
+	public List<Computer> getSome(DaoRequestParameter param) throws DaoException {
 		logger.info("getSome(param) method");
 		Integer numArg = new Integer(1);
 		List<Computer> list = new ArrayList<Computer>();
@@ -204,7 +205,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		request.append(" ");
 		request.append(" LIMIT ? OFFSET ?;");
 		
-		statement = transaction.createPreparedStatement(request.toString());
+		statement = TransactionFactory.INSTANCE.createPreparedStatement(request.toString());
 
 		try {
 			if (param.getNameLike() != null) {
@@ -229,7 +230,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 				}
 			}
 		} catch (SQLException e) {
-			transaction.closeStat(statement);
+			TransactionFactory.INSTANCE.closeStat(statement);
 			throw new DaoException(DaoException.CAN_NOT_SET_PREPAREDSTATEMENT,e);
 		}
 		try{
@@ -242,19 +243,19 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
-			transaction.closeStat(statement);
+			TransactionFactory.INSTANCE.closeStat(statement);
 		}
 		return list;
 	}
 
 	@Override
-	public Computer getById(CDBTransaction transaction, Long id) throws DaoException {
+	public Computer getById(Long id) throws DaoException {
 		logger.info("getById(id) method");
 		if (id == null) {
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
 		Computer comp=null;
-		PreparedStatement statement = transaction.createPreparedStatement( preparedStatement.SELECT_ONE.getRequest());
+		PreparedStatement statement = TransactionFactory.INSTANCE.createPreparedStatement( preparedStatement.SELECT_ONE.getRequest());
 		try {
 			statement.setLong(1,id);
 			ResultSet curs = statement.executeQuery();
@@ -268,13 +269,13 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
-			transaction.closeStat(statement);
+			TransactionFactory.INSTANCE.closeStat(statement);
 		}
 		return comp;
 	}
 
 	@Override
-	public void save(CDBTransaction transaction, Computer computer) throws DaoException {
+	public void save(Computer computer) throws DaoException {
 		logger.info("save(computer) method");
 		if (computer == null) {
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
@@ -282,7 +283,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		int nb;
 		Integer numArg = new Integer(1);
 		boolean update=false;
-		PreparedStatement statement = transaction.createPreparedStatement( preparedStatement.SELECT_ONE.getRequest());
+		PreparedStatement statement = TransactionFactory.INSTANCE.createPreparedStatement( preparedStatement.SELECT_ONE.getRequest());
 		try {
 			statement.setLong(1,computer.getId());
 			ResultSet curs = statement.executeQuery();
@@ -301,7 +302,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		try{
 			if (!update)
 			{
-				statement = transaction.createPreparedStatement( preparedStatement.INSERT_ONE.getRequest(),
+				statement = TransactionFactory.INSTANCE.createPreparedStatement( preparedStatement.INSERT_ONE.getRequest(),
 						PreparedStatement.RETURN_GENERATED_KEYS);
 				numArg = setComputerInStatement (statement,computer, numArg);
 				nb = statement.executeUpdate();
@@ -316,7 +317,7 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 				rs.close();
 
 			} else {
-				statement = transaction.createPreparedStatement( preparedStatement.UPDATE_ONE.getRequest());
+				statement = TransactionFactory.INSTANCE.createPreparedStatement( preparedStatement.UPDATE_ONE.getRequest());
 				setComputerInStatement (statement,computer, numArg);
 				statement.setLong(numArg++, computer.getId());
 				nb = statement.executeUpdate();
@@ -328,17 +329,17 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_SET_PREPAREDSTATEMENT,e);
 		} finally {
-			transaction.closeStat(statement);
+			TransactionFactory.INSTANCE.closeStat(statement);
 		}
 	}
 
 	@Override
-	public void delete(CDBTransaction transaction, Long id) throws DaoException {
+	public void delete(Long id) throws DaoException {
 		logger.info("delete(id) method");
 		if (id == null) {
 			throw new IllegalArgumentException();
 		}
-		PreparedStatement statement = transaction.createPreparedStatement( preparedStatement.DELETE_ONE.getRequest());
+		PreparedStatement statement = TransactionFactory.INSTANCE.createPreparedStatement( preparedStatement.DELETE_ONE.getRequest());
 		logger.debug("Excuted request : "+statement.toString());
 		try {
 			statement.setLong(1, id);
@@ -349,9 +350,30 @@ public enum ComputerDao  implements IDao<Computer, Long> {
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_DELETE_ELEMENT,e);
 		} finally {
-			transaction.closeStat(statement);
+			TransactionFactory.INSTANCE.closeStat(statement);
 		}
 	}
+	
+	public void deleteByCompany(Long companyId) throws DaoException {
+		logger.info("delete(id) method");
+		if (companyId == null) {
+			throw new IllegalArgumentException();
+		}
+		PreparedStatement statement = TransactionFactory.INSTANCE.createPreparedStatement( preparedStatement.DELETE_BY_COMPANY.getRequest());
+		logger.debug("Excuted request : "+statement.toString());
+		try {
+			statement.setLong(1, companyId);
+			int nb = statement.executeUpdate();
+			if (nb==0) {
+				throw new DaoException(DaoException.CAN_NOT_DELETE_ELEMENT);
+			}
+		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_DELETE_ELEMENT,e);
+		} finally {
+			TransactionFactory.INSTANCE.closeStat(statement);
+		}
+	}
+	
 	
 	public void addOrderByToRequest(StringBuilder request, DaoRequestParameter param) throws DaoException {
 		if ((param.getColToOrderBy() == null) || (param.getColToOrderBy().size() == 0)){

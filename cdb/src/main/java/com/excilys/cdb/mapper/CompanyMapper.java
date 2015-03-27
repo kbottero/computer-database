@@ -2,7 +2,6 @@ package com.excilys.cdb.mapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 
 import com.excilys.cdb.dto.CompanyDTO;
 import com.excilys.cdb.exception.DaoException;
@@ -14,18 +13,21 @@ import com.excilys.cdb.model.Company;
  * @author Kevin Bottero
  *
  */
-public enum CompanyMapper implements IMapper<Company> {
+public enum CompanyMapper implements IMapper<Company, CompanyDTO> {
 	INSTANCE;
 
 	/** Primary Key.	 */
 	public static final String DEFAULT_ID = "id";
 
-	/** Map DB labels -> Model attributes. */
-	public static final HashMap<String,String> mapBDModel;
-	static {
-		mapBDModel = new HashMap<String,String>();
-		mapBDModel.put("id","id");
-		mapBDModel.put("name","name");
+	public enum DBFields {
+		ID ("id"),
+		NAME ("name");
+		
+		DBFields (String value) {
+			this.value = value;
+		}
+		
+		public String value;
 	}
 	
 	/**

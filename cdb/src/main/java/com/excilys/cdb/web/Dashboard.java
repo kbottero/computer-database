@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.excilys.cdb.mapper.ComputerMapper;
 import com.excilys.cdb.persistence.DaoRequestParameter;
 import com.excilys.cdb.persistence.DaoRequestParameter.NameFiltering;
 import com.excilys.cdb.service.ComputersService;
@@ -49,8 +50,9 @@ public class Dashboard extends HttpServlet {
 			Long numPage = Long.parseLong(attrib);
 			compPage.goToPage(numPage);
 		}
-		
+
 		request.setAttribute("page", compPage);
+		request.setAttribute("computers", ComputerMapper.INSTANCE.toDTOList(compPage.getElements()));
 		RequestDispatcher dis=this.getServletContext().getRequestDispatcher("/WEB-INF/views/dashboard.jsp");
 		
 		dis.forward(request, response);

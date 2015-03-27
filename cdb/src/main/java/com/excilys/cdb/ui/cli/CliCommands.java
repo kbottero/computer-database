@@ -406,7 +406,7 @@ public enum CliCommands {
 	 * 
 	 */
 	private static void listComputersPage(Scanner s) {
-		Page<Computer, ComputerDTO, Long> page;
+		Page<Computer, Long> page;
 		if (s.hasNext()) {
 			Long nbLine = s.nextLong();
 			page = new ComputerPage (servComputers, nbLine,null);
@@ -416,7 +416,7 @@ public enum CliCommands {
 	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		Scanner scan = null;
 		do {
-			for (ComputerDTO computer  : page.getElements()) {
+			for (ComputerDTO computer  : ComputerMapper.INSTANCE.toDTOList(page.getElements())) {
 				CliCommands.printComputer(computer);
 			}
 			printEndOfPage(page);
@@ -444,7 +444,7 @@ public enum CliCommands {
 	 * @param s Current Scanner value
 	 */
 	private static void listCompaniesPage(Scanner s) {
-		Page<Company, CompanyDTO, Long> page;
+		Page<Company, Long> page;
 		if (s.hasNext()) {
 			Long nbLine = s.nextLong();
 			page = new CompanyPage (servCompanies, nbLine,null);
@@ -454,7 +454,7 @@ public enum CliCommands {
 	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		Scanner scan = null;
 		do {
-			for (CompanyDTO company  : page.getElements()) {
+			for (CompanyDTO company  : CompanyMapper.INSTANCE.toDTOList(page.getElements())) {
 				CliCommands.printCompany(company);
 			}
 			printEndOfPage(page);
@@ -490,7 +490,7 @@ public enum CliCommands {
 	/**
 	 * Print information related to the current page
 	 */
-	private static void printEndOfPage (Page<?,?,?> page) {
+	private static void printEndOfPage (Page<?,?> page) {
 		StringBuilder stgBuild = new StringBuilder();
 		stgBuild.append("Page ");
 		stgBuild.append(page.getCurrent());

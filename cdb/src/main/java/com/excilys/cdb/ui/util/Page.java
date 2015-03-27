@@ -6,10 +6,10 @@ import java.util.List;
 import com.excilys.cdb.persistence.DaoRequestParameter;
 import com.excilys.cdb.service.IService;
 
-public abstract class Page <E,D, I extends Serializable> {
+public abstract class Page <E, I extends Serializable> {
 
 	protected IService<E, I> serv;
-	protected List<D> elements;
+	protected List<E> elements;
 	protected Long current;
 	protected Long pageSize;
 	protected Long count;
@@ -59,7 +59,7 @@ public abstract class Page <E,D, I extends Serializable> {
 		return count;
 	}
 	
-	public List<D> getElements() {
+	public List<E> getElements() {
 		return elements;
 	}
 	

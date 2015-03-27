@@ -12,7 +12,7 @@ public interface IDao <T, I extends Serializable> {
 	 * @return
 	 * @throws DaoException
 	 */
-	public default List<T> getAll(CDBTransaction transaction) throws DaoException {
+	public default List<T> getAll() throws DaoException {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -27,7 +27,7 @@ public interface IDao <T, I extends Serializable> {
 	 * @return		List<T>
 	 * @throws DaoException
 	 */
-	public default List<T> getAll(CDBTransaction transaction, DaoRequestParameter param)  throws DaoException {
+	public default List<T> getAll( DaoRequestParameter param)  throws DaoException {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -36,7 +36,7 @@ public interface IDao <T, I extends Serializable> {
 	 * @return
 	 * @throws DaoException
 	 */
-	public default Long getNb(CDBTransaction transaction)  throws DaoException {
+	public default Long getNb()  throws DaoException {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -45,7 +45,7 @@ public interface IDao <T, I extends Serializable> {
 	 * @return
 	 * @throws DaoException
 	 */
-	public default Long getNb(CDBTransaction transaction, DaoRequestParameter param)  throws DaoException {
+	public default Long getNb( DaoRequestParameter param)  throws DaoException {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -55,7 +55,7 @@ public interface IDao <T, I extends Serializable> {
 	 * @return
 	 * @throws DaoException
 	 */
-	public default T getById(CDBTransaction transaction, I id)  throws DaoException {
+	public default T getById( I id)  throws DaoException {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -65,7 +65,7 @@ public interface IDao <T, I extends Serializable> {
 	 * @return
 	 * @throws DaoException
 	 */
-	public default void save(CDBTransaction transaction, T c)  throws DaoException {
+	public default void save( T c)  throws DaoException {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -75,7 +75,7 @@ public interface IDao <T, I extends Serializable> {
 	 * @return
 	 * @throws DaoException
 	 */
-	public default void delete(CDBTransaction transaction, I id)  throws DaoException {
+	public default void delete( I id)  throws DaoException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -90,7 +90,7 @@ public interface IDao <T, I extends Serializable> {
 	 * 				All the parameters related to the request.
 	 * @throws DaoException
 	 */
-	public default List<T> getSome(CDBTransaction transaction, DaoRequestParameter param) throws DaoException {
+	public default List<T> getSome( DaoRequestParameter param) throws DaoException {
 		throw new UnsupportedOperationException();
 	}
 }

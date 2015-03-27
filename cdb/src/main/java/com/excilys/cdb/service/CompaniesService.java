@@ -6,9 +6,11 @@ import java.util.List;
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.exception.ServiceException;
 import com.excilys.cdb.model.Company;
+import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.CDBTransaction;
 import com.excilys.cdb.persistence.CDBTransaction.TransactionType;
 import com.excilys.cdb.persistence.CompanyDao;
+import com.excilys.cdb.persistence.ComputerDao;
 import com.excilys.cdb.persistence.DaoRequestParameter;
 
 public class CompaniesService implements IService<Company,Long>{
@@ -194,7 +196,23 @@ public class CompaniesService implements IService<Company,Long>{
 		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
 		try {
 			transaction.init();
+			try {
+				transaction.setAutoCommit(false);
+			} catch (SQLException e1) {
+				throw new ServiceException(DaoException.CAN_NOT_CHANGE_AUTOCOMMIT,e1);
+			}
+//			DaoRequestParameter param = new DaoRequestParameter(nameFiltering, nameLike, colToOrderBy, order, limit, offset);
+//			List<Computer> list = ComputerDao.INSTANCE.getSome(transaction, param);
+//			for (Computer computer : list) {
+//				ComputerDao.INSTANCE.delete(transaction, computer.getId());
+//			}
 			CompanyDao.INSTANCE.delete(transaction,id);
+			try {
+				transaction.commit();
+			} catch (SQLException e) {
+				throw new ServiceException(e);
+			}
+			
 		} catch (DaoException e) {
 			try {
 				transaction.rollback();
@@ -204,6 +222,11 @@ public class CompaniesService implements IService<Company,Long>{
 			throw new ServiceException(e);
 		} finally {
 			if (transaction != null) {
+				try {
+					transaction.setAutoCommit(true);
+				} catch (SQLException e1) {
+					throw new ServiceException(DaoException.CAN_NOT_CHANGE_AUTOCOMMIT,e1);
+				}
 				try {
 					transaction.close();
 				} catch (SQLException e) {

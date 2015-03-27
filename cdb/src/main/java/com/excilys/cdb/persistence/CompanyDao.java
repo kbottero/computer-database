@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.mapper.CompanyMapper;
+import com.excilys.cdb.mapper.ComputerMapper;
 import com.excilys.cdb.model.Company;
 
 /**
@@ -71,56 +72,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 
 		request.append(preparedStatement.SELECT_ALL_ORDERED.getRequest());
 		request.append(" ");
-		if ((param.getColToOrderBy() == null) || (param.getColToOrderBy().size() == 0)){
-			request.append(CompanyMapper.DEFAULT_ID);
-			request.append(" ");
-			//ASC or DESC ?
-			if (param.getOrder() == null) {
-				request.append("ASC");
-			} else {
-				switch (param.getOrder()) {
-				case ASC:
-					request.append("ASC");
-					break;
-				case DESC:
-					request.append("DESC");
-					break;
-				default:
-					throw new DaoException(DaoException.INVALID_ARGUMENT);
-				}
-			}
-		} else {
-			StringBuilder strgBuild = new StringBuilder();
-			for (String strg : param.getColToOrderBy()) {
-				if (CompanyMapper.mapBDModel.containsKey(strg)) {
-					if (strgBuild.length() != 0) {
-						strgBuild.append(",");
-						strgBuild.append(CompanyMapper.mapBDModel.get(strg));
-					} else {
-						strgBuild.append(CompanyMapper.mapBDModel.get(strg));
-						strgBuild.append(" ");
-						//ASC or DESC ?
-						if (param.getOrder() == null) {
-							strgBuild.append("ASC");
-						} else {
-							switch (param.getOrder()) {
-							case ASC:
-								strgBuild.append("ASC");
-								break;
-							case DESC:
-								strgBuild.append("DESC");
-								break;
-							default:
-								throw new DaoException(DaoException.INVALID_ARGUMENT);
-							}
-						}
-					}
-				} else {
-					throw new DaoException(DaoException.INVALID_ARGUMENT);
-				}
-			}
-			request.append(strgBuild.toString());
-		}
+		addOrderByToRequest(request, param);
 		request.append(";");
 		Statement statement = transaction.createStatement();
 		
@@ -179,85 +131,14 @@ public enum CompanyDao implements IDao<Company, Long>{
 			request.append(preparedStatement.SELECT_SOME.getRequest());
 		}
 		request.append(" ");
-
-		if ((param.getColToOrderBy() == null) || (param.getColToOrderBy().size() == 0)){
-			request.append(CompanyMapper.DEFAULT_ID);
-			request.append(" ");
-			//ASC or DESC ?
-			if (param.getOrder() == null) {
-				request.append("ASC");
-			} else {
-				switch (param.getOrder()) {
-				case ASC:
-					request.append("ASC");
-					break;
-				case DESC:
-					request.append("DESC");
-					break;
-				default:
-					throw new DaoException(DaoException.INVALID_ARGUMENT);
-				}
-			}
-		} else {
-			StringBuilder strgBuild = new StringBuilder();
-			for (String strg : param.getColToOrderBy()) {
-				if (CompanyMapper.mapBDModel.containsKey(strg)) {
-					if (strgBuild.length() != 0) {
-						strgBuild.append(",");
-						strgBuild.append(CompanyMapper.mapBDModel.get(strg));
-					} else {
-						strgBuild.append(CompanyMapper.mapBDModel.get(strg));
-						strgBuild.append(" ");
-						//ASC or DESC ?
-						if (param.getOrder() == null) {
-							strgBuild.append("ASC");
-						} else {
-							switch (param.getOrder()) {
-							case ASC:
-								strgBuild.append("ASC");
-								break;
-							case DESC:
-								strgBuild.append("DESC");
-								break;
-							default:
-								throw new DaoException(DaoException.INVALID_ARGUMENT);
-							}
-						}
-					}
-				} else {
-					throw new DaoException(DaoException.INVALID_ARGUMENT);
-				}
-			}
-			request.append(strgBuild.toString());
-		}
+		addOrderByToRequest(request, param);
 		request.append(" ");
 		request.append(" LIMIT ? OFFSET ?;");
 		
 		statement = transaction.createPreparedStatement(request.toString());
 		try {
 			if (param.getNameLike() != null) {			
-					StringBuilder filter = new StringBuilder();
-					switch (param.getNameFiltering()) {
-					case POST:
-						filter.append(param.getNameLike());
-						filter.append('%');
-						break;
-					case PRE:
-						filter.append('%');
-						filter.append(param.getNameLike());
-						break;
-					case POST_AND_PRE:
-						filter.append('%');
-						filter.append(param.getNameLike());
-						filter.append('%');
-						break;
-					case NONE:
-						filter.append(param.getNameLike());
-						break;
-						default:
-							throw new DaoException(DaoException.INVALID_ARGUMENT);
-					}
-					statement.setString(numArg++,filter.toString());
+				numArg = setWhenCondition (statement,param, numArg);
 			}
 			if (param.getLimit() == null) {
 				transaction.closeStat(statement);
@@ -362,5 +243,85 @@ public enum CompanyDao implements IDao<Company, Long>{
 			transaction.closeStat(statement);
 		}
 	}
+	
+	public void addOrderByToRequest(StringBuilder request, DaoRequestParameter param) throws DaoException {
+		if ((param.getColToOrderBy() == null) || (param.getColToOrderBy().size() == 0)){
+			request.append(ComputerMapper.DEFAULT_ID);
+			request.append(" ");
+			//ASC or DESC ?
+			if (param.getOrder() == null) {
+				request.append("ASC");
+			} else {
+				switch (param.getOrder()) {
+				case ASC:
+					request.append("ASC");
+					break;
+				case DESC:
+					request.append("DESC");
+					break;
+				default:
+					throw new DaoException(DaoException.INVALID_ARGUMENT);
+				}
+			}
+		} else {
+			StringBuilder strgBuild = new StringBuilder();
+			for (String strg : param.getColToOrderBy()) {
+				if (ComputerMapper.mapBDModel.containsKey(strg)) {
+					if (strgBuild.length() != 0) {
+						strgBuild.append(",");
+						strgBuild.append(ComputerMapper.mapBDModel.get(strg));
+					} else {
+						strgBuild.append(ComputerMapper.mapBDModel.get(strg));
+						strgBuild.append(" ");
+						//ASC or DESC ?
+						if (param.getOrder() == null) {
+							strgBuild.append("ASC");
+						} else {
+							switch (param.getOrder()) {
+							case ASC:
+								strgBuild.append("ASC");
+								break;
+							case DESC:
+								strgBuild.append("DESC");
+								break;
+							default:
+								throw new DaoException(DaoException.INVALID_ARGUMENT);
+							}
+						}
+					}
+				} else {
+					throw new DaoException(DaoException.INVALID_ARGUMENT);
+				}
+			}
+			request.append(strgBuild.toString());
+		}
+	}
+	
+	public Integer setWhenCondition (PreparedStatement statement,DaoRequestParameter param, Integer numArg) throws SQLException {
+		StringBuilder filter = new StringBuilder();
+		switch (param.getNameFiltering()) {
+		case POST:
+			filter.append(param.getNameLike());
+			filter.append('%');
+			break;
+		case PRE:
+			filter.append('%');
+			filter.append(param.getNameLike());
+			break;
+		case POST_AND_PRE:
+			filter.append('%');
+			filter.append(param.getNameLike());
+			filter.append('%');
+			break;
+		case NONE:
+			filter.append(param.getNameLike());
+			break;
+		default:
+			throw new DaoException(DaoException.INVALID_ARGUMENT);
+		}
+		statement.setString(numArg++,filter.toString());
+		return numArg;
+	}
+	
 	
 }

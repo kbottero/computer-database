@@ -1,6 +1,7 @@
 package com.excilys.cdb.dao;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -10,6 +11,7 @@ import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -25,6 +27,7 @@ import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.CompanyDao;
+import com.excilys.cdb.persistence.ComputerDao;
 import com.excilys.cdb.persistence.TransactionFactory;
 import com.excilys.cdb.persistence.DaoRequestParameter;
 import com.excilys.cdb.persistence.DaoRequestParameter.Order;
@@ -271,6 +274,44 @@ public class TestCompanyDao {
 		statement.execute("drop table if exists computer;");
 		statement.execute("drop table if exists company;");
 		CompanyDao.INSTANCE.getById(1l);
+	}
+	
+	@Test(expected = DaoException.class)
+	public void deleteByIdOnEmptyDatabase() throws Exception {
+		statement.execute("drop table if exists computer;");
+		statement.execute("drop table if exists company;");
+		CompanyDao.INSTANCE.delete(1l);
+	}
+	
+	@Test(expected = DaoException.class)
+	public void deleteByCompanyOnEmptyTable() throws Exception {
+		ComputerDao.INSTANCE.delete(1l);
+	}
+	
+	@Test(expected = DaoException.class)
+	public void deleteWithInvalidId() throws Exception {
+		CompanyDao.INSTANCE.delete(100000l);
+	}
+	
+	@Test(expected = DaoException.class)
+	public void deleteWithIdUsedByComputer() throws Exception {
+		ArrayList<Computer> listComputer = new ArrayList<Computer>();
+		ArrayList<Company> listCompany = new ArrayList<Company>();
+		initDBWithBasicInfo(listComputer, listCompany);
+		CompanyDao.INSTANCE.delete(1l);
+	}
+
+	@Test
+	public void deleteWithValidId() throws Exception {
+		ArrayList<Computer> listComputer = new ArrayList<Computer>();
+		ArrayList<Company> listCompany = new ArrayList<Company>();
+		initDBWithBasicInfo(listComputer, listCompany);
+		CompanyDao.INSTANCE.delete(6l);
+		ResultSet rs = statement.executeQuery("SELECT * FROM company WHERE id=6;");
+		assertFalse(rs.next());
+		rs.close();
+		rs = statement.executeQuery("SELECT * FROM computer WHERE company_id=6;");
+		assertFalse(rs.next());
 	}
 	
 

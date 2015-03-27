@@ -319,6 +319,39 @@ public class TestComputerDao {
 		ComputerDao.INSTANCE.delete(1l);
 	}
 
+	@Test
+	public void deleteByCompany() throws Exception {
+		ArrayList<Computer> listComputer = new ArrayList<Computer>();
+		ArrayList<Company> listCompany = new ArrayList<Company>();
+		initDBWithBasicInfo(listComputer, listCompany);
+
+		ComputerDao.INSTANCE.deleteByCompany(1l);
+		StringBuilder strg = new StringBuilder();
+		strg.append("SELECT * FROM computer WHERE company_id=1;");
+		ResultSet rs = statement.executeQuery(strg.toString());
+		assertFalse(rs.next());
+		rs.close();
+	}
+	
+	@Test(expected = DaoException.class)
+	public void deleteByCompanyOnEmptyTable() throws Exception {
+		ComputerDao.INSTANCE.deleteByCompany(1l);
+	}
+	
+	@Test(expected = DaoException.class)
+	public void deleteByCompanyOnEmptyDatabase() throws Exception {
+		statement.execute("drop table if exists computer;");
+		ComputerDao.INSTANCE.deleteByCompany(1l);
+	}
+	
+	@Test(expected = DaoException.class)
+	public void deleteByCompanyWithInvalidId() throws Exception {
+		ArrayList<Computer> listComputer = new ArrayList<Computer>();
+		ArrayList<Company> listCompany = new ArrayList<Company>();
+		initDBWithBasicInfo(listComputer, listCompany);
+		ComputerDao.INSTANCE.deleteByCompany(100000l);
+	}
+	
 	private void initDBWithBasicInfo (ArrayList<Computer> listComputer, ArrayList<Company> listCompany) throws Exception {
 		ArrayList<String> list = new ArrayList<String>();
 

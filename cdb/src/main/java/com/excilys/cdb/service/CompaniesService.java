@@ -25,6 +25,11 @@ public class CompaniesService implements IService<Company,Long>{
 			transaction.init();
 			return CompanyDao.INSTANCE.getAll(transaction);
 		} catch (DaoException e) {
+			try {
+				transaction.rollback();
+			} catch (SQLException e1) {
+				throw new ServiceException(e1);
+			}
 			throw new ServiceException(e);
 		} finally {
 			if (transaction != null) {
@@ -48,6 +53,11 @@ public class CompaniesService implements IService<Company,Long>{
 			transaction.init();
 			return CompanyDao.INSTANCE.getAll(transaction,param);
 		} catch (DaoException e) {
+			try {
+				transaction.rollback();
+			} catch (SQLException e1) {
+				throw new ServiceException(e1);
+			}
 			throw new ServiceException(e);
 		} finally {
 			if (transaction != null) {
@@ -73,6 +83,11 @@ public class CompaniesService implements IService<Company,Long>{
 			transaction.init();
 			return CompanyDao.INSTANCE.getSome(transaction,param);
 		} catch (DaoException e) {
+			try {
+				transaction.rollback();
+			} catch (SQLException e1) {
+				throw new ServiceException(e1);
+			}
 			throw new ServiceException(e);
 		} finally {
 			if (transaction != null) {
@@ -96,6 +111,11 @@ public class CompaniesService implements IService<Company,Long>{
 			transaction.init();
 			return CompanyDao.INSTANCE.getNb(transaction);
 		} catch (DaoException e) {
+			try {
+				transaction.rollback();
+			} catch (SQLException e1) {
+				throw new ServiceException(e1);
+			}
 			throw new ServiceException(e);
 		} finally {
 			if (transaction != null) {
@@ -119,6 +139,11 @@ public class CompaniesService implements IService<Company,Long>{
 			transaction.init();
 			return CompanyDao.INSTANCE.getNb(transaction,param);
 		} catch (DaoException e) {
+			try {
+				transaction.rollback();
+			} catch (SQLException e1) {
+				throw new ServiceException(e1);
+			}
 			throw new ServiceException(e);
 		} finally {
 			if (transaction != null) {
@@ -142,6 +167,11 @@ public class CompaniesService implements IService<Company,Long>{
 			transaction.init();
 			return CompanyDao.INSTANCE.getById(transaction,id);
 		} catch (DaoException e) {
+			try {
+				transaction.rollback();
+			} catch (SQLException e1) {
+				throw new ServiceException(e1);
+			}
 			throw new ServiceException(e);
 		} finally {
 			if (transaction != null) {
@@ -166,6 +196,11 @@ public class CompaniesService implements IService<Company,Long>{
 			transaction.init();
 			CompanyDao.INSTANCE.delete(transaction,id);
 		} catch (DaoException e) {
+			try {
+				transaction.rollback();
+			} catch (SQLException e1) {
+				throw new ServiceException(e1);
+			}
 			throw new ServiceException(e);
 		} finally {
 			if (transaction != null) {

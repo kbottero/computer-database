@@ -25,6 +25,11 @@ public class ComputersService implements IService<Computer,Long> {
 			transaction.init();
 			return ComputerDao.INSTANCE.getAll(transaction);
 		} catch (DaoException e) {
+			try {
+				transaction.rollback();
+			} catch (SQLException e1) {
+				throw new ServiceException(e1);
+			}
 			throw new ServiceException(e);
 		} finally {
 			if (transaction != null) {
@@ -49,6 +54,11 @@ public class ComputersService implements IService<Computer,Long> {
 			transaction.init();
 			return ComputerDao.INSTANCE.getAll(transaction,param);
 		} catch (DaoException e) {
+			try {
+				transaction.rollback();
+			} catch (SQLException e1) {
+				throw new ServiceException(e1);
+			}
 			throw new ServiceException(e);
 		} finally {
 			if (transaction != null) {
@@ -74,6 +84,11 @@ public class ComputersService implements IService<Computer,Long> {
 			transaction.init();
 			return ComputerDao.INSTANCE.getSome(transaction,param);
 		} catch (DaoException e) {
+			try {
+				transaction.rollback();
+			} catch (SQLException e1) {
+				throw new ServiceException(e1);
+			}
 			throw new ServiceException(e);
 		} finally {
 			if (transaction != null) {
@@ -97,6 +112,11 @@ public class ComputersService implements IService<Computer,Long> {
 			transaction.init();
 			return ComputerDao.INSTANCE.getNb(transaction);
 		} catch (DaoException e) {
+			try {
+				transaction.rollback();
+			} catch (SQLException e1) {
+				throw new ServiceException(e1);
+			}
 			throw new ServiceException(e);
 		} finally {
 			if (transaction != null) {
@@ -119,6 +139,11 @@ public class ComputersService implements IService<Computer,Long> {
 			transaction.init();
 			return ComputerDao.INSTANCE.getNb(transaction,param);
 		} catch (DaoException e) {
+			try {
+				transaction.rollback();
+			} catch (SQLException e1) {
+				throw new ServiceException(e1);
+			}
 			throw new ServiceException(e);
 		} finally {
 			if (transaction != null) {
@@ -143,6 +168,11 @@ public class ComputersService implements IService<Computer,Long> {
 			transaction.init();
 			return ComputerDao.INSTANCE.getById(transaction,id);
 		} catch (DaoException e) {
+			try {
+				transaction.rollback();
+			} catch (SQLException e1) {
+				throw new ServiceException(e1);
+			}
 			throw new ServiceException(e);
 		} finally {
 			if (transaction != null) {
@@ -170,6 +200,11 @@ public class ComputersService implements IService<Computer,Long> {
 			transaction.init();
 			ComputerDao.INSTANCE.save(transaction,c);
 		} catch (DaoException e) {
+			try {
+				transaction.rollback();
+			} catch (SQLException e1) {
+				throw new ServiceException(e1);
+			}
 			throw new ServiceException(e);
 		} finally {
 			if (transaction != null) {
@@ -194,6 +229,11 @@ public class ComputersService implements IService<Computer,Long> {
 			transaction.init();
 			ComputerDao.INSTANCE.delete(transaction,id);
 		} catch (DaoException e) {
+			try {
+				transaction.rollback();
+			} catch (SQLException e1) {
+				throw new ServiceException(e1);
+			}
 			throw new ServiceException(e);
 		} finally {
 			if (transaction != null) {

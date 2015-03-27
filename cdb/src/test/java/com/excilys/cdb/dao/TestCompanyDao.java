@@ -40,6 +40,7 @@ public class TestCompanyDao {
 
 	private Connection connection;
 	private Statement statement;
+	CDBTransaction transaction;
 	
 	@BeforeClass
 	public static void setUpDB () {
@@ -65,10 +66,13 @@ public class TestCompanyDao {
 			line = in.readLine();
 		}
 		in.close();
+		transaction = new CDBTransaction(TransactionType.ATOMIC);
+		transaction.init();
 	}
 	
 	@After
 	public void tearDown() throws Exception {
+		transaction.close();
 		if (statement != null) {
 			statement.close();
 		}
@@ -79,8 +83,6 @@ public class TestCompanyDao {
 
 	@Test
 	public void getAllWithNoOrder() throws Exception {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
-		transaction.init();
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
@@ -91,34 +93,25 @@ public class TestCompanyDao {
 		for (int i=0; i<listCompany.size() ;++i) {
 			assertTrue(result.get(i).equals(listCompany.get(i)));
 		}
-		transaction.close();
 	}
 	
 	@Test(expected = DaoException.class)
 	public void getAllOnEmptyDatabase() throws Exception {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
-		transaction.init();
 		statement.execute("drop table if exists computer;");
 		statement.execute("drop table if exists company;");
 		CompanyDao.INSTANCE.getAll(transaction);
-		transaction.close();
 	}
 	
 	@Test(expected = NullPointerException.class)
 	public void getAllWithNullParam() throws Exception {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
-		transaction.init();
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
 		CompanyDao.INSTANCE.getAll(transaction,null);
-		transaction.close();
 	}
 	
 	@Test
 	public void getAllWithOrderByName() throws Exception {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
-		transaction.init();
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
@@ -138,13 +131,10 @@ public class TestCompanyDao {
 		for (int i=0; i<listCompany.size() ;++i) {
 			assertTrue(result.get(i).getName().equals(nameList.get(i)));
 		}
-		transaction.close();
 	}
 	
 	@Test
 	public void getAllWithOrderByNameAndId() throws Exception {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
-		transaction.init();
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
@@ -165,53 +155,38 @@ public class TestCompanyDao {
 		for (int i=0; i<listCompany.size() ;++i) {
 			assertTrue(result.get(i).getName().equals(nameList.get(i)));
 		}
-		transaction.close();
 	}
 	
 	@Test(expected = NullPointerException.class)
 	public void getSomeWithNullParameter() throws Exception {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
-		transaction.init();
 		CompanyDao.INSTANCE.getSome(transaction,null);
-		transaction.close();
 	}
 
 	@Test(expected = DaoException.class)
 	public void getSomeWithRequestParameterAttributeNull() throws Exception {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
-		transaction.init();
 		ArrayList<Company> list = (ArrayList<Company>) CompanyDao.INSTANCE.getSome(transaction,new DaoRequestParameter(null, null, null, null, null, null));
 		assertNotNull(list);
 		assertNotNull(list.size());
-		transaction.close();
 	}
 	
 	@Test
 	public void getSomeWithFilter() throws Exception {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
-		transaction.init();
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
 		ArrayList<Company> list = (ArrayList<Company>) CompanyDao.INSTANCE.getSome(transaction,new DaoRequestParameter(DaoRequestParameter.NameFiltering.POST, "T", null, null, 10l, null));
 		assertEquals(list.size(),2);
-		transaction.close();
 	}
 	
 	@Test(expected = DaoException.class)
 	public void getSomeOnEmptyDatabase() throws Exception {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
-		transaction.init();
 		statement.execute("drop table if exists computer;");
 		statement.execute("drop table if exists company;");
 		CompanyDao.INSTANCE.getSome(transaction,new DaoRequestParameter(null, null, null, null, 10l, null));
-		transaction.close();
 	}
 	
 	@Test
 	public void getSomeWithOrderByName() throws Exception {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
-		transaction.init();
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
@@ -231,13 +206,10 @@ public class TestCompanyDao {
 		for (int i=0; i<result.size() ;++i) {
 			assertTrue(result.get(i).getName().equals(nameList.get(i)));
 		}
-		transaction.close();
 	}
 	
 	@Test
 	public void getSomeWithOrderByNameAndOffset() throws Exception {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
-		transaction.init();
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
@@ -257,76 +229,54 @@ public class TestCompanyDao {
 		for (int i=0; i<result.size() ;++i) {
 			assertTrue(result.get(i).getName().equals(nameList.get(i+1)));
 		}
-		transaction.close();
 	}
 	
 	@Test
 	public void getNb() throws Exception {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
-		transaction.init();
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
 		assertTrue(CompanyDao.INSTANCE.getNb(transaction) == listCompany.size());
-		transaction.close();
 	}
 	
 	@Test
 	public void getNbOnEmptyTable() throws Exception {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
-		transaction.init();
 		assertEquals(new Long (0l),CompanyDao.INSTANCE.getNb(transaction));
-		transaction.close();
 	}
 
 	@Test(expected = DaoException.class)
 	public void getNbOnEmptyDatabase() throws Exception {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
-		transaction.init();
 		statement.execute("drop table if exists computer;");
 		statement.execute("drop table if exists company;");
 		CompanyDao.INSTANCE.getNb(transaction);
-		transaction.close();
 	}
 	
 	@Test
 	public void getById() throws Exception {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
-		transaction.init();
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
 		assertTrue(CompanyDao.INSTANCE.getById(transaction,1l).equals(listCompany.get(0)));
-		transaction.close();
 	}
 	
 	@Test(expected = DaoException.class)
 	public void getByIdNullParameter() throws Exception {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
-		transaction.init();
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
 		CompanyDao.INSTANCE.getById(transaction,null);
-		transaction.close();
 	}
 	
 	@Test(expected = DaoException.class)
 	public void getByIdOnEmptyTable() throws Exception {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
-		transaction.init();
 		assertNull(CompanyDao.INSTANCE.getById(transaction,1l));
-		transaction.close();
 	}
 	
 	@Test(expected = DaoException.class)
 	public void getByIdOnEmptyDatabase() throws Exception {
-		CDBTransaction transaction = new CDBTransaction(TransactionType.ATOMIC);
-		transaction.init();
 		statement.execute("drop table if exists computer;");
 		statement.execute("drop table if exists company;");
 		CompanyDao.INSTANCE.getById(transaction,1l);
-		transaction.close();
 	}
 	
 

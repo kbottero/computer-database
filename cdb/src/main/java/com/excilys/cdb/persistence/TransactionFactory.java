@@ -47,17 +47,17 @@ public enum TransactionFactory {
 		} catch (ClassNotFoundException | IOException e) {
 			throw new DaoException(DaoException.CAN_NOT_LOAD_PROPERTIES, e);
 		}
-		
-		BoneCPConfig configBoneCP = new BoneCPConfig();
-		configBoneCP.setJdbcUrl(properties.getProperty("url")+properties.getProperty("database")); // jdbc url specific to your database, eg jdbc:mysql://127.0.0.1/yourdb
-		configBoneCP.setUsername(properties.getProperty("user")); 
-		configBoneCP.setPassword(properties.getProperty("password"));
-		configBoneCP.setMinConnectionsPerPartition(5);
-		configBoneCP.setMaxConnectionsPerPartition(10);
-		configBoneCP.setPartitionCount(1);
+
 		try {
+			BoneCPConfig configBoneCP = new BoneCPConfig(properties);
+			configBoneCP.setJdbcUrl(properties.getProperty("url")+properties.getProperty("database")+"?zeroDateTimeBehavior=convertToNull");
+			configBoneCP.setMinConnectionsPerPartition(5);
+			configBoneCP.setMaxConnectionsPerPartition(10);
+			configBoneCP.setPartitionCount(1);
 			connectionPool = new BoneCP(configBoneCP);
 		} catch (SQLException e) {
+			throw new DaoException(DaoException.CAN_NOT_SETUP_CONNECTION_POOL, e);
+		} catch (Exception e) {
 			throw new DaoException(DaoException.CAN_NOT_SETUP_CONNECTION_POOL, e);
 		}
 	}

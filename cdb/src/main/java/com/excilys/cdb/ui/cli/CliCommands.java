@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import com.excilys.cdb.dto.CompanyDTO;
 import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.mapper.CompanyMapper;
@@ -79,9 +82,9 @@ public enum CliCommands {
 		public void execute(Scanner s) {
 			if (s.hasNext()) {
 				long id = s.nextLong();
-				Computer computer = servComputers.getOne(id);
+				Computer computer = computersService.getOne(id);
 				if (computer != null) {
-					printComputer(ComputerMapper.INSTANCE.toDTO(computer));
+					printComputer(computerMapper.toDTO(computer));
 				} else {
 					System.out.println("This id does not refer to any computer");
 				}
@@ -144,7 +147,7 @@ public enum CliCommands {
 				}
 			}
 
-			computer = servComputers.getOne(id);
+			computer = computersService.getOne(id);
 			
 			if (computer != null) {
 				if (name != null) {
@@ -157,14 +160,14 @@ public enum CliCommands {
 					computer.setDiscontinuedDate(discontinuedDate);
 				}
 				if (company_id != null) {
-					computer.setConstructor(servCompanies.getOne(company_id));
+					computer.setConstructor(companiesService.getOne(company_id));
 				}
 			} else {
 				invalidCommand(this);
 				return;
 			}
 			
-			servComputers.saveOne(computer);
+			computersService.saveOne(computer);
 		}
 		@Override
 		public String getHelp() {
@@ -226,9 +229,9 @@ public enum CliCommands {
 				computer.setDiscontinuedDate(discontinuedDate);
 			}
 			if (company_id != null) {
-				computer.setConstructor(servCompanies.getOne(company_id));
+				computer.setConstructor(companiesService.getOne(company_id));
 			}
-			servComputers.saveOne(computer);
+			computersService.saveOne(computer);
 			if (computer.getId() != -1) {
 				System.out.println("Computer created. Id = "+computer.getId());
 			}
@@ -246,7 +249,7 @@ public enum CliCommands {
 		public void execute(Scanner s) {
 			if (s.hasNext()) {
 				long id = s.nextLong();
-				servComputers.deleteOne(id);
+				computersService.deleteOne(id);
 			} else {
 				invalidCommand(this);
 			}
@@ -264,7 +267,7 @@ public enum CliCommands {
 		public void execute(Scanner s) {
 			if (s.hasNext()) {
 				long id = s.nextLong();
-				servCompanies.deleteOne(id);
+				companiesService.deleteOne(id);
 			} else {
 				invalidCommand(this);
 			}
@@ -306,8 +309,10 @@ public enum CliCommands {
 	
 	private final String label;
 
-	private static ComputersService servComputers = new ComputersService();
-	private static CompaniesService servCompanies = new CompaniesService();
+	private static ComputersService computersService;
+	private static CompaniesService companiesService;
+	private static ComputerMapper computerMapper;
+	private static CompanyMapper companyMapper;
 	private static String invalidCommand = "Invalid Command";
 	private static String pages = "pages";
 	public static String prompt = ">";
@@ -319,6 +324,11 @@ public enum CliCommands {
 		for (CliCommands cliCom : CliCommands.values()) {
 				listCommands.put(cliCom.getLabel(), cliCom);
 		}
+		ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
+		computersService = (ComputersService) context.getBean("computersService");
+		companiesService = (CompaniesService) context.getBean("companiesService");
+		computerMapper = (ComputerMapper) context.getBean("computerMapper");
+		companyMapper = (CompanyMapper) context.getBean("companyMapper");
 	}
 	
 	CliCommands(String label) {
@@ -384,9 +394,9 @@ public enum CliCommands {
 	 */
 	private static void listComputers() {
 		ArrayList<Computer> list = new ArrayList<Computer>();
-		list = (ArrayList<Computer>) servComputers.getAll();
+		list = (ArrayList<Computer>) computersService.getAll();
 		for (Computer computer : list) {
-			printComputer(ComputerMapper.INSTANCE.toDTO(computer));
+			printComputer(computerMapper.toDTO(computer));
 		}
 	}
 
@@ -395,9 +405,9 @@ public enum CliCommands {
 	 */
 	private static void listCompanies() {
 		ArrayList<Company> list = new ArrayList<Company>();
-		list = (ArrayList<Company>) servCompanies.getAll();
+		list = (ArrayList<Company>) companiesService.getAll();
 		for (Company company : list) {
-			printCompany(CompanyMapper.INSTANCE.toDTO(company));
+			printCompany(companyMapper.toDTO(company));
 		}
 	}
 
@@ -409,14 +419,14 @@ public enum CliCommands {
 		Page<Computer, Long> page;
 		if (s.hasNext()) {
 			Long nbLine = s.nextLong();
-			page = new ComputerPage (servComputers, nbLine,null);
+			page = new ComputerPage (computersService, nbLine,null);
 		} else {
-			page = new ComputerPage (servComputers,20l,null);
+			page = new ComputerPage (computersService,20l,null);
 		}
 	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		Scanner scan = null;
 		do {
-			for (ComputerDTO computer  : ComputerMapper.INSTANCE.toDTOList(page.getElements())) {
+			for (ComputerDTO computer  : computerMapper.toDTOList(page.getElements())) {
 				CliCommands.printComputer(computer);
 			}
 			printEndOfPage(page);
@@ -447,14 +457,14 @@ public enum CliCommands {
 		Page<Company, Long> page;
 		if (s.hasNext()) {
 			Long nbLine = s.nextLong();
-			page = new CompanyPage (servCompanies, nbLine,null);
+			page = new CompanyPage (companiesService, nbLine,null);
 		} else {
-			page = new CompanyPage (servCompanies,null,null);
+			page = new CompanyPage (companiesService,null,null);
 		}
 	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		Scanner scan = null;
 		do {
-			for (CompanyDTO company  : CompanyMapper.INSTANCE.toDTOList(page.getElements())) {
+			for (CompanyDTO company  : companyMapper.toDTOList(page.getElements())) {
 				CliCommands.printCompany(company);
 			}
 			printEndOfPage(page);

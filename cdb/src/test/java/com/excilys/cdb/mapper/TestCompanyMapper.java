@@ -18,21 +18,27 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.excilys.cdb.dto.CompanyDTO;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.persistence.ComputerDao;
 import com.excilys.cdb.persistence.TransactionFactory;
 
 public class TestCompanyMapper {
 
 	private Connection connection = null;
 	private Statement statement = null;
+	private static CompanyMapper companyMapper = null;
 	
 	
 	@BeforeClass
 	public static void setUpDB () {
 		System.setProperty("env", "TEST");
+		ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
+		companyMapper = (CompanyMapper) context.getBean("companyMapper");
 	}
 	
 	@Before
@@ -72,7 +78,7 @@ public class TestCompanyMapper {
 		ResultSet rs = statement.executeQuery("SELECT * FROM company;");
 		for (Company company : listCompany) {
 			rs.next();
-			assertEquals(company,CompanyMapper.INSTANCE.mapFromRow(rs));
+			assertEquals(company,companyMapper.mapFromRow(rs));
 		}
 		rs.close();
 		
@@ -88,14 +94,14 @@ public class TestCompanyMapper {
 	public void toDTO() {
 		Company company = new Company(1l,"Company");
 		CompanyDTO companyDTO = new CompanyDTO(1l,"Company");
-		assertEquals(companyDTO, CompanyMapper.INSTANCE.toDTO(company));
+		assertEquals(companyDTO, companyMapper.toDTO(company));
 	}
 
 	@Test
 	public void fromDTO() {
 		Company company = new Company(1l,"Company");
 		CompanyDTO companyDTO = new CompanyDTO(1l,"Company");
-		assertEquals(company, CompanyMapper.INSTANCE.fromDTO(companyDTO));
+		assertEquals(company, companyMapper.fromDTO(companyDTO));
 	}
 	
 	private void initDBWithBasicInfo (ArrayList<Computer> listComputer, ArrayList<Company> listCompany) throws Exception {

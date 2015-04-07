@@ -18,6 +18,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.model.Company;
@@ -28,10 +30,13 @@ public class TestComputerMapper {
 
 	private Connection connection = null;
 	private Statement statement = null;
+	private static ComputerMapper computerMapper;
 	
 	@BeforeClass
 	public static void setUpDB () {
 		System.setProperty("env", "TEST");
+		ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
+		computerMapper = (ComputerMapper) context.getBean("computerMapper");
 	}
 	
 	@Before
@@ -69,7 +74,7 @@ public class TestComputerMapper {
 		ResultSet rs = statement.executeQuery("SELECT * FROM computer;");
 		for (Computer computer : listComputer) {
 			rs.next();
-			assertEquals(computer,ComputerMapper.INSTANCE.mapFromRow(rs));
+			assertEquals(computer,computerMapper.mapFromRow(rs));
 		}
 		rs.close();
 		
@@ -85,14 +90,14 @@ public class TestComputerMapper {
 	public void toDTOWithMinimunData() {
 		Computer computer = new Computer(1l,"Company");
 		ComputerDTO computerDTO = new ComputerDTO(1l,"Company","","",0l,"");
-		assertEquals(computerDTO, ComputerMapper.INSTANCE.toDTO(computer));
+		assertEquals(computerDTO, computerMapper.toDTO(computer));
 	}
 
 	@Test
 	public void fromDTOWithMinimunData() {
 		Computer computer = new Computer(1l,"Company");
 		ComputerDTO computerDTO = new ComputerDTO(1l,"Company","","",0l,"");
-		assertEquals(computer, ComputerMapper.INSTANCE.fromDTO(computerDTO));
+		assertEquals(computer, computerMapper.fromDTO(computerDTO));
 	}
 
 	@Test
@@ -100,7 +105,7 @@ public class TestComputerMapper {
 		LocalDateTime localDateTime = LocalDateTime.now();
 		Computer computer = new Computer(1l,"Company",localDateTime,localDateTime.plusDays(50),new Company (1l, "company"));
 		ComputerDTO computerDTO = new ComputerDTO(1l,"Company",localDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE),localDateTime.plusDays(50).format(DateTimeFormatter.ISO_LOCAL_DATE),1l,"company");
-		assertEquals(computerDTO, ComputerMapper.INSTANCE.toDTO(computer));
+		assertEquals(computerDTO, computerMapper.toDTO(computer));
 	}
 
 	@Test
@@ -108,7 +113,7 @@ public class TestComputerMapper {
 		LocalDateTime localDateTime = LocalDateTime.now();
 		Computer computer = new Computer(1l,"Company",localDateTime,localDateTime.plusDays(50),new Company (1l, "company"));
 		ComputerDTO computerDTO = new ComputerDTO(1l,"Company",localDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE),localDateTime.plusDays(50).format(DateTimeFormatter.ISO_LOCAL_DATE),1l,"company");
-		assertEquals(computer, ComputerMapper.INSTANCE.fromDTO(computerDTO));
+		assertEquals(computer, computerMapper.fromDTO(computerDTO));
 	}
 
 	private void initDBWithBasicInfo (ArrayList<Computer> listComputer, ArrayList<Company> listCompany) throws Exception {

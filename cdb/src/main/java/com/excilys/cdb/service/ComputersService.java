@@ -2,16 +2,32 @@ package com.excilys.cdb.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.exception.ServiceException;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.ComputerDao;
 import com.excilys.cdb.persistence.DaoRequestParameter;
+import com.excilys.cdb.persistence.IDao;
 import com.excilys.cdb.persistence.TransactionFactory;
 import com.excilys.cdb.validation.ValidatorComputer;
 
+@Service
 public class ComputersService implements IService<Computer,Long> {
 
+	@Autowired @Qualifier("computerDao")
+	private IDao<Computer,Long> dao;
+	
+	public IDao<Computer,Long> getDao() {
+		return this.dao;
+	}
+	
+	public void setDao(IDao<Computer,Long> dao) {
+		this.dao = dao;
+	}
+	
 	/**
 	 * Return a list of all the computers in the database.
 	 * @return
@@ -19,7 +35,7 @@ public class ComputersService implements IService<Computer,Long> {
 	@Override
 	public List<Computer> getAll() throws ServiceException {
 		try {
-			return ComputerDao.INSTANCE.getAll();
+			return dao.getAll();
 		} catch (DaoException e) {
 			throw new ServiceException(e);
 		}
@@ -33,7 +49,7 @@ public class ComputersService implements IService<Computer,Long> {
 	@Override
 	public List<Computer> getAll(DaoRequestParameter param) throws ServiceException {
 		try {
-			return ComputerDao.INSTANCE.getAll(param);
+			return dao.getAll(param);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
 		}
@@ -48,7 +64,7 @@ public class ComputersService implements IService<Computer,Long> {
 	@Override
 	public List<Computer> getSome(DaoRequestParameter param) throws ServiceException {
 		try {
-			return ComputerDao.INSTANCE.getSome(param);
+			return dao.getSome(param);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
 		}
@@ -61,7 +77,7 @@ public class ComputersService implements IService<Computer,Long> {
 	@Override
 	public Long getNbInstance() throws ServiceException {
 		try {
-			return ComputerDao.INSTANCE.getNb();
+			return dao.getNb();
 		} catch (DaoException e) {
 			throw new ServiceException(e);
 		}
@@ -73,7 +89,7 @@ public class ComputersService implements IService<Computer,Long> {
 	 */
 	public Long getNbInstance(DaoRequestParameter param) throws ServiceException {
 		try {
-			return ComputerDao.INSTANCE.getNb(param);
+			return dao.getNb(param);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
 		}
@@ -87,7 +103,7 @@ public class ComputersService implements IService<Computer,Long> {
 	@Override
 	public Computer getOne(Long id) throws ServiceException {
 		try {
-			return ComputerDao.INSTANCE.getById(id);
+			return dao.getById(id);
 		} catch (DaoException e) {
 			throw new ServiceException(e);
 		}
@@ -104,7 +120,7 @@ public class ComputersService implements IService<Computer,Long> {
 			throw new ServiceException();
 		}
 		try {
-			ComputerDao.INSTANCE.save(c);
+			dao.save(c);
 		} catch (DaoException e) {
 			
 			throw new ServiceException(e);
@@ -120,7 +136,7 @@ public class ComputersService implements IService<Computer,Long> {
 	public void deleteOne(Long id) throws ServiceException {
 		try {
 			TransactionFactory.INSTANCE.startTransaction();
-			ComputerDao.INSTANCE.delete(id);
+			dao.delete(id);
 		} catch (DaoException e) {
 			TransactionFactory.INSTANCE.cancelTransaction();
 			throw new ServiceException(e);

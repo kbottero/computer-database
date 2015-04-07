@@ -27,6 +27,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.mapper.ComputerMapper;
@@ -43,10 +45,13 @@ public class TestDashboard {
 	
 	private static Connection connection;
 	private static Statement statement;
+	private static ComputerMapper computerMapper;
 
 	@BeforeClass
 	public static void setUpDB() throws IOException, SQLException {
 		System.setProperty("env", "TEST");
+		ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
+		computerMapper = (ComputerMapper) context.getBean("computerMapper");
 	}
 	
 	@Before 
@@ -95,7 +100,7 @@ public class TestDashboard {
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
 		driver.get(baseUrl);
-		List<ComputerDTO> listComputerDTO = ComputerMapper.INSTANCE.toDTOList(listComputer);
+		List<ComputerDTO> listComputerDTO = computerMapper.toDTOList(listComputer);
 		for (int i =0; i<listComputerDTO.size() && i < 10; ++i) {
 			WebElement query = driver.findElement(By.id("computer_"+listComputerDTO.get(i).getId()));
 			assertNotNull(query);

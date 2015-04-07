@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import com.excilys.cdb.dto.CompanyDTO;
 import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.mapper.CompanyMapper;
@@ -24,16 +27,19 @@ public class EditComputer extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = -6844149787037040594L;
-	private ComputersService computersService = new ComputersService();
-	private CompaniesService companiesService = new CompaniesService();
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
+		ComputersService computersService = (ComputersService) context.getBean("computersService");
+		CompaniesService companiesService = (CompaniesService) context.getBean("companiesService");
+		ComputerMapper computerMapper = (ComputerMapper) context.getBean("computerMapper");
+		CompanyMapper companyMapper = (CompanyMapper) context.getBean("companyMapper");
 		String attrib = request.getParameter("id");
 		if (attrib != null) {
 			Long id = Long.parseLong(attrib);
-			ComputerDTO computer = ComputerMapper.INSTANCE.toDTO(computersService.getOne(id));
+			ComputerDTO computer = computerMapper.toDTO(computersService.getOne(id));
 			request.setAttribute("computer", computer);
-			List<CompanyDTO> listCompany = CompanyMapper.INSTANCE.toDTOList(companiesService.getAll());
+			List<CompanyDTO> listCompany = companyMapper.toDTOList(companiesService.getAll());
 			request.setAttribute("companies", listCompany);
 			request.setAttribute("prev", request.getHeader("Referer"));
 			RequestDispatcher dis=this.getServletContext().getRequestDispatcher("/WEB-INF/views/editComputer.jsp");

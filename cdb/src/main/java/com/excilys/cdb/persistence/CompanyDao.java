@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.mapper.CompanyMapper;
@@ -20,10 +22,15 @@ import com.excilys.cdb.model.Company;
  * @author Kevin Bottero
  *
  */
-public enum CompanyDao implements IDao<Company, Long>{
-	INSTANCE;
+@Repository("companyDao")
+public class CompanyDao implements IDao<Company, Long>{
+	
+	public CompanyDao() {};
 	
 	private static Logger logger = LoggerFactory.getLogger(CompanyDao.class);
+	
+	@Autowired
+	private CompanyMapper companyMapper;
 	
 	private static enum preparedStatement {
 		COUNT_ALL ("SELECT COUNT(id) FROM company;"),
@@ -52,7 +59,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 			ResultSet curs = statement.executeQuery(preparedStatement.SELECT_ALL.getRequest());
 			logger.info("Excuted request : "+preparedStatement.SELECT_ALL.getRequest());
 			while ( curs.next() ) {
-				list.add(CompanyMapper.INSTANCE.mapFromRow(curs));
+				list.add(companyMapper.mapFromRow(curs));
     		}
 			curs.close();
 		} catch (SQLException e) {
@@ -82,7 +89,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 			logger.info("Excuted request : "+request.toString());
 			//Mapping
 			while ( curs.next() ) {
-				list.add(CompanyMapper.INSTANCE.mapFromRow(curs));
+				list.add(companyMapper.mapFromRow(curs));
 			}
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_SET_PREPAREDSTATEMENT,e);
@@ -163,7 +170,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 			ResultSet curs = statement.executeQuery();
 			logger.debug("Excuted request : "+request.toString());
 			while ( curs.next() ) {
-				list.add(CompanyMapper.INSTANCE.mapFromRow(curs));
+				list.add(companyMapper.mapFromRow(curs));
     		}
 			curs.close();
 		} catch (SQLException e) {
@@ -188,7 +195,7 @@ public enum CompanyDao implements IDao<Company, Long>{
 			ResultSet curs = statement.executeQuery();
 			logger.debug("Excuted request : "+preparedStatement.SELECT_ONE.getRequest());
 			if ( curs.next() ) {
-				comp = CompanyMapper.INSTANCE.mapFromRow(curs);
+				comp = companyMapper.mapFromRow(curs);
     		} else {
     			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT);
     		}

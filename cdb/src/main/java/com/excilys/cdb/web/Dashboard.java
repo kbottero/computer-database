@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import com.excilys.cdb.mapper.ComputerMapper;
 import com.excilys.cdb.persistence.DaoRequestParameter;
 import com.excilys.cdb.persistence.DaoRequestParameter.NameFiltering;
@@ -22,12 +25,14 @@ public class Dashboard extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = -6844149787037040594L;
-	private ComputersService computersService = new ComputersService();
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String attrib;
 		ComputerPage compPage;
 		Long nbCompPerPage = 10l;
+		ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
+		ComputersService computersService = (ComputersService) context.getBean("computersService");
+		ComputerMapper computerMapper = (ComputerMapper) context.getBean("computerMapper");
 
 		attrib = request.getParameter("nbCompPerPage");
 		if (attrib != null) {
@@ -52,7 +57,7 @@ public class Dashboard extends HttpServlet {
 		}
 
 		request.setAttribute("page", compPage);
-		request.setAttribute("computers", ComputerMapper.INSTANCE.toDTOList(compPage.getElements()));
+		request.setAttribute("computers", computerMapper.toDTOList(compPage.getElements()));
 		RequestDispatcher dis=this.getServletContext().getRequestDispatcher("/WEB-INF/views/dashboard.jsp");
 		
 		dis.forward(request, response);

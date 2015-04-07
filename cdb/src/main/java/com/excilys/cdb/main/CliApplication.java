@@ -12,6 +12,7 @@ import com.excilys.cdb.ui.cli.CliCommands;
 
 public class CliApplication {
 	public static void main(String args[]){
+		
 		Logger logger = LoggerFactory.getLogger(CliApplication.class);
 		logger.info("Beginning of the CLI application");
 		String rep = new String();

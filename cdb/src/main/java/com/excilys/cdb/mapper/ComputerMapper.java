@@ -7,6 +7,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.model.Company;
@@ -19,11 +22,14 @@ import com.excilys.cdb.service.CompaniesService;
  * @author Kevin Bottero
  *
  */
-public enum ComputerMapper implements IMapper<Computer, ComputerDTO> {
-	INSTANCE;
+@Component
+public class ComputerMapper implements IMapper<Computer, ComputerDTO> {
 
 	/** Primary Key.	 */
 	public static final String DEFAULT_ID = "id";
+
+	@Autowired
+	private CompaniesService companiesService;
 
 	/** Map DB labels -> Model attributes. */
 	public static final HashMap<String,String> mapBDModel;
@@ -56,7 +62,7 @@ public enum ComputerMapper implements IMapper<Computer, ComputerDTO> {
 				comp.setDiscontinuedDate(Timestamp.valueOf((curs.getString("discontinued"))).toLocalDateTime());
 			}
 			if (curs.getString("company_id") != null) {
-				comp.setConstructor(new CompaniesService().getOne(curs.getLong("company_id")));
+				comp.setConstructor(companiesService.getOne(curs.getLong("company_id")));
 			}
 		} catch (SQLException e) {
 			throw new DaoException(e);

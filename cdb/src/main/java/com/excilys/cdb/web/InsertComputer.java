@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.exception.ServiceException;
 import com.excilys.cdb.mapper.ComputerMapper;
@@ -23,10 +26,11 @@ public class InsertComputer extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = -6819960873094583968L;
-	private ComputersService computersService = new ComputersService();
-	private CompaniesService companiesService = new CompaniesService();
-
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
+		ComputersService computersService = (ComputersService) context.getBean("computersService");
+		CompaniesService companiesService = (CompaniesService) context.getBean("companiesService");
 		String computerName = request.getParameter("computerName");
 		String attrib = null;
 		if (computerName == null) {
@@ -68,7 +72,8 @@ public class InsertComputer extends HttpServlet {
 		    return;
 		}
 		ComputerDTO computerDTO = new ComputerDTO(0l,computerName, introduced, discontinued, compId, companyName );
-		computersService.saveOne(ComputerMapper.INSTANCE.fromDTO(computerDTO));
+		ComputerMapper computerMapper = (ComputerMapper) context.getBean("computerMapper");
+		computersService.saveOne(computerMapper.fromDTO(computerDTO));
 		
 		RequestDispatcher dis = this.getServletContext().getRequestDispatcher("/index.jsp");
 		dis.forward(request, response);

@@ -11,13 +11,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import com.excilys.cdb.service.ComputersService;
 
+@Controller
 @WebServlet(urlPatterns = "/deleteComputer")
-public class DeleteComputer  extends HttpServlet {
+public class DeleteComputer  extends AbstractServlet {
 
 	/**
 	 * 
@@ -25,9 +26,10 @@ public class DeleteComputer  extends HttpServlet {
 	private static final long serialVersionUID = 3419392631122313675L;
 	private static Logger logger = LoggerFactory.getLogger(DeleteComputer.class);
 
+	@Autowired
+	private ComputersService computersService;
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
-		ComputersService computersService = (ComputersService) context.getBean("computersService");
 	    String[] attrib = request.getParameterValues("selection");
 	    logger.debug(request.getParameterNames().toString());
 		if (attrib != null) {

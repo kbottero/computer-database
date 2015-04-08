@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import com.excilys.cdb.dto.CompanyDTO;
 import com.excilys.cdb.dto.ComputerDTO;
@@ -20,20 +20,25 @@ import com.excilys.cdb.mapper.ComputerMapper;
 import com.excilys.cdb.service.CompaniesService;
 import com.excilys.cdb.service.ComputersService;
 
+@Controller
 @WebServlet(urlPatterns = "/editComputer")
-public class EditComputer extends HttpServlet {
+public class EditComputer extends AbstractServlet {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6844149787037040594L;
+	
+	@Autowired
+	private ComputersService computersService;
+	@Autowired
+	private CompaniesService companiesService;
+	@Autowired
+	private ComputerMapper computerMapper;
+	@Autowired
+	private CompanyMapper companyMapper;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
-		ComputersService computersService = (ComputersService) context.getBean("computersService");
-		CompaniesService companiesService = (CompaniesService) context.getBean("companiesService");
-		ComputerMapper computerMapper = (ComputerMapper) context.getBean("computerMapper");
-		CompanyMapper companyMapper = (CompanyMapper) context.getBean("companyMapper");
 		String attrib = request.getParameter("id");
 		if (attrib != null) {
 			Long id = Long.parseLong(attrib);

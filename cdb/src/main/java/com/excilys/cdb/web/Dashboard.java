@@ -9,8 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.cdb.mapper.ComputerMapper;
 import com.excilys.cdb.persistence.DaoRequestParameter;
@@ -18,22 +19,24 @@ import com.excilys.cdb.persistence.DaoRequestParameter.NameFiltering;
 import com.excilys.cdb.service.ComputersService;
 import com.excilys.cdb.ui.util.ComputerPage;
 
+@Controller
 @WebServlet(urlPatterns = "/dashboard")
-public class Dashboard extends HttpServlet {
+public class Dashboard extends AbstractServlet {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6844149787037040594L;
 
+	@Autowired
+	private ComputersService computersService;
+	@Autowired
+	private ComputerMapper computerMapper;
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String attrib;
 		ComputerPage compPage;
 		Long nbCompPerPage = 10l;
-		ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
-		ComputersService computersService = (ComputersService) context.getBean("computersService");
-		ComputerMapper computerMapper = (ComputerMapper) context.getBean("computerMapper");
-
 		attrib = request.getParameter("nbCompPerPage");
 		if (attrib != null) {
 			nbCompPerPage = Long.parseLong(attrib);

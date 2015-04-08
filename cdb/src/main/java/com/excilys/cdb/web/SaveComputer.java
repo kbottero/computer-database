@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.exception.ServiceException;
@@ -20,18 +20,23 @@ import com.excilys.cdb.service.CompaniesService;
 import com.excilys.cdb.service.ComputersService;
 import com.excilys.cdb.validation.ValidatorDate;
 
+@Controller
 @WebServlet(urlPatterns = "/saveComputer")
-public class SaveComputer extends HttpServlet {
+public class SaveComputer extends AbstractServlet {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -8015371304857282287L;
 
+	@Autowired
+	private ComputersService computersService;
+	@Autowired
+	private CompaniesService companiesService;
+	@Autowired
+	private ComputerMapper computerMapper;
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
-		ComputersService computersService = (ComputersService) context.getBean("computersService");
-		CompaniesService companiesService = (CompaniesService) context.getBean("companiesService");
 		String computerName = request.getParameter("computerName");
 		Long computerId = null;
 		String attrib = request.getParameter("computerId");
@@ -85,8 +90,6 @@ public class SaveComputer extends HttpServlet {
 		    return;
 		}
 		ComputerDTO computerDTO = new ComputerDTO(computerId,computerName, introduced, discontinued, compId, companyName );
-
-		ComputerMapper computerMapper = (ComputerMapper) context.getBean("computerMapper");
 		computersService.saveOne(computerMapper.fromDTO(computerDTO));
 		
 		RequestDispatcher dis = this.getServletContext().getRequestDispatcher("/index.jsp");

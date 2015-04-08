@@ -10,27 +10,28 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import com.excilys.cdb.dto.CompanyDTO;
 import com.excilys.cdb.mapper.CompanyMapper;
 import com.excilys.cdb.service.CompaniesService;
 
-@Component
+@Controller
 @WebServlet(urlPatterns = "/addComputer")
-public class AddComputer extends HttpServlet {
+public class AddComputer extends AbstractServlet {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6844149787037040594L;
+	
+	@Autowired
+	private CompaniesService companiesService;
+	@Autowired
+	private CompanyMapper companyMapper;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
-		CompaniesService companiesService = (CompaniesService) context.getBean("companiesService");
-		CompanyMapper companyMapper = (CompanyMapper) context.getBean("companyMapper");
 		List<CompanyDTO> listCompany = companyMapper.toDTOList(companiesService.getAll());
 		request.setAttribute("companies", listCompany);
 		request.setAttribute("prev", request.getHeader("Referer"));

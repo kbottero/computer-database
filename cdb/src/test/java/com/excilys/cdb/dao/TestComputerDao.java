@@ -1,6 +1,11 @@
 package com.excilys.cdb.dao;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -18,34 +23,37 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.CompanyDao;
 import com.excilys.cdb.persistence.ComputerDao;
-import com.excilys.cdb.persistence.TransactionFactory;
 import com.excilys.cdb.persistence.DaoRequestParameter;
 import com.excilys.cdb.persistence.DaoRequestParameter.Order;
+import com.excilys.cdb.persistence.TransactionFactory;
 
 /**
  * TODO: Complete with DbUnit
  * @author Kevin Bottero
  *
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"/spring-context-test.xml"})
 public class TestComputerDao {
 	
 	private Connection connection;
 	private Statement statement;
-	private static ComputerDao dao;
+	@Autowired
+	private ComputerDao dao;
+	
 	
 	@BeforeClass
 	public static void setUpDB() {
 		System.setProperty("env", "TEST");
-		ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
-		dao = (ComputerDao) context.getBean("computerDao");
 	}
 
 	@Before
@@ -55,7 +63,7 @@ public class TestComputerDao {
 		properties.load(in);
 		in.close();
 		connection = DriverManager.getConnection(
-				properties.getProperty("url")+properties.getProperty("database"),
+				properties.getProperty("url"),
 				properties);
 		statement = connection.createStatement();
 		

@@ -1,20 +1,17 @@
 package com.excilys.cdb.persistence;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.excilys.cdb.exception.DaoException;
-import com.jolbox.bonecp.BoneCP;
-import com.jolbox.bonecp.BoneCPConfig;
 
 
 /**
@@ -23,50 +20,24 @@ import com.jolbox.bonecp.BoneCPConfig;
  * @author Kevin Bottero
  *
  */
-public enum TransactionFactory {
+@Component
+public class TransactionFactory {
 	
-	INSTANCE;
 	private static Logger logger = LoggerFactory.getLogger(TransactionFactory.class); 
-	private Properties properties;
-	private BoneCP connectionPool = null;
-	ThreadLocal<Connection> connectionTL = new ThreadLocal<Connection>();
+	private ThreadLocal<Connection> connectionTL = new ThreadLocal<Connection>();
+
+	@Autowired
+	private BasicDataSource dataSource;
 	
 	TransactionFactory () {
-		properties = new Properties();
-		String config;
-		try {
-			if ("TEST".equals(System.getProperty("env"))) {
-				config = "db-test.properties";
-			} else {
-				Class.forName("com.mysql.jdbc.Driver");
-				config = "db.properties";
-			}
-			BufferedReader in = new BufferedReader(new InputStreamReader(TransactionFactory.class.getClassLoader().getResourceAsStream(config)));
-			properties.load(in);
-			in.close();
-		} catch (ClassNotFoundException | IOException e) {
-			throw new DaoException(DaoException.CAN_NOT_LOAD_PROPERTIES, e);
-		}
-
-		try {
-			BoneCPConfig configBoneCP = new BoneCPConfig(properties);
-			configBoneCP.setJdbcUrl(properties.getProperty("url")+properties.getProperty("database")+"?zeroDateTimeBehavior=convertToNull");
-			configBoneCP.setMinConnectionsPerPartition(5);
-			configBoneCP.setMaxConnectionsPerPartition(10);
-			configBoneCP.setPartitionCount(1);
-			connectionPool = new BoneCP(configBoneCP);
-		} catch (SQLException e) {
-			throw new DaoException(DaoException.CAN_NOT_SETUP_CONNECTION_POOL, e);
-		} catch (Exception e) {
-			throw new DaoException(DaoException.CAN_NOT_SETUP_CONNECTION_POOL, e);
-		}
+		
 	}
 	
 	private Connection getConnection() throws DaoException {
 		logger.debug("getConnection()");
 		if (connectionTL.get() == null) {
 			try {
-				connectionTL.set(connectionPool.getConnection());
+				connectionTL.set(dataSource.getConnection());
 			} catch (SQLException e) {
 				throw new DaoException(DaoException.CAN_NOT_CREATE_CONNECTION, e);
 			}
@@ -128,36 +99,4 @@ public enum TransactionFactory {
 			throw new DaoException(DaoException.CAN_NOT_CLOSE_STATEMENT,e);
 		}
 	}
-	
-	public void startTransaction () throws DaoException {
-		try {
-			getConnection().setAutoCommit(false);
-		} catch (SQLException e) {
-			throw new DaoException(DaoException.CAN_NOT_CHANGE_AUTOCOMMIT,e);
-		}
-	}
-	
-	public void commitTransaction () throws DaoException {
-		try {
-			getConnection().commit();
-		} catch (SQLException e) {
-			throw new DaoException(DaoException.CAN_NOT_COMMIT,e);
-		}
-	}
-	
-	public void cancelTransaction () throws DaoException {
-		try {
-			getConnection().rollback();
-		} catch (SQLException e) {
-			throw new DaoException(DaoException.CAN_NOT_ROLLBACK,e);
-		}
-	}
-	
-	public void endTransaction () throws DaoException {
-		try {
-			getConnection().setAutoCommit(true);
-		} catch (SQLException e) {
-			throw new DaoException(DaoException.CAN_NOT_CHANGE_AUTOCOMMIT,e);
-		}
-	}	
 }

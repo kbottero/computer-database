@@ -31,6 +31,8 @@ public class CompanyDao implements IDao<Company, Long>{
 	
 	@Autowired
 	private CompanyMapper companyMapper;
+	@Autowired
+	TransactionFactory transactionFactory;
 	
 	private static enum preparedStatement {
 		COUNT_ALL ("SELECT COUNT(id) FROM company;"),
@@ -54,7 +56,7 @@ public class CompanyDao implements IDao<Company, Long>{
 	public List<Company> getAll() throws DaoException {
 		logger.info("getAll() method");
 		List<Company> list = new ArrayList<Company>();
-		Statement statement = TransactionFactory.INSTANCE.createStatement();
+		Statement statement = transactionFactory.createStatement();
 		try {
 			ResultSet curs = statement.executeQuery(preparedStatement.SELECT_ALL.getRequest());
 			logger.info("Excuted request : "+preparedStatement.SELECT_ALL.getRequest());
@@ -65,7 +67,7 @@ public class CompanyDao implements IDao<Company, Long>{
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
-			TransactionFactory.INSTANCE.closeStat(statement);
+			transactionFactory.closeStat(statement);
 		}
 		return list;
 	}
@@ -81,7 +83,7 @@ public class CompanyDao implements IDao<Company, Long>{
 		request.append(" ");
 		addOrderByToRequest(request, param);
 		request.append(";");
-		Statement statement = TransactionFactory.INSTANCE.createStatement();
+		Statement statement = transactionFactory.createStatement();
 		
 		try {
 			//Execute Request
@@ -94,7 +96,7 @@ public class CompanyDao implements IDao<Company, Long>{
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_SET_PREPAREDSTATEMENT,e);
 		} finally {
-			TransactionFactory.INSTANCE.closeStat(statement);
+			transactionFactory.closeStat(statement);
 		}
 		return list;
 	}
@@ -104,7 +106,7 @@ public class CompanyDao implements IDao<Company, Long>{
 		logger.info("getNb() method");
 		Long nbElements;
 		
-		Statement statement = TransactionFactory.INSTANCE.createStatement();
+		Statement statement = transactionFactory.createStatement();
 		try {
 			ResultSet curs = statement.executeQuery(preparedStatement.COUNT_ALL.getRequest());
 			logger.debug("Executed request : "+preparedStatement.COUNT_ALL.getRequest());
@@ -117,7 +119,7 @@ public class CompanyDao implements IDao<Company, Long>{
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
-			TransactionFactory.INSTANCE.closeStat(statement);
+			transactionFactory.closeStat(statement);
 		}
 		return nbElements;
 	}
@@ -142,17 +144,17 @@ public class CompanyDao implements IDao<Company, Long>{
 		request.append(" ");
 		request.append(" LIMIT ? OFFSET ?;");
 		
-		statement = TransactionFactory.INSTANCE.createPreparedStatement(request.toString());
+		statement = transactionFactory.createPreparedStatement(request.toString());
 		try {
 			if (param.getNameLike() != null) {			
 				numArg = setWhenCondition (statement,param, numArg);
 			}
 			if (param.getLimit() == null) {
-				TransactionFactory.INSTANCE.closeStat(statement);
+				transactionFactory.closeStat(statement);
 				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			} else {
 				if (param.getLimit() < 0) {
-					TransactionFactory.INSTANCE.closeStat(statement);
+					transactionFactory.closeStat(statement);
 					throw new DaoException(DaoException.INVALID_ARGUMENT);
 				} else {
 					statement.setLong(numArg++,param.getLimit()); 
@@ -176,7 +178,7 @@ public class CompanyDao implements IDao<Company, Long>{
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
 		} finally {
-			TransactionFactory.INSTANCE.closeStat(statement);
+			transactionFactory.closeStat(statement);
 		}
 		return list;
 	}
@@ -189,7 +191,7 @@ public class CompanyDao implements IDao<Company, Long>{
 		}
 		Company comp=null;
 		
-		PreparedStatement statement = TransactionFactory.INSTANCE.createPreparedStatement(preparedStatement.SELECT_ONE.getRequest());
+		PreparedStatement statement = transactionFactory.createPreparedStatement(preparedStatement.SELECT_ONE.getRequest());
 		try {
 			statement.setLong(1,id);
 			ResultSet curs = statement.executeQuery();
@@ -203,7 +205,7 @@ public class CompanyDao implements IDao<Company, Long>{
 		} catch (SQLException e) {
 			throw new DaoException(e);
 		} finally {
-			TransactionFactory.INSTANCE.closeStat(statement);
+			transactionFactory.closeStat(statement);
 		}
 		return comp;
 	}
@@ -215,7 +217,7 @@ public class CompanyDao implements IDao<Company, Long>{
 			throw new IllegalArgumentException();
 		}
 		
-		PreparedStatement statement = TransactionFactory.INSTANCE.createPreparedStatement( preparedStatement.DELETE_ONE.getRequest());
+		PreparedStatement statement = transactionFactory.createPreparedStatement( preparedStatement.DELETE_ONE.getRequest());
 		logger.debug("Excuted request : "+statement.toString());
 		try {
 			statement.setLong(1, id);
@@ -226,7 +228,7 @@ public class CompanyDao implements IDao<Company, Long>{
 		} catch (SQLException e) {
 			throw new DaoException(DaoException.CAN_NOT_DELETE_ELEMENT,e);
 		} finally {
-			TransactionFactory.INSTANCE.closeStat(statement);
+			transactionFactory.closeStat(statement);
 		}
 	}
 	

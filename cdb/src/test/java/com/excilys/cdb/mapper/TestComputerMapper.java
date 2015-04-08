@@ -18,25 +18,28 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.TransactionFactory;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"/spring-context-test.xml"})
 public class TestComputerMapper {
 
 	private Connection connection = null;
 	private Statement statement = null;
-	private static ComputerMapper computerMapper;
+	@Autowired
+	private ComputerMapper computerMapper;
 	
 	@BeforeClass
 	public static void setUpDB () {
 		System.setProperty("env", "TEST");
-		ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
-		computerMapper = (ComputerMapper) context.getBean("computerMapper");
 	}
 	
 	@Before
@@ -55,7 +58,7 @@ public class TestComputerMapper {
 		properties.load(in);
 		in.close();
 		connection = DriverManager.getConnection(
-				properties.getProperty("url")+properties.getProperty("database"),
+				properties.getProperty("url"),
 				properties);
 		statement = connection.createStatement();
 		

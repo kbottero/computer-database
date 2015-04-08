@@ -22,8 +22,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.model.Company;
@@ -38,17 +40,19 @@ import com.excilys.cdb.persistence.TransactionFactory;
  * @author Kevin Bottero
  *
  */
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"/spring-context-test.xml"})
 public class TestCompanyDao {
 
 	private Connection connection;
 	private Statement statement;
-	private static CompanyDao dao;
+	@Autowired
+	private CompanyDao dao;
 	
 	@BeforeClass
 	public static void setUpDB () {
 		System.setProperty("env", "TEST");
-		ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
-		dao = (CompanyDao) context.getBean("companyDao");
 	}
 
 	@Before
@@ -59,7 +63,7 @@ public class TestCompanyDao {
 		properties.load(in);
 		in.close();
 		connection = DriverManager.getConnection(
-				properties.getProperty("url")+properties.getProperty("database"),
+				properties.getProperty("url"),
 				properties);
 		statement = connection.createStatement();
 		

@@ -34,7 +34,6 @@ import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.mapper.ComputerMapper;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.TransactionFactory;
 
 public class TestDashboard {
 
@@ -57,7 +56,7 @@ public class TestDashboard {
 	@Before 
 	public void setUp() throws Exception {
 		//Data-base
-		BufferedReader in = new BufferedReader(new InputStreamReader(TransactionFactory.class.getClassLoader().getResourceAsStream("db-test.properties")));
+		BufferedReader in = new BufferedReader(new InputStreamReader(TestDashboard.class.getClassLoader().getResourceAsStream("db-test.properties")));
 		Properties properties = new Properties();
 		properties.load(in);
 		in.close();

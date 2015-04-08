@@ -34,7 +34,6 @@ import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.ComputerDao;
 import com.excilys.cdb.persistence.DaoRequestParameter;
 import com.excilys.cdb.persistence.DaoRequestParameter.Order;
-import com.excilys.cdb.persistence.TransactionFactory;
 
 /**
  * TODO: Complete with DbUnit
@@ -58,7 +57,7 @@ public class TestComputerDao {
 
 	@Before
 	public void setUp() throws Exception {
-		BufferedReader in = new BufferedReader(new InputStreamReader(TransactionFactory.class.getClassLoader().getResourceAsStream("db-test.properties")));
+		BufferedReader in = new BufferedReader(new InputStreamReader(TestComputerDao.class.getClassLoader().getResourceAsStream("db-test.properties")));
 		Properties properties = new Properties();
 		properties.load(in);
 		in.close();
@@ -100,7 +99,7 @@ public class TestComputerDao {
 		}
 	}
 	
-	@Test(expected = DaoException.class)
+	@Test(expected = Exception.class)
 	public void getAllOnEmptyDatabase() throws Exception {
 		statement.execute("drop table if exists computer;");
 		dao.getAll();
@@ -166,7 +165,7 @@ public class TestComputerDao {
 		dao.getSome(null);
 	}
 
-	@Test(expected = DaoException.class)
+	@Test(expected = Exception.class)
 	public void getSomeWithRequestParameterAttributeNull() throws Exception {
 		ArrayList<Computer> list = (ArrayList<Computer>) dao.getSome(new DaoRequestParameter(null, null, null, null, null, null));
 		assertNotNull(list);
@@ -182,7 +181,7 @@ public class TestComputerDao {
 		assertEquals(list.size(),7);
 	}
 	
-	@Test(expected = DaoException.class)
+	@Test(expected = Exception.class)
 	public void getSomeOnEmptyDatabase() throws Exception {
 		statement.execute("drop table if exists computer;");
 		dao.getSome(new DaoRequestParameter(null, null, null, null, 10l, null));
@@ -247,7 +246,7 @@ public class TestComputerDao {
 		assertEquals(new Long (0l),dao.getNb());
 	}
 
-	@Test(expected = DaoException.class)
+	@Test(expected = Exception.class)
 	public void getNbOnEmptyDatabase() throws Exception {
 		statement.execute("drop table if exists computer;");
 		dao.getNb();
@@ -261,7 +260,7 @@ public class TestComputerDao {
 		assertTrue(dao.getById(1l).equals(listComputer.get(0)));
 	}
 	
-	@Test(expected = DaoException.class)
+	@Test(expected = Exception.class)
 	public void getByIdNullParameter() throws Exception {
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
@@ -269,12 +268,12 @@ public class TestComputerDao {
 		dao.getById(null);
 	}
 	
-	@Test(expected = DaoException.class)
+	@Test(expected = Exception.class)
 	public void getByIdOnEmptyTable() throws Exception {
 		assertNull(dao.getById(1l));
 	}
 	
-	@Test(expected = DaoException.class)
+	@Test(expected = Exception.class)
 	public void getByIdOnEmptyDatabase() throws Exception {
 		statement.execute("drop table if exists computer;");
 		dao.getById(1l);
@@ -293,14 +292,14 @@ public class TestComputerDao {
 		rs.close();
 	}
 	
-	@Test(expected = DaoException.class)
+	@Test(expected = Exception.class)
 	public void saveInvalidComputer() throws Exception {
 		Computer computer = new Computer(1, "Computer 1");
 		computer.setName(null);
 		dao.save(computer);
 	}
 
-	@Test(expected = DaoException.class)
+	@Test(expected = Exception.class)
 	public void saveNullComputer() throws Exception {
 		dao.save(null);
 	}
@@ -322,12 +321,12 @@ public class TestComputerDao {
 		rs.close();
 	}
 	
-	@Test(expected = DaoException.class)
+	@Test(expected = Exception.class)
 	public void deleteOnEmptyTable() throws Exception {
 		dao.delete(1l);
 	}
 	
-	@Test(expected = DaoException.class)
+	@Test(expected = Exception.class)
 	public void deleteOnEmptyDatabase() throws Exception {
 		statement.execute("drop table if exists computer;");
 		dao.delete(1l);
@@ -347,18 +346,18 @@ public class TestComputerDao {
 		rs.close();
 	}
 	
-	@Test(expected = DaoException.class)
+	@Test(expected = Exception.class)
 	public void deleteByCompanyOnEmptyTable() throws Exception {
 		dao.deleteByCompany(1l);
 	}
 	
-	@Test(expected = DaoException.class)
+	@Test(expected = Exception.class)
 	public void deleteByCompanyOnEmptyDatabase() throws Exception {
 		statement.execute("drop table if exists computer;");
 		dao.deleteByCompany(1l);
 	}
 	
-	@Test(expected = DaoException.class)
+	@Test(expected = Exception.class)
 	public void deleteByCompanyWithInvalidId() throws Exception {
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();

@@ -12,7 +12,6 @@ import com.excilys.cdb.exception.ServiceException;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.DaoRequestParameter;
 import com.excilys.cdb.persistence.IDao;
-import com.excilys.cdb.persistence.TransactionFactory;
 import com.excilys.cdb.validation.ValidatorComputer;
 
 @Service
@@ -21,8 +20,6 @@ public class ComputersService implements IService<Computer,Long> {
 
 	@Autowired @Qualifier("computerDao")
 	private IDao<Computer,Long> dao;
-	@Autowired
-	TransactionFactory transactionFactory;
 	
 	public IDao<Computer,Long> getDao() {
 		return this.dao;

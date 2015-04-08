@@ -1,15 +1,13 @@
 package com.excilys.cdb.persistence;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.cdb.exception.DaoException;
@@ -32,203 +30,112 @@ public class CompanyDao implements IDao<Company, Long>{
 	@Autowired
 	private CompanyMapper companyMapper;
 	@Autowired
-	TransactionFactory transactionFactory;
+	private JdbcTemplate jdbcTemplate;
 	
-	private static enum preparedStatement {
-		COUNT_ALL ("SELECT COUNT(id) FROM company;"),
-		SELECT_ALL ("SELECT id, name FROM company;"),
-		SELECT_ALL_ORDERED ("SELECT id, name FROM company ORDER BY"),
-		SELECT_ONE ("SELECT id, name FROM company WHERE id=?;"),
-		SELECT_SOME ("SELECT id, name FROM company ORDER BY"),
-		SELECT_SOME_FILTERED ("SELECT id, name FROM company WHERE name LIKE ? ORDER BY"), 
-		DELETE_COMPUTER ("DELETE FROM computer WHERE company_id=?;"),
-		DELETE_ONE("DELETE FROM company WHERE id=?;");
-		
-		private final String request;
-		
-		preparedStatement(String request) {
-	        this.request = request;
-	    }
-	    private String getRequest() { return request; }
-	}
+		private static final String	COUNT_ALL = "SELECT COUNT(id) FROM company;";
+		private static final String	SELECT_ALL ="SELECT id, name FROM company;";
+		private static final String	SELECT_ALL_ORDERED ="SELECT id, name FROM company ORDER BY";
+		private static final String	SELECT_ONE ="SELECT id, name FROM company WHERE id=?;";
+		private static final String	SELECT_SOME ="SELECT id, name FROM company ORDER BY";
+		private static final String	SELECT_SOME_FILTERED ="SELECT id, name FROM company WHERE name LIKE ? ORDER BY";
+		private static final String	DELETE_COMPUTER ="DELETE FROM computer WHERE company_id=?;";
+		private static final String	DELETE_ONE = "DELETE FROM company WHERE id=?;";
+
 	
 	@Override
 	public List<Company> getAll() throws DaoException {
-		logger.info("getAll() method");
-		List<Company> list = new ArrayList<Company>();
-		Statement statement = transactionFactory.createStatement();
-		try {
-			ResultSet curs = statement.executeQuery(preparedStatement.SELECT_ALL.getRequest());
-			logger.info("Excuted request : "+preparedStatement.SELECT_ALL.getRequest());
-			while ( curs.next() ) {
-				list.add(companyMapper.mapFromRow(curs));
-    		}
-			curs.close();
-		} catch (SQLException e) {
-			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
-		} finally {
-			transactionFactory.closeStat(statement);
-		}
-		return list;
+		return jdbcTemplate.query(SELECT_ALL, companyMapper);
 	}
 	
 	@Override
 	public List<Company> getAll(DaoRequestParameter param) throws DaoException {
-		logger.info("getAll(param) method");
 		StringBuilder request = new StringBuilder();
-		List<Company> list = new ArrayList<Company>();
 		
-
-		request.append(preparedStatement.SELECT_ALL_ORDERED.getRequest());
+		request.append(SELECT_ALL_ORDERED);
 		request.append(" ");
 		addOrderByToRequest(request, param);
 		request.append(";");
-		Statement statement = transactionFactory.createStatement();
 		
-		try {
-			//Execute Request
-			ResultSet curs = statement.executeQuery(request.toString());
-			logger.info("Excuted request : "+request.toString());
-			//Mapping
-			while ( curs.next() ) {
-				list.add(companyMapper.mapFromRow(curs));
-			}
-		} catch (SQLException e) {
-			throw new DaoException(DaoException.CAN_NOT_SET_PREPAREDSTATEMENT,e);
-		} finally {
-			transactionFactory.closeStat(statement);
-		}
-		return list;
+		return jdbcTemplate.query(request.toString(), companyMapper);
 	}
 
 	@Override
 	public Long getNb() throws DaoException {
-		logger.info("getNb() method");
-		Long nbElements;
-		
-		Statement statement = transactionFactory.createStatement();
-		try {
-			ResultSet curs = statement.executeQuery(preparedStatement.COUNT_ALL.getRequest());
-			logger.debug("Executed request : "+preparedStatement.COUNT_ALL.getRequest());
-			if ( curs.next() ) {
-				nbElements = curs.getLong(1); 
-    		} else {
-    			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT);
-    		}
-			curs.close();
-		} catch (SQLException e) {
-			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
-		} finally {
-			transactionFactory.closeStat(statement);
+		Long nbElements = 10l;
+		nbElements = jdbcTemplate.queryForObject(COUNT_ALL,Long.class);
+		if (nbElements == null) {
+			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT);
 		}
 		return nbElements;
 	}
 	
 	@Override
 	public List<Company> getSome(DaoRequestParameter param) throws DaoException {
-		logger.info("getSome(param) method");
-		int numArg = 1;
-		List<Company> list = new ArrayList<Company>();
 		
-		PreparedStatement statement = null;
+		List<Object> list = new ArrayList<Object>();
 		
 		StringBuilder request = new StringBuilder();
 
 		if (param.getNameLike() != null) {
-			request.append(preparedStatement.SELECT_SOME_FILTERED.getRequest());	
+			request.append(SELECT_SOME_FILTERED);	
 		} else {
-			request.append(preparedStatement.SELECT_SOME.getRequest());
+			request.append(SELECT_SOME);
 		}
 		request.append(" ");
 		addOrderByToRequest(request, param);
 		request.append(" ");
 		request.append(" LIMIT ? OFFSET ?;");
 		
-		statement = transactionFactory.createPreparedStatement(request.toString());
-		try {
-			if (param.getNameLike() != null) {			
-				numArg = setWhenCondition (statement,param, numArg);
+		if (param.getNameLike() != null) {			
+			try {
+				setWhenCondition (list,param);
+			} catch (SQLException e) {
+				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			}
-			if (param.getLimit() == null) {
-				transactionFactory.closeStat(statement);
+		}
+		if (param.getLimit() == null) {
+			throw new DaoException(DaoException.INVALID_ARGUMENT);
+		} else {
+			if (param.getLimit() < 0) {
 				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			} else {
-				if (param.getLimit() < 0) {
-					transactionFactory.closeStat(statement);
-					throw new DaoException(DaoException.INVALID_ARGUMENT);
-				} else {
-					statement.setLong(numArg++,param.getLimit()); 
-				}
+				list.add(param.getLimit()); 
 			}
-			if (param.getOffset() == null) {
-				statement.setLong(numArg++,0); 
-			} else {
-				if (param.getOffset() < 0) {
-					throw new DaoException(DaoException.INVALID_ARGUMENT);
-				} else {
-					statement.setLong(numArg++,param.getOffset()); 
-				}
-			}
-			ResultSet curs = statement.executeQuery();
-			logger.debug("Excuted request : "+request.toString());
-			while ( curs.next() ) {
-				list.add(companyMapper.mapFromRow(curs));
-    		}
-			curs.close();
-		} catch (SQLException e) {
-			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT,e);
-		} finally {
-			transactionFactory.closeStat(statement);
 		}
-		return list;
+		if (param.getOffset() == null) {
+			list.add(0); 
+		} else {
+			if (param.getOffset() < 0) {
+				throw new DaoException(DaoException.INVALID_ARGUMENT);
+			} else {
+				list.add(param.getOffset()); 
+			}
+		}
+		return jdbcTemplate.query(request.toString(), list.toArray(),companyMapper);
 	}
 
 	@Override
 	public Company getById(Long id) throws DaoException {
-		logger.info("getById(id) method");
 		if (id == null) {
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
 		Company comp=null;
-		
-		PreparedStatement statement = transactionFactory.createPreparedStatement(preparedStatement.SELECT_ONE.getRequest());
-		try {
-			statement.setLong(1,id);
-			ResultSet curs = statement.executeQuery();
-			logger.debug("Excuted request : "+preparedStatement.SELECT_ONE.getRequest());
-			if ( curs.next() ) {
-				comp = companyMapper.mapFromRow(curs);
-    		} else {
-    			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT);
-    		}
-			curs.close();
-		} catch (SQLException e) {
-			throw new DaoException(e);
-		} finally {
-			transactionFactory.closeStat(statement);
+		comp = jdbcTemplate.queryForObject(SELECT_ONE, new Object[] {id},companyMapper);
+		if (comp == null ) {
+			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT);
 		}
+
 		return comp;
 	}
 	
 	@Override
 	public void delete(Long id)  throws DaoException {
-		logger.info("delete(id) method");
 		if (id == null) {
 			throw new IllegalArgumentException();
 		}
-		
-		PreparedStatement statement = transactionFactory.createPreparedStatement( preparedStatement.DELETE_ONE.getRequest());
-		logger.debug("Excuted request : "+statement.toString());
-		try {
-			statement.setLong(1, id);
-			int nb = statement.executeUpdate();
-			if (nb==0) {
-				throw new DaoException(DaoException.CAN_NOT_DELETE_ELEMENT);
-			}
-		} catch (SQLException e) {
-			throw new DaoException(DaoException.CAN_NOT_DELETE_ELEMENT,e);
-		} finally {
-			transactionFactory.closeStat(statement);
+		int nb = jdbcTemplate.update(DELETE_ONE, new Object[] {id});
+		if (nb==0) {
+			throw new DaoException(DaoException.CAN_NOT_DELETE_ELEMENT);
 		}
 	}
 	
@@ -285,7 +192,7 @@ public class CompanyDao implements IDao<Company, Long>{
 		}
 	}
 	
-	public Integer setWhenCondition (PreparedStatement statement,DaoRequestParameter param, Integer numArg) throws SQLException {
+	public void setWhenCondition (List<Object> list,DaoRequestParameter param) throws SQLException {
 		StringBuilder filter = new StringBuilder();
 		switch (param.getNameFiltering()) {
 		case POST:
@@ -307,8 +214,7 @@ public class CompanyDao implements IDao<Company, Long>{
 		default:
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
-		statement.setString(numArg++,filter.toString());
-		return numArg;
+		list.add(filter.toString());
 	}
 	
 	

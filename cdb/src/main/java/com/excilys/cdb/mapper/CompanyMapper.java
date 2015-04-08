@@ -39,7 +39,7 @@ public class CompanyMapper implements IMapper<Company, CompanyDTO> {
 	 * 				Data on the Computer
 	 * @return Created Company instance
 	 */
-	public Company mapFromRow(ResultSet curs) {
+	public Company mapRow(ResultSet curs, int arg) {
 		Company comp=null;
 		try {
 			comp = new Company(curs.getLong("id"),

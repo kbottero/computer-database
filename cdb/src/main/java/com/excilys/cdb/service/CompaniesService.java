@@ -13,7 +13,6 @@ import com.excilys.cdb.model.Company;
 import com.excilys.cdb.persistence.ComputerDao;
 import com.excilys.cdb.persistence.DaoRequestParameter;
 import com.excilys.cdb.persistence.IDao;
-import com.excilys.cdb.persistence.TransactionFactory;
 
 @Service
 @Transactional
@@ -21,8 +20,6 @@ public class CompaniesService implements IService<Company,Long>{
 
 	@Autowired @Qualifier("companyDao")
 	private IDao<Company,Long> dao;
-	@Autowired
-	TransactionFactory transactionFactory;
 	
 	/**
 	 * Return a list of all companies in the database.

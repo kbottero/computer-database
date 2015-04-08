@@ -49,7 +49,7 @@ public class ComputerMapper implements IMapper<Computer, ComputerDTO> {
 	 * 				Data on the Computer
 	 * @return Created Computer instance
 	 */
-	public Computer mapFromRow(ResultSet curs) {
+	public Computer mapRow(ResultSet curs, int arg) {
 
 		Computer comp;
 		try {

@@ -1,12 +1,11 @@
 package com.excilys.cdb.mapper;
 
-import java.sql.ResultSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public interface IMapper<T,E> {
+import org.springframework.jdbc.core.RowMapper;
 
-	T mapFromRow(ResultSet curs);
+public interface IMapper<T,E> extends RowMapper<T>{
 	
 	E toDTO(T instance);
 	

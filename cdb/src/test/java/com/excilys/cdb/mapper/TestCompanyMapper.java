@@ -26,7 +26,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.excilys.cdb.dto.CompanyDTO;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.TransactionFactory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/spring-context-test.xml"})
@@ -56,7 +55,7 @@ public class TestCompanyMapper {
 	@Test
 	public void mapFromRow() throws Exception {
 		
-		BufferedReader in = new BufferedReader(new InputStreamReader(TransactionFactory.class.getClassLoader().getResourceAsStream("db-test.properties")));
+		BufferedReader in = new BufferedReader(new InputStreamReader(TestCompanyMapper.class.getClassLoader().getResourceAsStream("db-test.properties")));
 		Properties properties = new Properties();
 		properties.load(in);
 		in.close();
@@ -80,7 +79,7 @@ public class TestCompanyMapper {
 		ResultSet rs = statement.executeQuery("SELECT * FROM company;");
 		for (Company company : listCompany) {
 			rs.next();
-			assertEquals(company,companyMapper.mapFromRow(rs));
+			assertEquals(company,companyMapper.mapRow(rs,0));
 		}
 		rs.close();
 		

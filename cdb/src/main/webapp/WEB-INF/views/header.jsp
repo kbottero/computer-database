@@ -19,13 +19,7 @@
     <header class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <a class="navbar-brand" href="dashboard.html">
-            Application - Computer Database
+                <spring:message code="application.name" text="application.name" />
             </a>
         </div>
-        <div class="btn-group btn-group-sm pull-right" role="group">
-			<button type="button" class="btn btn-default"
-				onclick="#">FR</button>
-			<button type="button" class="btn btn-default"
-				onclick="#">EN</button>
-		</div>
     </header>

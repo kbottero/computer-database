@@ -3,20 +3,20 @@
     <section id="main">
         <div class="container">
             <h1 id="homeTitle">
-                ${page.nbElements} Computers found
+                ${page.nbElements} <spring:message code="computers.found" text="computers.found" />
             </h1>
             <div id="actions" class="form-horizontal">
                 <div class="pull-left">
                     <form id="searchForm" action="#" method="GET" class="form-inline">
 
-                        <input type="search" id="searchbox" name="search" class="form-control" placeholder="Search name" />
-                        <input type="submit" id="searchsubmit" value="Filter by name"
+                        <input type="search" id="searchbox" name="search" class="form-control" placeholder="<spring:message code="search.name" text="search.name" />" />
+                        <input type="submit" id="searchsubmit" value="<spring:message code="filter.name" text="filter.name" />"
                         class="btn btn-primary" />
                     </form>
                 </div>
                 <div class="pull-right">
-                    <a class="btn btn-success" id="addComputer" href="${pageContext.request.contextPath}/addComputer">Add Computer</a> 
-                    <a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();">Edit</a>
+                    <a class="btn btn-success" id="addComputer" href="${pageContext.request.contextPath}/addComputer"><spring:message code="add.computer" text="add.computer" /></a> 
+                    <a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();"><spring:message code="edit" text="edit" /></a>
                 </div>
             </div>
         </div>
@@ -41,18 +41,18 @@
                             </span>
                         </th>
                         <th>
-                            Computer name
+                            <spring:message code="computers.name.th" text="computers.name.th" />
                         </th>
                         <th>
-                            Introduced date
+                            <spring:message code="introduced.date.th" text="introduced.date.th" />
                         </th>
                         <!-- Table header for Discontinued Date -->
                         <th>
-                            Discontinued date
+                            <spring:message code="discontinued.date.th" text="discontinued.date.th" />
                         </th>
                         <!-- Table header for Company -->
                         <th>
-                            Company
+                            <spring:message code="company.th" text="company.th" />
                         </th>
 
                     </tr>

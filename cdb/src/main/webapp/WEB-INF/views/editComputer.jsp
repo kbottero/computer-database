@@ -6,7 +6,7 @@
                     <div class="label label-default pull-right">
                         id: ${computer.id}
                     </div>
-                    <h1>Edit Computer</h1>
+                    <h1><spring:message code="edit.computer" text="edit.computer" /></h1>
 
                     <form action="saveComputer" method="GET" id="formEditComputer">
                         <input type="hidden" name ="computerId"value="${computer.id}"/>

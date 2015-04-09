@@ -1,49 +1,35 @@
 package com.excilys.cdb.web;
 
-import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.excilys.cdb.dto.CompanyDTO;
-import com.excilys.cdb.mapper.CompanyMapper;
-import com.excilys.cdb.service.CompaniesService;
+import com.excilys.cdb.mapper.IMapper;
+import com.excilys.cdb.model.Company;
+import com.excilys.cdb.service.IService;
 
 @Controller
-@WebServlet(urlPatterns = "/addComputer")
-public class AddComputer extends AbstractServlet {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6844149787037040594L;
+@RequestMapping("/addComputer")
+public class AddComputer {
 	
 	@Autowired
-	private CompaniesService companiesService;
+	private IService<Company, Long> companiesService;
 	@Autowired
-	private CompanyMapper companyMapper;
+	private IMapper<Company, CompanyDTO> companyMapper;
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	@RequestMapping(method = {RequestMethod.GET,RequestMethod.POST})
+	protected ModelAndView doGet(HttpServletRequest request) {
+		ModelAndView model = new ModelAndView("addComputer");
 		List<CompanyDTO> listCompany = companyMapper.toDTOList(companiesService.getAll());
-		request.setAttribute("companies", listCompany);
-		request.setAttribute("prev", request.getHeader("Referer"));
-		RequestDispatcher dis=this.getServletContext().getRequestDispatcher("/WEB-INF/views/addComputer.jsp");
-		dis.forward(request, response);
+		model.addObject("companies", listCompany);
+		model.addObject("prev", request.getHeader("Referer"));
+		return model;
 	}
-	
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request,response);
-	}
-	
 }

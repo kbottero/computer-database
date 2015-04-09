@@ -1,92 +1,51 @@
 package com.excilys.cdb.web;
 
-import java.io.IOException;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
 
 import com.excilys.cdb.dto.ComputerDTO;
-import com.excilys.cdb.exception.ServiceException;
-import com.excilys.cdb.mapper.ComputerMapper;
+import com.excilys.cdb.mapper.IMapper;
 import com.excilys.cdb.model.Company;
-import com.excilys.cdb.service.CompaniesService;
-import com.excilys.cdb.service.ComputersService;
-import com.excilys.cdb.validation.ValidatorDate;
+import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.service.IService;
 
 @Controller
-@WebServlet(urlPatterns = "/insertComputer")
-public class InsertComputer extends AbstractServlet {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6819960873094583968L;
+@RequestMapping("/insertComputer")
+public class InsertComputer {
 
 	@Autowired
-	private ComputersService computersService;
+	private IService<Computer,Long> computersService;
 	@Autowired
-	private CompaniesService companiesService;
+	private IService<Company,Long> companiesService;
 	@Autowired
-	private ComputerMapper computerMapper;
-	
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String computerName = request.getParameter("computerName");
-		String attrib = null;
-		if (computerName == null) {
-		    response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Computer name wasn'treceived.");
-		    return;
-		}
-		String introduced = request.getParameter("introduced");
-		if(introduced == null || 
-				(!introduced.isEmpty() && !ValidatorDate.check(introduced))) {
-		    response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Incorrect introduced date send.");
-		    return;
-		}
-		String discontinued = request.getParameter("discontinued");
-		if(discontinued == null || 
-				(!discontinued.isEmpty() && !ValidatorDate.check(discontinued))) {
-		    response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Incorrect discontinued date send.");
-		    return;
-		}
-		attrib = request.getParameter("companyId");
+	private IMapper<Computer,ComputerDTO> computerMapper;
+
+	@RequestMapping(method = {RequestMethod.GET,RequestMethod.POST})
+    @ExceptionHandler(NoSuchRequestHandlingMethodException.class)
+	protected String doGet(
+			@RequestParam(value="computerName", defaultValue="", required=false) final String computerName,
+			@RequestParam(value="introduced", defaultValue="", required=false) final String introduced,
+			@RequestParam(value="discontinued", defaultValue="", required=false) final String discontinued,
+			@RequestParam(value="companyId", defaultValue="", required=false) final String companyId) {
+		
 		Long compId = null;
 		String companyName = "";
-		if (attrib != null) {
-			if (!attrib.isEmpty()) {
-				try {
-					compId = Long.parseLong(attrib);
-					if (!compId.equals(0l)) {
-						Company company = companiesService.getOne(compId);
-						companyName = company.getName();
-					}
-				} catch (NumberFormatException | ServiceException e) {
-				    response.sendError(HttpServletResponse.SC_BAD_REQUEST,"The company id received is not valid.");
-				    return;
-				}
-			} else {
-				compId = 0l;
+		if (!companyId.isEmpty()) {
+			compId = Long.parseLong(companyId);
+			if (!compId.equals(0l)) {
+				Company company = companiesService.getOne(compId);
+				companyName = company.getName();
 			}
 		} else {
-		    response.sendError(HttpServletResponse.SC_BAD_REQUEST,"No company id received.");
-		    return;
+			compId = 0l;
 		}
 		ComputerDTO computerDTO = new ComputerDTO(0l,computerName, introduced, discontinued, compId, companyName );
 		computersService.saveOne(computerMapper.fromDTO(computerDTO));
-		
-		RequestDispatcher dis = this.getServletContext().getRequestDispatcher("/index.jsp");
-		dis.forward(request, response);
-	}
-	
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request,response);
+		return "redirect:/dashboard";
 	}
 }

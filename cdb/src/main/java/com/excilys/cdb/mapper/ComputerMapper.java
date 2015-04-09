@@ -14,7 +14,7 @@ import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.service.CompaniesService;
+import com.excilys.cdb.service.IService;
 
 /**
  * Mapper for com.excilys.cdb.Model.Computer using java.sql.ResultSet
@@ -29,7 +29,7 @@ public class ComputerMapper implements IMapper<Computer, ComputerDTO> {
 	public static final String DEFAULT_ID = "id";
 
 	@Autowired
-	private CompaniesService companiesService;
+	private IService<Company,Long> companiesService;
 
 	/** Map DB labels -> Model attributes. */
 	public static final HashMap<String,String> mapBDModel;

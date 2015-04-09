@@ -236,7 +236,7 @@ public class ComputerDao  implements IDao<Computer, Long> {
 		if (companyId == null) {
 			throw new IllegalArgumentException();
 		}
-		int nb = jdbcTemplate.update(DELETE_BY_COMPANY, new Object[] {companyId});
+		jdbcTemplate.update(DELETE_BY_COMPANY, new Object[] {companyId});
 	}
 	
 	

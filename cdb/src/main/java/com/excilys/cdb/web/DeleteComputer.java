@@ -1,39 +1,30 @@
 package com.excilys.cdb.web;
 
-import java.io.IOException;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
-import com.excilys.cdb.service.ComputersService;
+import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.service.IService;
 
 @Controller
-@WebServlet(urlPatterns = "/deleteComputer")
-public class DeleteComputer  extends AbstractServlet {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 3419392631122313675L;
+@RequestMapping("/deleteComputer")
+public class DeleteComputer {
 	private static Logger logger = LoggerFactory.getLogger(DeleteComputer.class);
 
 	@Autowired
-	private ComputersService computersService;
+	private IService<Computer,Long> computersService;
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	    String[] attrib = request.getParameterValues("selection");
-	    logger.debug(request.getParameterNames().toString());
-		if (attrib != null) {
-		    for (String ids : attrib) {
+	@RequestMapping(method = {RequestMethod.GET,RequestMethod.POST})
+	protected ModelAndView doGet(@RequestParam(value="selection", required=true) final String[] selection) {
+		if (selection != null) {
+		    logger.debug(selection.toString());
+		    for (String ids : selection) {
 		    		String[] num = ids.split(",");
 		    		for (String id : num) {
 						Long idValue = Long.parseLong(id);
@@ -41,14 +32,7 @@ public class DeleteComputer  extends AbstractServlet {
 		    		}
 		    }
 		}
-		RequestDispatcher dis=this.getServletContext().getRequestDispatcher("/index.jsp");
-		dis.forward(request, response);
+		return new ModelAndView("dashboard");
 	}
-	
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request,response);
-	}
+
 }

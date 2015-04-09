@@ -7,15 +7,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.excilys.cdb.exception.DaoException;
-import com.excilys.cdb.exception.ServiceException;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.persistence.ComputerDao;
 import com.excilys.cdb.persistence.DaoRequestParameter;
 import com.excilys.cdb.persistence.IDao;
 
 @Service
-@Transactional
 public class CompaniesService implements IService<Company,Long>{
 
 	@Autowired @Qualifier("companyDao")
@@ -26,13 +23,8 @@ public class CompaniesService implements IService<Company,Long>{
 	 * @return
 	 */
 	@Override
-	@Transactional(readOnly=true)
-	public List<Company> getAll()  throws ServiceException{
-		try {
-			return dao.getAll();
-		} catch (DaoException e) {
-			throw new ServiceException(e);
-		}
+	public List<Company> getAll() {
+		return dao.getAll();
 	}
 	/**
 	 * Return a list of all companies in the database.
@@ -40,13 +32,8 @@ public class CompaniesService implements IService<Company,Long>{
 	 * @return
 	 */
 	@Override
-	@Transactional(readOnly=true)
-	public List<Company> getAll(DaoRequestParameter param) throws ServiceException {
-		try {
+	public List<Company> getAll(DaoRequestParameter param) {
 			return dao.getAll(param);
-		} catch (DaoException e) {
-			throw new ServiceException(e);
-		}
 	}
 	
 	/**
@@ -56,13 +43,8 @@ public class CompaniesService implements IService<Company,Long>{
 	 * @return
 	 */
 	@Override
-	@Transactional(readOnly=true)
-	public List<Company> getSome(DaoRequestParameter param) throws ServiceException {
-		try {
-			return dao.getSome(param);
-		} catch (DaoException e) {
-			throw new ServiceException(e);
-		}
+	public List<Company> getSome(DaoRequestParameter param) {
+		return dao.getSome(param);
 	}
 
 	/**
@@ -70,13 +52,8 @@ public class CompaniesService implements IService<Company,Long>{
 	 * @return
 	 */
 	@Override
-	@Transactional(readOnly=true)
-	public Long getNbInstance() throws ServiceException {
-		try {
-			return dao.getNb();
-		} catch (DaoException e) {
-			throw new ServiceException(e);
-		}
+	public Long getNbInstance() {
+		return dao.getNb();
 	}
 	
 	/**
@@ -84,13 +61,8 @@ public class CompaniesService implements IService<Company,Long>{
 	 * @return
 	 */
 	@Override
-	@Transactional(readOnly=true)
-	public Long getNbInstance(DaoRequestParameter param) throws ServiceException {
-		try {
-			return dao.getNb(param);
-		} catch (DaoException e) {
-			throw new ServiceException(e);
-		}
+	public Long getNbInstance(DaoRequestParameter param) {
+		return dao.getNb(param);
 	}
 	
 	/**
@@ -98,13 +70,8 @@ public class CompaniesService implements IService<Company,Long>{
 	 * @return
 	 */
 	@Override
-	@Transactional(readOnly=true)
-	public Company getOne(Long id) throws ServiceException {
-		try {
-			return dao.getById(id);
-		} catch (DaoException e) {
-			throw new ServiceException(e);
-		}
+	public Company getOne(Long id) {
+		return dao.getById(id);
 	}
 	
 	/**
@@ -113,13 +80,9 @@ public class CompaniesService implements IService<Company,Long>{
 	 * @return
 	 */
 	@Override
-	@Transactional(rollbackFor=ServiceException.class)
-	public void deleteOne(Long id) throws ServiceException {
-		try {
-			new ComputerDao().deleteByCompany(id);
-			dao.delete(id);;
-		} catch (DaoException e) {
-			throw new ServiceException(e);
-		}
+	@Transactional(rollbackFor=RuntimeException.class)
+	public void deleteOne(Long id){
+		new ComputerDao().deleteByCompany(id);
+		dao.delete(id);
 	}
 }

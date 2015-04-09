@@ -1,76 +1,61 @@
 package com.excilys.cdb.web;
 
-import java.io.IOException;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
-import com.excilys.cdb.mapper.ComputerMapper;
+import com.excilys.cdb.dto.ComputerDTO;
+import com.excilys.cdb.mapper.IMapper;
+import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.DaoRequestParameter;
 import com.excilys.cdb.persistence.DaoRequestParameter.NameFiltering;
-import com.excilys.cdb.service.ComputersService;
+import com.excilys.cdb.service.IService;
 import com.excilys.cdb.ui.util.ComputerPage;
 
 @Controller
-@WebServlet(urlPatterns = "/dashboard")
-public class Dashboard extends AbstractServlet {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6844149787037040594L;
+@RequestMapping("/dashboard")
+public class Dashboard {
 
 	@Autowired
-	private ComputersService computersService;
+	private IService<Computer, Long> computersService;
 	@Autowired
-	private ComputerMapper computerMapper;
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String attrib;
+	private IMapper<Computer, ComputerDTO> computerMapper;
+	 
+	@RequestMapping(method = {RequestMethod.GET,RequestMethod.POST})
+	protected ModelAndView doGet(
+			@RequestParam(value="nbCompPerPage", defaultValue="", required=false) final String nbCompPerPage,
+			@RequestParam(value="numPage", defaultValue="", required=false) final String numPage,
+			@RequestParam(value="search", defaultValue="", required=false) final String searchParam) {
 		ComputerPage compPage;
-		Long nbCompPerPage = 10l;
-		attrib = request.getParameter("nbCompPerPage");
-		if (attrib != null) {
-			nbCompPerPage = Long.parseLong(attrib);
-			if (nbCompPerPage != 10l && nbCompPerPage != 50l && nbCompPerPage != 100l) {
-				nbCompPerPage = 10l;
+		ModelAndView model = new ModelAndView("dashboard");
+		
+		Long nbPerPage = 10l;
+		if (nbCompPerPage != null && !nbCompPerPage.isEmpty()) {
+			nbPerPage = Long.parseLong(nbCompPerPage);
+			if (nbPerPage != 10l && nbPerPage != 50l && nbPerPage != 100l) {
+				nbPerPage = 10l;
 			}
 		}
-		request.setAttribute("nbCompPerPage", nbCompPerPage);
-		attrib = request.getParameter("search");
-		if (attrib != null) {
-			String filter = attrib;
-			DaoRequestParameter param = new DaoRequestParameter(NameFiltering.POST,filter,null,null,nbCompPerPage,0l);
-			compPage = new ComputerPage(computersService, nbCompPerPage, param);
+		
+		if (searchParam != null && !searchParam.isEmpty()) {
+			DaoRequestParameter param = new DaoRequestParameter(NameFiltering.POST,searchParam,null,null,nbPerPage,0l);
+			compPage = new ComputerPage(computersService,nbPerPage, param);
 		} else {
-			compPage = new ComputerPage(computersService, nbCompPerPage, null);
+			compPage = new ComputerPage(computersService, nbPerPage, null);
 		}
-		attrib = request.getParameter("numPage");
-		if (attrib != null) {
-			Long numPage = Long.parseLong(attrib);
-			compPage.goToPage(numPage);
+		
+		if (numPage != null && !numPage.isEmpty()) {
+			Long num = Long.parseLong(numPage);
+			compPage.goToPage(num);
 		}
 
-		request.setAttribute("page", compPage);
-		request.setAttribute("computers", computerMapper.toDTOList(compPage.getElements()));
-		RequestDispatcher dis=this.getServletContext().getRequestDispatcher("/WEB-INF/views/dashboard.jsp");
-		
-		dis.forward(request, response);
-	}
-	
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request,response);
+		model.addObject("nbCompPerPage", nbCompPerPage);
+		model.addObject("page", compPage);
+		model.addObject("computers", computerMapper.toDTOList(compPage.getElements()));
+		return model;
 	}
 	
 }

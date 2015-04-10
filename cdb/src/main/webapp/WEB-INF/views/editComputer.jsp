@@ -9,22 +9,22 @@
                     <h1><spring:message code="edit.computer" text="edit.computer" /></h1>
 
                     <form action="saveComputer" method="GET" id="formEditComputer">
-                        <input type="hidden" name ="computerId"value="${computer.id}"/>
+                        <input type="hidden" name ="computerId" value="${computer.id}"/>
                         <fieldset>
                             <div class="form-group">
-                                <label for="computerName">Computer name</label>
+                                <label for="computerName"><spring:message code="computers.name.th" text="computers.name.th" /></label>
                                 <input type="text" class="form-control" name ="computerName" id="computerName" placeholder="Computer name" value="${computer.name}">
                             </div>
                             <div class="form-group">
-                                <label for="introduced">Introduced date</label>
-                                <input type="date" class="form-control" name ="introduced" id="introduced" placeholder="Introduced date" value="${computer.introductionDate}">
+                                <label for="introduced"><spring:message code="introduced.date.th" text="introduced.date.th" /></label>
+                                <input type="date" class="form-control" name ="introduced" id="introduced" placeholder="yyyy-mm-dd" value="${computer.introductionDate}">
                             </div>
                             <div class="form-group">
-                                <label for="discontinued">Discontinued date</label>
-                                <input type="date" class="form-control" name ="discontinued" id="discontinued" placeholder="Discontinued date" value="${computer.discontinuedDate}">
+                                <label for="discontinued"><spring:message code="discontinued.date.th" text="discontinued.date.th" /></label>
+                                <input type="date" class="form-control" name ="discontinued" id="discontinued" placeholder="yyyy-mm-dd" value="${computer.discontinuedDate}">
                             </div>
                             <div class="form-group">
-                                <label for="companyId">Company</label>
+                                <label for="companyId"><spring:message code="company.th" text="company.th" /></label>
                                 <select name ="companyId" class="form-control" id="companyId" >
                                    	<option value="0" <c:if test="${computer.constructorName == null}">selected</c:if>>--</option>
                                     <c:forEach var="c" items="${companies}">
@@ -34,9 +34,9 @@
                             </div>            
                         </fieldset>
                         <div class="actions pull-right">
-                            <input type="submit" value="Edit" class="btn btn-primary" id="formEditComputerSubmit">
-                            or
-                            <a href="${prev}" class="btn btn-default">Cancel</a>
+                            <input type="submit" value="<spring:message code="edit" text="edit" />" class="btn btn-primary" id="formEditComputerSubmit">
+                            <spring:message code="or" text="or" />
+                            <a href="${prev}" class="btn btn-default"><spring:message code="cancel" text="cancel" /></a>
                         </div>
                     </form>
                 </div>

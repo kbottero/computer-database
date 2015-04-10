@@ -21,7 +21,7 @@ $(function() {
             $("#deleteSelected").disable();
         }
     });
-
+    
 });
 
 
@@ -68,8 +68,6 @@ $(function() {
         }
     };
 }( jQuery ));
-
-
 
 //Event handling
 //Onkeydown

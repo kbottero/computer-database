@@ -34,19 +34,18 @@ public class ComputerDao  implements IDao<Computer, Long> {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
-	private static final String COUNT_ALL ="SELECT COUNT(id) FROM computer;";
-	private static final String COUNT_ALL_FILTERED = "SELECT COUNT(id) FROM computer WHERE name LIKE ? ORDER BY";
+	private static final String COUNT_ALL ="SELECT COUNT(id) FROM computer AS c;";
+	private static final String COUNT_ALL_FILTERED = "SELECT COUNT(c.id) FROM computer AS c LEFT OUTER JOIN company ON c.company_id = company.id WHERE c.name LIKE ? OR company.name LIKE ? ORDER BY";
 	private static final String SELECT_ALL = "SELECT id, name, introduced, discontinued, company_id FROM computer;";
-	private static final String SELECT_ALL_ORDERED = "SELECT id, name, introduced, discontinued, company_id FROM computer ORDER BY";
-	private static final String SELECT_SOME = "SELECT id, name, introduced, discontinued, company_id FROM computer ORDER BY";
-	private static final String SELECT_SOME_FILTERED = "SELECT id, name, introduced, discontinued, company_id FROM computer WHERE name LIKE ? ORDER BY";
+	private static final String SELECT_ALL_ORDERED = "SELECT c.id, c.name, c.introduced, c.discontinued, c.company_id FROM computer AS c ORDER BY";
+	private static final String SELECT_SOME = "SELECT c.id, c.name, c.introduced, c.discontinued, c.company_id FROM computer AS c LEFT OUTER JOIN company ON c.company_id = company.id ORDER BY";
+	private static final String SELECT_SOME_FILTERED = "SELECT c.id, c.name, c.introduced, c.discontinued, c.company_id FROM computer AS c LEFT OUTER JOIN company ON c.company_id = company.id WHERE c.name LIKE ? OR company.name LIKE ? ORDER BY";
 	private static final String SELECT_ONE = "SELECT id, name,introduced, discontinued, company_id FROM computer WHERE id=?;";
 	private static final String INSERT_ONE = "INSERT INTO computer (name, introduced, discontinued, company_id) VALUES (?,?,?,?) ;";
 	private static final String UPDATE_ONE = "UPDATE computer SET name=?, introduced=?, discontinued=?, company_id=? WHERE id=?;";
 	private static final String DELETE_ONE = "DELETE FROM computer WHERE id=?;";
 	private static final String DELETE_BY_COMPANY = "DELETE FROM computer WHERE company_id=?;";
 	private static final String COUNT_ONE = "SELECT COUNT(id) FROM computer WHERE id=?;";
-
 
 	@Override
 	public List<Computer> getAll() throws DaoException {
@@ -91,31 +90,12 @@ public class ComputerDao  implements IDao<Computer, Long> {
 			request.append(COUNT_ALL_FILTERED);
 			request.append(" ");
 			addOrderByToRequest(request, param);
-			request.append(" LIMIT ? OFFSET ?;");
 			
 			if (param.getNameLike() != null) {
 				try {
 					setWhenCondition (list, param);
 				} catch (SQLException e) {
 					throw new DaoException(DaoException.INVALID_ARGUMENT);
-				}
-			}
-			if (param.getLimit() == null) {
-				throw new DaoException(DaoException.INVALID_ARGUMENT);
-			} else {
-				if (param.getLimit() < 0) {
-					throw new DaoException(DaoException.INVALID_ARGUMENT);
-				} else {
-					list.add(param.getLimit()); 
-				}
-			}
-			if (param.getOffset() == null) {
-				list.add(0); 
-			} else {
-				if (param.getOffset() < 0) {
-					throw new DaoException(DaoException.INVALID_ARGUMENT);
-				} else {
-					list.add(param.getOffset()); 
 				}
 			}
 		} else {
@@ -315,6 +295,7 @@ public class ComputerDao  implements IDao<Computer, Long> {
 		default:
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
+		list.add(filter.toString());
 		list.add(filter.toString());
 	}
 	

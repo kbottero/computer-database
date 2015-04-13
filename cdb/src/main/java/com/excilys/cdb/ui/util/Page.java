@@ -45,7 +45,7 @@ public abstract class Page <E, I extends Serializable> {
 			count = 1l;
 		}
 		if (param == null) {
-			this.param = new DaoRequestParameter (null, null, null,null,this.pageSize,0l);
+			this.param = new DaoRequestParameter (null, null, null, null, this.pageSize,0l);
 		} else {
 			this.param = param;
 		}
@@ -63,8 +63,39 @@ public abstract class Page <E, I extends Serializable> {
 		return elements;
 	}
 	
+	public DaoRequestParameter getParam() {
+		return param;
+	}
+	
 	public Long getNbElements() {
 		return nbElements;
+	}
+
+	public Long getPageSize() {
+		return pageSize;
+	}
+	
+	public String getSortColumn() {
+		StringBuilder strgBuil = new StringBuilder();
+		if (param != null && param.getColToOrderBy() != null) {
+			for (String s : param.getColToOrderBy()) {
+				if (strgBuil.length() != 0) {
+					strgBuil.append(",");
+				} 
+				strgBuil.append(s);
+			}
+		}
+		return strgBuil.toString();
+	}
+	
+	public String sortColumnOrder() {
+		String strg = new String();
+		if (param != null && param.getOrder() != null) {
+			strg = param.getOrder().name();
+		} else {
+			strg = DaoRequestParameter.Order.ASC.name();
+		}
+		return strg;
 	}
 	
 	public abstract void setFilter(String filter);

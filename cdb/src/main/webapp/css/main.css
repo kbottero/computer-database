@@ -32,3 +32,9 @@ input[type='checkbox'] {
 	color:red;
 	border : 2px solid red;
 }
+
+.pagination > li > a.selectedLi {
+	color: white;
+	background-color: #337AB7;
+}
+

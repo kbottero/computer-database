@@ -22,7 +22,6 @@ import com.excilys.cdb.service.IService;
 @RequestMapping("/editComputer")
 public class EditComputer {
 
-	
 	@Autowired
 	private IService<Computer,Long> computersService;
 	@Autowired

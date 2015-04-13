@@ -1,5 +1,8 @@
 package com.excilys.cdb.web;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +14,6 @@ import com.excilys.cdb.dto.ComputerDTO;
 import com.excilys.cdb.mapper.IMapper;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.DaoRequestParameter;
-import com.excilys.cdb.persistence.DaoRequestParameter.NameFiltering;
 import com.excilys.cdb.service.IService;
 import com.excilys.cdb.ui.util.ComputerPage;
 
@@ -23,12 +25,15 @@ public class Dashboard {
 	private IService<Computer, Long> computersService;
 	@Autowired
 	private IMapper<Computer, ComputerDTO> computerMapper;
-	 
+	
 	@RequestMapping(method = {RequestMethod.GET,RequestMethod.POST})
 	protected ModelAndView doGet(
-			@RequestParam(value="nbCompPerPage", defaultValue="", required=false) final String nbCompPerPage,
+			@RequestParam(value="search", defaultValue="", required=false) final String search,
 			@RequestParam(value="numPage", defaultValue="", required=false) final String numPage,
-			@RequestParam(value="search", defaultValue="", required=false) final String searchParam) {
+			@RequestParam(value="nbCompPerPage", defaultValue="", required=false) final String nbCompPerPage,
+			@RequestParam(value="sortColumn", defaultValue="", required=false) final String sortColumn,
+			@RequestParam(value="sortColumnOrder", defaultValue="", required=false) final String sortColumnOrder,
+			@RequestParam(value="language", defaultValue="", required=false) final String language) {
 		ComputerPage compPage;
 		ModelAndView model = new ModelAndView("dashboard");
 		
@@ -40,13 +45,8 @@ public class Dashboard {
 			}
 		}
 		
-		if (searchParam != null && !searchParam.isEmpty()) {
-			DaoRequestParameter param = new DaoRequestParameter(NameFiltering.POST,searchParam,null,null,nbPerPage,0l);
-			compPage = new ComputerPage(computersService,nbPerPage, param);
-		} else {
-			compPage = new ComputerPage(computersService, nbPerPage, null);
-		}
-		
+		DaoRequestParameter param = getDaoRequestParameter(search, numPage, nbCompPerPage, sortColumn, sortColumnOrder, language);
+		compPage = new ComputerPage(computersService,nbPerPage, param);
 		if (numPage != null && !numPage.isEmpty()) {
 			Long num = Long.parseLong(numPage);
 			compPage.goToPage(num);
@@ -56,6 +56,53 @@ public class Dashboard {
 		model.addObject("page", compPage);
 		model.addObject("computers", computerMapper.toDTOList(compPage.getElements()));
 		return model;
+	}
+	
+	private DaoRequestParameter getDaoRequestParameter (
+					final String search,
+					final String numPage,
+					final String nbCompPerPage,
+					final String sortColumn,
+					final String sortColumnOrder,
+					final String language) {
+		DaoRequestParameter daoRequestParameter = new DaoRequestParameter();
+		
+		if (search != null && !search.isEmpty()) {
+			daoRequestParameter.setNameLike(search);
+		}
+		if ((nbCompPerPage != null) && (! nbCompPerPage.isEmpty()) && (numPage != null) && (!numPage.isEmpty())) {
+			Long limit = Long.parseLong(nbCompPerPage);
+			daoRequestParameter.setLimit(limit);
+			Long page = Long.parseLong(numPage);
+			daoRequestParameter.setOffset((page-1)*limit);
+		} else {
+			daoRequestParameter.setLimit(10l);
+		}
+		List<String> l = null;
+		if (sortColumn != null && !sortColumn.isEmpty()) {
+			String [] list = sortColumn.split(",");
+			l = new ArrayList<String>();
+			for (String s : list) {
+				l.add(s);
+			}
+		}
+		daoRequestParameter.setColToOrderBy(l);
+		DaoRequestParameter.Order order = DaoRequestParameter.Order.ASC;;
+		if (sortColumnOrder != null && !sortColumnOrder.isEmpty()) {
+			switch (sortColumnOrder) {
+			case "ASC":
+				order = DaoRequestParameter.Order.ASC;
+				break;
+			case "DESC":
+				order = DaoRequestParameter.Order.DESC;
+				break;
+			default:
+				break;
+			}
+		}
+		daoRequestParameter.setOrder(order);
+		
+		return daoRequestParameter;
 	}
 	
 }

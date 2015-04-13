@@ -1,7 +1,5 @@
 package com.excilys.cdb.persistence;
-
 import java.util.List;
-
 
 public class DaoRequestParameter {
 	
@@ -23,6 +21,8 @@ public class DaoRequestParameter {
 	private Order order;
 	private Long limit;
 	private Long offset;
+	
+	public DaoRequestParameter() {}
 	
 	public DaoRequestParameter(NameFiltering nameFiltering, String nameLike,
 			List<String> colToOrderBy, Order order, Long limit, Long offset) {
@@ -56,11 +56,14 @@ public class DaoRequestParameter {
 	}
 
 	public void setNameLike(String nameLike) {
+		if (nameFiltering == null) {
+			nameFiltering = NameFiltering.POST;
+		} 
 		this.nameLike = nameLike;
 	}
 
 	public List<String> getColToOrderBy() {
-			return colToOrderBy;
+		return colToOrderBy;
 	}
 
 	public void setColToOrderBy(List<String> colToOrderBy) {
@@ -90,4 +93,5 @@ public class DaoRequestParameter {
 	public void setOffset(Long offset) {
 		this.offset = offset;
 	}
+	
 }

@@ -3,8 +3,11 @@ package com.excilys.cdb.persistence;
 import java.io.Serializable;
 import java.util.List;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.excilys.cdb.exception.DaoException;
 
+@Transactional
 public interface IDao <T, I extends Serializable> {
 	
 	/**

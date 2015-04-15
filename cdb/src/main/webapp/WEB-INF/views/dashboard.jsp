@@ -62,16 +62,16 @@
                         </th>
                         <th>
                         	<c:choose>
-	                        	<c:when test="${requestScope.page.param.colToOrderBy!=null && requestScope.page.param.colToOrderBy.get(0)=='introductionDate' && requestScope.page.param.order.toString()=='ASC'}" >
+	                        	<c:when test="${requestScope.page.param.colToOrderBy!=null && requestScope.page.param.colToOrderBy.get(0)=='introduced' && requestScope.page.param.order.toString()=='ASC'}" >
 									<a href="<mylib:link target="dashboard" search="${requestScope.page.param.nameLike}"
-		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="introductionDate" language="fr"
+		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="introduced" language="fr"
 		                        	sortColumnOrder="DESC"/>">
                             			<spring:message code="introduced.date.th" text="introduced.date.th" />
 		                            </a>
 	                        	</c:when>
 	                        	<c:otherwise>
 									<a href="<mylib:link target="dashboard" search="${requestScope.page.param.nameLike}"
-		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="introductionDate" language="fr"
+		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="introduced" language="fr"
 		                        	sortColumnOrder="ASC"/>">
                             			<spring:message code="introduced.date.th" text="introduced.date.th" />
 		                            </a>
@@ -81,16 +81,16 @@
                         <!-- Table header for Discontinued Date -->
                         <th>
                         	<c:choose>
-	 	                       	<c:when test="${requestScope.page.param.colToOrderBy!=null && requestScope.page.param.colToOrderBy.get(0)=='discontinuedDate' && requestScope.page.param.order.toString()=='ASC'}" >
+	 	                       	<c:when test="${requestScope.page.param.colToOrderBy!=null && requestScope.page.param.colToOrderBy.get(0)=='discontinued' && requestScope.page.param.order.toString()=='ASC'}" >
 									<a href="<mylib:link target="dashboard" search="${requestScope.page.param.nameLike}"
-		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="discontinuedDate" language="fr"
+		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="discontinued" language="fr"
 		                        	sortColumnOrder="DESC"/>">
                             			<spring:message code="discontinued.date.th" text="discontinued.date.th" />
 		                            </a>
 	                        	</c:when>
 	                        	<c:otherwise>
 									<a href="<mylib:link target="dashboard" search="${requestScope.page.param.nameLike}"
-		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="discontinuedDate" language="fr"
+		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="discontinued" language="fr"
 		                        	sortColumnOrder="ASC"/>">
                             			<spring:message code="discontinued.date.th" text="discontinued.date.th" />
 		                            </a>

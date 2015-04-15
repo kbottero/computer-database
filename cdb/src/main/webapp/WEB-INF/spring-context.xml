@@ -10,11 +10,6 @@
                         http://www.springframework.org/schema/context 
                         http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-	<context:component-scan base-package="com.excilys.cdb.persistence" />
-	<context:component-scan base-package="com.excilys.cdb.dto" />
-	<context:component-scan base-package="com.excilys.cdb.mapper" />
-	<context:component-scan base-package="com.excilys.cdb.service" />
-	
 	<context:property-placeholder location="classpath:db.properties" />
 
 	<bean id="mysqlDataSource" class="org.apache.commons.dbcp2.BasicDataSource"	destroy-method="close">
@@ -30,11 +25,35 @@
 	
 	<tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager"/>
 
-	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	<!-- <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="mysqlDataSource"/>
-	</bean>
+	</bean> -->
 	
 	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
 	
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" >
+		<property name="dataSource" ref="mysqlDataSource" />
+		<property name="annotatedClasses">
+			<list>
+				<value>com.excilys.cdb.model.Company</value>
+				<value>com.excilys.cdb.model.Computer</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+			</props>
+		</property>
+	</bean>
 
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	
+	<context:component-scan base-package="com.excilys.cdb.persistence" />
+	<context:component-scan base-package="com.excilys.cdb.dto" />
+	<context:component-scan base-package="com.excilys.cdb.mapper" />
+	<context:component-scan base-package="com.excilys.cdb.service" />
+	
 </beans>

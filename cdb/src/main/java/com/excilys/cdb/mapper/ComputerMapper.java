@@ -26,7 +26,7 @@ import com.excilys.cdb.service.IService;
 public class ComputerMapper implements IMapper<Computer, ComputerDTO> {
 
 	/** Primary Key.	 */
-	public static final String DEFAULT_ID = "c.id";
+	public static final String DEFAULT_ID = "computer.id";
 
 	@Autowired
 	private IService<Company,Long> companiesService;
@@ -35,10 +35,10 @@ public class ComputerMapper implements IMapper<Computer, ComputerDTO> {
 	public static final HashMap<String,String> mapBDModel;
 	static {
 		mapBDModel = new HashMap<String,String>();
-		mapBDModel.put("id","c.id");
-		mapBDModel.put("name","c.name");
-		mapBDModel.put("introductionDate","c.introduced");
-		mapBDModel.put("discontinuedDate","c.discontinued");
+		mapBDModel.put("id","computer.id");
+		mapBDModel.put("name","computer.name");
+		mapBDModel.put("introduced","computer.introduced");
+		mapBDModel.put("discontinued","computer.discontinued");
 		mapBDModel.put("constructor","company.name");
 	}
 	

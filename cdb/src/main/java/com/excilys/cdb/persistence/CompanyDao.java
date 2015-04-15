@@ -1,18 +1,21 @@
 package com.excilys.cdb.persistence;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Criteria;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.mapper.CompanyMapper;
-import com.excilys.cdb.mapper.ComputerMapper;
 import com.excilys.cdb.model.Company;
 
 /**
@@ -20,6 +23,7 @@ import com.excilys.cdb.model.Company;
  * @author Kevin Bottero
  *
  */
+@Transactional
 @Repository("companyDao")
 public class CompanyDao implements IDao<Company, Long>{
 	
@@ -30,39 +34,24 @@ public class CompanyDao implements IDao<Company, Long>{
 	@Autowired
 	private CompanyMapper companyMapper;
 	@Autowired
-	private JdbcTemplate jdbcTemplate;
-	
-		private static final String	COUNT_ALL = "SELECT COUNT(id) FROM company;";
-		private static final String	SELECT_ALL ="SELECT id, name FROM company;";
-		private static final String	SELECT_ALL_ORDERED ="SELECT id, name FROM company ORDER BY";
-		private static final String	SELECT_ONE ="SELECT id, name FROM company WHERE id=?;";
-		private static final String	SELECT_SOME ="SELECT id, name FROM company ORDER BY";
-		private static final String	SELECT_SOME_FILTERED ="SELECT id, name FROM company WHERE name LIKE ? ORDER BY";
-		private static final String	DELETE_COMPUTER ="DELETE FROM computer WHERE company_id=?;";
-		private static final String	DELETE_ONE = "DELETE FROM company WHERE id=?;";
+	private SessionFactory sessionFactory;
 
-	
 	@Override
 	public List<Company> getAll() throws DaoException {
-		return jdbcTemplate.query(SELECT_ALL, companyMapper);
+		return sessionFactory.getCurrentSession().createCriteria(Company.class).list();
 	}
 	
 	@Override
 	public List<Company> getAll(DaoRequestParameter param) throws DaoException {
-		StringBuilder request = new StringBuilder();
-		
-		request.append(SELECT_ALL_ORDERED);
-		request.append(" ");
-		addOrderByToRequest(request, param);
-		request.append(";");
-		
-		return jdbcTemplate.query(request.toString(), companyMapper);
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class);
+		addOrderByToRequest(criteria, param);
+		return criteria.list();
 	}
 
 	@Override
 	public Long getNb() throws DaoException {
-		Long nbElements = 10l;
-		nbElements = jdbcTemplate.queryForObject(COUNT_ALL,Long.class);
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class);
+		Long nbElements = (Long) criteria.setProjection(Projections.rowCount()).uniqueResult();
 		if (nbElements == null) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT);
 		}
@@ -71,24 +60,11 @@ public class CompanyDao implements IDao<Company, Long>{
 	
 	@Override
 	public List<Company> getSome(DaoRequestParameter param) throws DaoException {
-		
-		List<Object> list = new ArrayList<Object>();
-		
-		StringBuilder request = new StringBuilder();
-
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class);
+		addOrderByToRequest(criteria, param);
 		if (param.getNameLike() != null) {
-			request.append(SELECT_SOME_FILTERED);	
-		} else {
-			request.append(SELECT_SOME);
-		}
-		request.append(" ");
-		addOrderByToRequest(request, param);
-		request.append(" ");
-		request.append(" LIMIT ? OFFSET ?;");
-		
-		if (param.getNameLike() != null) {			
 			try {
-				setWhenCondition (list,param);
+				setWhenCondition (criteria, param);
 			} catch (SQLException e) {
 				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			}
@@ -99,19 +75,17 @@ public class CompanyDao implements IDao<Company, Long>{
 			if (param.getLimit() < 0) {
 				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			} else {
-				list.add(param.getLimit()); 
+				criteria.setMaxResults(param.getLimit().intValue()); 
 			}
 		}
-		if (param.getOffset() == null) {
-			list.add(0); 
-		} else {
+		if (param.getOffset() != null) {
 			if (param.getOffset() < 0) {
 				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			} else {
-				list.add(param.getOffset()); 
+				criteria.setFirstResult(param.getOffset().intValue()); 
 			}
 		}
-		return jdbcTemplate.query(request.toString(), list.toArray(),companyMapper);
+		return criteria.list();
 	}
 
 	@Override
@@ -120,11 +94,12 @@ public class CompanyDao implements IDao<Company, Long>{
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
 		Company comp=null;
-		comp = jdbcTemplate.queryForObject(SELECT_ONE, new Object[] {id},companyMapper);
-		if (comp == null ) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class);
+		criteria.add(Restrictions.idEq(id));
+		comp = (Company) criteria.uniqueResult();
+		if (comp == null) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT);
 		}
-
 		return comp;
 	}
 	
@@ -133,66 +108,50 @@ public class CompanyDao implements IDao<Company, Long>{
 		if (id == null) {
 			throw new IllegalArgumentException();
 		}
-		int nb = jdbcTemplate.update(DELETE_ONE, new Object[] {id});
-		if (nb==0) {
-			throw new DaoException(DaoException.CAN_NOT_DELETE_ELEMENT);
-		}
+		sessionFactory.getCurrentSession().delete(this.getById(id));
 	}
 	
-	public void addOrderByToRequest(StringBuilder request, DaoRequestParameter param) throws DaoException {
+	public void addOrderByToRequest(Criteria criteria, DaoRequestParameter param) throws DaoException {
 		if ((param.getColToOrderBy() == null) || (param.getColToOrderBy().size() == 0)){
-			request.append(ComputerMapper.DEFAULT_ID);
-			request.append(" ");
-			//ASC or DESC ?
 			if (param.getOrder() == null) {
-				request.append("ASC");
+				criteria.addOrder(Order.asc(CompanyMapper.DEFAULT_ID));
 			} else {
 				switch (param.getOrder()) {
 				case ASC:
-					request.append("ASC");
+					criteria.addOrder(Order.asc(CompanyMapper.DEFAULT_ID));
 					break;
 				case DESC:
-					request.append("DESC");
+					criteria.addOrder(Order.desc(CompanyMapper.DEFAULT_ID));
 					break;
 				default:
 					throw new DaoException(DaoException.INVALID_ARGUMENT);
 				}
 			}
 		} else {
-			StringBuilder strgBuild = new StringBuilder();
 			for (String strg : param.getColToOrderBy()) {
-				if (ComputerMapper.mapBDModel.containsKey(strg)) {
-					if (strgBuild.length() != 0) {
-						strgBuild.append(",");
-						strgBuild.append(ComputerMapper.mapBDModel.get(strg));
+				if (CompanyMapper.mapBDModel.containsKey(strg)) {
+					if (param.getOrder() == null) {
+						criteria.addOrder(Order.asc(strg));
 					} else {
-						strgBuild.append(ComputerMapper.mapBDModel.get(strg));
-						strgBuild.append(" ");
-						//ASC or DESC ?
-						if (param.getOrder() == null) {
-							strgBuild.append("ASC");
-						} else {
-							switch (param.getOrder()) {
-							case ASC:
-								strgBuild.append("ASC");
-								break;
-							case DESC:
-								strgBuild.append("DESC");
-								break;
-							default:
-								throw new DaoException(DaoException.INVALID_ARGUMENT);
-							}
+						switch (param.getOrder()) {
+						case ASC:
+							criteria.addOrder(Order.asc(strg));
+							break;
+						case DESC:
+							criteria.addOrder(Order.desc(strg));
+							break;
+						default:
+							throw new DaoException(DaoException.INVALID_ARGUMENT);
 						}
 					}
 				} else {
 					throw new DaoException(DaoException.INVALID_ARGUMENT);
 				}
 			}
-			request.append(strgBuild.toString());
 		}
 	}
 	
-	public void setWhenCondition (List<Object> list,DaoRequestParameter param) throws SQLException {
+	public void setWhenCondition (Criteria criteria, DaoRequestParameter param) throws SQLException {
 		StringBuilder filter = new StringBuilder();
 		switch (param.getNameFiltering()) {
 		case POST:
@@ -214,8 +173,7 @@ public class CompanyDao implements IDao<Company, Long>{
 		default:
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
-		list.add(filter.toString());
+		
+		criteria.add( Restrictions.like("name", param.getNameLike()));
 	}
-	
-	
 }

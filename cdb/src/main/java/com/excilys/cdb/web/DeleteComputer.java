@@ -21,7 +21,7 @@ public class DeleteComputer {
 	private IService<Computer,Long> computersService;
 
 	@RequestMapping(method = {RequestMethod.GET,RequestMethod.POST})
-	protected ModelAndView doGet(@RequestParam(value="selection", required=true) final String[] selection) {
+	protected String doGet(@RequestParam(value="selection", required=true) final String[] selection) {
 		if (selection != null) {
 		    logger.debug(selection.toString());
 		    for (String ids : selection) {
@@ -32,7 +32,7 @@ public class DeleteComputer {
 		    		}
 		    }
 		}
-		return new ModelAndView("dashboard");
+		return "redirect:/dashboard";
 	}
 
 }

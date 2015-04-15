@@ -2,6 +2,7 @@ package com.excilys.cdb.mapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 import org.springframework.stereotype.Component;
 
@@ -21,15 +22,12 @@ public class CompanyMapper implements IMapper<Company, CompanyDTO> {
 	/** Primary Key.	 */
 	public static final String DEFAULT_ID = "id";
 
-	public enum DBFields {
-		ID ("id"),
-		NAME ("name");
-		
-		DBFields (String value) {
-			this.value = value;
-		}
-		
-		public String value;
+	/** Map DB labels -> Model attributes. */
+	public static final HashMap<String,String> mapBDModel;
+	static {
+		mapBDModel = new HashMap<String,String>();
+		mapBDModel.put("id","id");
+		mapBDModel.put("name","name");
 	}
 	
 	/**

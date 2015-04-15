@@ -1,13 +1,47 @@
 package com.excilys.cdb.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Computer {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
+
+@Entity
+@Table(name="computer")
+public class Computer implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+	
+	@Column(name="name")
 	private String name;
-	private LocalDateTime introductionDate;
-	private LocalDateTime discontinuedDate;
+	
+	@Column(name="introduced")
+	@Type(type="com.excilys.cdb.mapper.LocalDateTimeUserType")
+	private LocalDateTime introduced;
+	
+	@Column(name="discontinued")
+	@Type(type="com.excilys.cdb.mapper.LocalDateTimeUserType")
+	private LocalDateTime discontinued;
+	
+	@ManyToOne
+    @JoinColumn(name="company_id")
+	@OrderBy("company.name")
 	private Company constructor;
 	
 	public Computer(long id, String name) {
@@ -16,13 +50,17 @@ public class Computer {
 		this.name = name;
 	}
 	
+	public Computer() {
+		super();
+	}
+	
 	public Computer(Long id, String name, LocalDateTime introductionDate,
 			LocalDateTime discontinuedDate, Company constructor) {
 		super();
 		this.id = id;
 		this.name = name;
-		this.introductionDate = introductionDate;
-		this.discontinuedDate = discontinuedDate;
+		this.introduced = introductionDate;
+		this.discontinued = discontinuedDate;
 		this.constructor = constructor;
 	}
 
@@ -35,7 +73,7 @@ public class Computer {
 	}
 
 	public LocalDateTime getIntroductionDate() {
-		return introductionDate;
+		return introduced;
 	}
 
 	public String getName() {
@@ -55,15 +93,15 @@ public class Computer {
 	}
 
 	public void setIntroductionDate(LocalDateTime introductionDate) {
-		this.introductionDate = introductionDate;
+		this.introduced = introductionDate;
 	}
 
 	public LocalDateTime getDiscontinuedDate() {
-		return discontinuedDate;
+		return discontinued;
 	}
 	
 	public void setDiscontinuedDate(LocalDateTime discontinuedDate) {
-		this.discontinuedDate = discontinuedDate;
+		this.discontinued = discontinuedDate;
 	}
 
 	@Override
@@ -77,19 +115,19 @@ public class Computer {
 		if (constructor!=null) {
 			str.append(constructor);
 		}
-		if (introductionDate!=null) {
+		if (introduced!=null) {
 			if (constructor!=null) {
 				str.append(",");
 			}
-			str.append(introductionDate);
+			str.append(introduced);
 		}
-		if (discontinuedDate!=null) {
-			if (introductionDate!=null) {
+		if (discontinued!=null) {
+			if (introduced!=null) {
 				str.append("/");
 			} else {
 				str.append(",");
 			}
-			str.append(discontinuedDate);
+			str.append(discontinued);
 		}
 		str.append("]");
 		return  str.toString();

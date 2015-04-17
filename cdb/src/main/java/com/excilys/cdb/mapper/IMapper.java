@@ -18,5 +18,4 @@ public interface IMapper<T,E> extends RowMapper<T>{
 	default List<T> fromDTOList(List<E> l) {
 		return l.stream().map(this::fromDTO).collect(Collectors.toList());
 	}
-	
 }

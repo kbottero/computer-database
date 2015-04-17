@@ -2,12 +2,15 @@ package com.excilys.cdb.persistence;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Criteria;
+import org.hibernate.NullPrecedence;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.mapper.CompanyMapper;
 import com.excilys.cdb.model.Company;
+import com.excilys.cdb.model.Computer;
 
 /**
  * CompanyDao
@@ -51,6 +55,24 @@ public class CompanyDao implements IDao<Company, Long>{
 	@Override
 	public Long getNb() throws DaoException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class);
+		Long nbElements = (Long) criteria.setProjection(Projections.rowCount()).uniqueResult();
+		if (nbElements == null) {
+			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT);
+		}
+		return nbElements;
+	}
+	
+	@Override
+	public Long getNb(DaoRequestParameter param) throws DaoException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class, "computer");
+		addOrderByToRequest(criteria, param);
+		if (param.getNameLike() != null) {
+			try {
+				setWhenCondition (criteria, param);
+			} catch (SQLException e) {
+				throw new DaoException(DaoException.INVALID_ARGUMENT);
+			}
+		}
 		Long nbElements = (Long) criteria.setProjection(Projections.rowCount()).uniqueResult();
 		if (nbElements == null) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT);
@@ -112,38 +134,23 @@ public class CompanyDao implements IDao<Company, Long>{
 	}
 	
 	public void addOrderByToRequest(Criteria criteria, DaoRequestParameter param) throws DaoException {
-		if ((param.getColToOrderBy() == null) || (param.getColToOrderBy().size() == 0)){
-			if (param.getOrder() == null) {
-				criteria.addOrder(Order.asc(CompanyMapper.DEFAULT_ID));
-			} else {
-				switch (param.getOrder()) {
-				case ASC:
-					criteria.addOrder(Order.asc(CompanyMapper.DEFAULT_ID));
-					break;
-				case DESC:
-					criteria.addOrder(Order.desc(CompanyMapper.DEFAULT_ID));
-					break;
-				default:
-					throw new DaoException(DaoException.INVALID_ARGUMENT);
-				}
-			}
+		if ((param.getOrders() == null) || (param.getOrders().size() == 0)) {
+			criteria.addOrder(Order.asc(CompanyMapper.DEFAULT_ID).nulls(NullPrecedence.LAST));
 		} else {
-			for (String strg : param.getColToOrderBy()) {
-				if (CompanyMapper.mapBDModel.containsKey(strg)) {
-					if (param.getOrder() == null) {
-						criteria.addOrder(Order.asc(strg));
-					} else {
-						switch (param.getOrder()) {
-						case ASC:
-							criteria.addOrder(Order.asc(strg));
-							break;
-						case DESC:
-							criteria.addOrder(Order.desc(strg));
-							break;
-						default:
-							throw new DaoException(DaoException.INVALID_ARGUMENT);
-						}
+			for (Map.Entry<String, com.excilys.cdb.persistence.DaoRequestParameter.Order> e : param.getOrders().entrySet()) {
+				Order order = null;
+				if (CompanyMapper.mapBDModel.containsKey(e.getKey())) {
+					switch(e.getValue()) {
+					case ASC:
+						order = Order.asc(CompanyMapper.mapBDModel.get(e.getKey())).nulls(NullPrecedence.LAST);
+						break;
+					case DESC:
+						order = Order.desc(CompanyMapper.mapBDModel.get(e.getKey())).nulls(NullPrecedence.LAST);
+						break;
+					default:
+						throw new DaoException(DaoException.INVALID_ARGUMENT);
 					}
+					criteria.addOrder(order);
 				} else {
 					throw new DaoException(DaoException.INVALID_ARGUMENT);
 				}

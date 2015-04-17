@@ -3,102 +3,108 @@ package com.excilys.cdb.ui.util;
 import java.io.Serializable;
 import java.util.List;
 
-import com.excilys.cdb.persistence.DaoRequestParameter;
-import com.excilys.cdb.service.IService;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
-public abstract class Page <E, I extends Serializable> {
+public abstract class Page <E, I extends Serializable> implements Pageable {
 
-	protected IService<E, I> serv;
-	protected List<E> elements;
-	protected Long current;
-	protected Long pageSize;
-	protected Long count;
-	protected Long nbElements;
-	protected DaoRequestParameter param;
+	protected Integer pageNumber;
+	protected Integer nbElemPerPage;
+	protected Integer numberOfPages;
+	protected Integer nbElements;
+	protected Integer offset;
+	protected Sort sort;
+	protected String search;
 	
-	public Page(IService<E, I> serv){
-		this(serv,null);
-	}
-	
-	public Page(IService<E, I> serv, Long pageSize){
-		this(serv,pageSize,null);
-	}
-	
-	public Page(IService<E, I> serv, Long pageSize, DaoRequestParameter param){
-		if ((serv == null)|| (pageSize == null) || (pageSize < 1)) {
-			throw new IllegalArgumentException();
-		}
-		this.serv = serv;
-		current = 1l;
-		this.pageSize = pageSize;
-		if (this.pageSize == null) {
-			this.pageSize = 20l;
-		}
-		nbElements = serv.getNbInstance(param);
-		if (this.pageSize < nbElements) {
-			count = nbElements / pageSize;
-			if (nbElements % pageSize != 0) {
-				++count;
-			}
-		} else {
-			this.pageSize = nbElements;
-			count = 1l;
-		}
-		if (param == null) {
-			this.param = new DaoRequestParameter (null, null, null, null, this.pageSize,0l);
-		} else {
-			this.param = param;
-		}
-	}
-	
-	public Long getCurrent() {
-		return current;
+	public String getSearch() {
+		return search;
 	}
 
-	public Long getCount() {
-		return count;
+	public void setSearch(String search) {
+		this.search = search;
+	}
+
+	public Page(){
+		pageNumber = 1;
 	}
 	
-	public List<E> getElements() {
-		return elements;
+	public Page(Integer nbElemPerPage){
+		pageNumber = 1;
+		this.nbElemPerPage = nbElemPerPage;
+		if (this.nbElemPerPage == null) {
+			this.nbElemPerPage = 20;
+		}
+	}
+
+	public Integer getNumberOfPages() {
+		return numberOfPages;
 	}
 	
-	public DaoRequestParameter getParam() {
-		return param;
-	}
-	
-	public Long getNbElements() {
+	public Integer getNbElements() {
 		return nbElements;
 	}
 
-	public Long getPageSize() {
-		return pageSize;
+	public int getNbElemPerPage() {
+		return nbElemPerPage.intValue();
 	}
 	
-	public String getSortColumn() {
-		StringBuilder strgBuil = new StringBuilder();
-		if (param != null && param.getColToOrderBy() != null) {
-			for (String s : param.getColToOrderBy()) {
-				if (strgBuil.length() != 0) {
-					strgBuil.append(",");
-				} 
-				strgBuil.append(s);
-			}
+	public void setNbElemPerPage(Integer nbElemPerPage) {
+		this.nbElemPerPage = nbElemPerPage;
+		if (pageNumber != null && pageNumber > 0) {
+			this.offset = (pageNumber-1)*nbElemPerPage;
 		}
-		return strgBuil.toString();
 	}
 	
-	public String sortColumnOrder() {
-		String strg = new String();
-		if (param != null && param.getOrder() != null) {
-			strg = param.getOrder().name();
+	@Override
+	public int getOffset() {
+		return offset;
+	}
+
+	@Override
+	public int getPageNumber() {
+		return pageNumber;
+	}
+
+	@Override
+	public boolean hasPrevious() {
+		if (numberOfPages > 1) {
+			return true;
 		} else {
-			strg = DaoRequestParameter.Order.ASC.name();
+			return false;
 		}
-		return strg;
 	}
 	
-	public abstract void setFilter(String filter);
+	@Override
+	public Pageable first() {
+		goToPage(1);
+		return this;
+	}
+
+	@Override
+	public Sort getSort() {
+		return this.sort;
+	}
+	
+	public void setSort(Sort sort) {
+		this.sort = sort;
+	}
+
+	@Override
+	public Pageable next() {
+		nextPage();
+		return this;
+	}
+
+	@Override
+	public Pageable previousOrFirst() {
+		previousPage();
+		return this;
+	}
+	
+	@Override
+	public int getPageSize() {
+		return this.nbElemPerPage;
+	}
 	
 	/**
 	 * Display next page
@@ -116,5 +122,7 @@ public abstract class Page <E, I extends Serializable> {
 	 * Go to a given page 
 	 * @return true if there is still pages to display, 0 else
 	 */
-	public abstract boolean goToPage(Long numPage);
+	public abstract boolean goToPage(Integer numPage);
+	
+	public abstract List<E> getElements();
 }

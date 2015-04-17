@@ -1,15 +1,40 @@
 package com.excilys.cdb.ui.util;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.DaoRequestParameter;
 import com.excilys.cdb.service.IService;
 
 public class ComputerPage extends Page<Computer, Long> {
 
+	private static Logger logger = LoggerFactory.getLogger(ComputerPage.class);
+
+	protected IService<Computer, Long> computersService;
 	
-	public ComputerPage(IService<Computer,Long> serv, Long pageSize,  DaoRequestParameter param) {
-		super(serv,pageSize, param);
-		elements = serv.getSome(this.param);
+	private List<Computer> elements;
+	
+	public ComputerPage(IService<Computer, Long> computersService, Integer nbElemPerPage) {
+		super(nbElemPerPage);
+		this.computersService = computersService;
+		nbElements = computersService.getNbInstance(this).intValue();
+		if (this.nbElemPerPage < nbElements) {
+			numberOfPages = nbElements / nbElemPerPage;
+			if (nbElements % nbElemPerPage != 0) {
+				++numberOfPages;
+			}
+		} else {
+			this.nbElemPerPage = nbElements;
+			numberOfPages = 1;
+		}
+		elements = computersService.getSome(this);
+	}
+	
+	@Override
+	public List<Computer> getElements() {
+		return elements;
 	}
 	
 	/**
@@ -18,10 +43,10 @@ public class ComputerPage extends Page<Computer, Long> {
 	 */
 	@Override
 	public boolean nextPage() {
-		if (current < count) {
-			++current;
-			param.setOffset((current-1)*pageSize);
-			elements = serv.getSome(param);
+		if (pageNumber < numberOfPages) {
+			++pageNumber;
+			offset = (pageNumber-1)*nbElemPerPage;
+			elements = computersService.getSome(this);
 			return true;
 		} else {
 			return false;
@@ -30,10 +55,10 @@ public class ComputerPage extends Page<Computer, Long> {
 
 	@Override
 	public boolean previousPage() {
-		if (current > 1) {
-			--current;
-			param.setOffset((current-1)*pageSize);
-			elements = serv.getSome(param);
+		if (pageNumber > 1) {
+			--pageNumber;
+			offset = (pageNumber-1)*nbElemPerPage;
+			elements = computersService.getSome(this);
 			return true;
 		} else {
 			return false;
@@ -41,21 +66,14 @@ public class ComputerPage extends Page<Computer, Long> {
 	}
 
 	@Override
-	public boolean goToPage(Long numPage) {
-		if (numPage > 0 && numPage < count+1) {
-			current = numPage;
-			param.setOffset((current-1)*pageSize);
-			elements = serv.getSome(param);
+	public boolean goToPage(Integer numPage) {
+		if (numPage > 0 && numPage < numberOfPages+1) {
+			pageNumber = numPage;
+			offset = (pageNumber-1)*nbElemPerPage;
+			elements = computersService.getSome(this);
 			return true;
 		} else {
 			throw new IndexOutOfBoundsException();
 		}
-	}
-	
-	@Override
-	public void setFilter (String filter) {
-		param.setNameLike(filter);
-		param.setOffset((current-1)*pageSize);
-		elements = serv.getSome(param);
 	}
 }

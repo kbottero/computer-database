@@ -7,16 +7,20 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.excilys.cdb.mapper.IPageMapper;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.persistence.ComputerDao;
-import com.excilys.cdb.persistence.DaoRequestParameter;
 import com.excilys.cdb.persistence.IDao;
+import com.excilys.cdb.ui.util.Page;
 
 @Service
 public class CompaniesService implements IService<Company,Long>{
 
 	@Autowired @Qualifier("companyDao")
 	private IDao<Company,Long> dao;
+
+	@Autowired
+	private IPageMapper<Company,Long> companyPageMapper;
 	
 	/**
 	 * Return a list of all companies in the database.
@@ -32,8 +36,8 @@ public class CompaniesService implements IService<Company,Long>{
 	 * @return
 	 */
 	@Override
-	public List<Company> getAll(DaoRequestParameter param) {
-			return dao.getAll(param);
+	public List<Company> getAll(Page<Company,Long>  page) {
+			return dao.getAll(companyPageMapper.pageToDaoRequestParameter(page));
 	}
 	
 	/**
@@ -43,8 +47,8 @@ public class CompaniesService implements IService<Company,Long>{
 	 * @return
 	 */
 	@Override
-	public List<Company> getSome(DaoRequestParameter param) {
-		return dao.getSome(param);
+	public List<Company> getSome(Page<Company,Long>  page) {
+		return dao.getSome(companyPageMapper.pageToDaoRequestParameter(page));
 	}
 
 	/**
@@ -61,8 +65,8 @@ public class CompaniesService implements IService<Company,Long>{
 	 * @return
 	 */
 	@Override
-	public Long getNbInstance(DaoRequestParameter param) {
-		return dao.getNb(param);
+	public Long getNbInstance(Page<Company,Long>  page) {
+		return dao.getNb(companyPageMapper.pageToDaoRequestParameter(page));
 	}
 	
 	/**

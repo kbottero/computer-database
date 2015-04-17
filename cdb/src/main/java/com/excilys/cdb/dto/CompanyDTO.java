@@ -7,7 +7,7 @@ public class CompanyDTO implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -8572173037034327911L;
+	private static final long serialVersionUID = 1L;
 	
 	private Long id;
 	private String name;

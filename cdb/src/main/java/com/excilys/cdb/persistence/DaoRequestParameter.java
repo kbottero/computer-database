@@ -1,10 +1,11 @@
 package com.excilys.cdb.persistence;
-import java.util.List;
+import java.util.LinkedHashMap;
 
 public class DaoRequestParameter {
 	
 	public static enum Order {
-		ASC,DESC;
+		ASC,
+		DESC;
 	}
 	
 	public static enum NameFiltering {
@@ -17,15 +18,14 @@ public class DaoRequestParameter {
 	private NameFiltering nameFiltering;
 	private String nameLike;
 	
-	private List<String> colToOrderBy;
-	private Order order;
+	private LinkedHashMap<String, Order> orders;
 	private Long limit;
 	private Long offset;
 	
 	public DaoRequestParameter() {}
 	
 	public DaoRequestParameter(NameFiltering nameFiltering, String nameLike,
-			List<String> colToOrderBy, Order order, Long limit, Long offset) {
+			LinkedHashMap<String, Order> orders, Long limit, Long offset) {
 		super();
 		if (nameFiltering == null) {
 			this.nameFiltering = NameFiltering.POST;
@@ -33,12 +33,7 @@ public class DaoRequestParameter {
 			this.nameFiltering = nameFiltering;
 		}
 		this.nameLike = nameLike;
-		this.colToOrderBy = colToOrderBy;
-		if (order == null) { 
-			this.order = Order.ASC;
-		} else {
-			this.order = order;
-		}
+		this.orders = orders;
 		this.limit = limit;
 		this.offset = offset;
 	}
@@ -62,22 +57,6 @@ public class DaoRequestParameter {
 		this.nameLike = nameLike;
 	}
 
-	public List<String> getColToOrderBy() {
-		return colToOrderBy;
-	}
-
-	public void setColToOrderBy(List<String> colToOrderBy) {
-		this.colToOrderBy = colToOrderBy;
-	}
-
-	public Order getOrder() {
-		return order;
-	}
-
-	public void setOrder(Order order) {
-		this.order = order;
-	}
-
 	public Long getLimit() {
 		return limit;
 	}
@@ -92,6 +71,14 @@ public class DaoRequestParameter {
 
 	public void setOffset(Long offset) {
 		this.offset = offset;
+	}
+
+	public void setOrders(LinkedHashMap<String, Order> orders) {
+		this.orders = orders;
+	}
+	
+	public LinkedHashMap<String, Order> getOrders() {
+		return this.orders;
 	}
 	
 }

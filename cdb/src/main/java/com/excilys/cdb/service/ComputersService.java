@@ -9,9 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.cdb.exception.DaoException;
 import com.excilys.cdb.exception.ServiceException;
+import com.excilys.cdb.mapper.IPageMapper;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.DaoRequestParameter;
 import com.excilys.cdb.persistence.IDao;
+import com.excilys.cdb.ui.util.Page;
 import com.excilys.cdb.validation.ValidatorComputer;
 
 @Service
@@ -19,6 +20,9 @@ public class ComputersService implements IService<Computer,Long> {
 
 	@Autowired @Qualifier("computerDao")
 	private IDao<Computer,Long> dao;
+	
+	@Autowired
+	private IPageMapper<Computer,Long> computerPageMapper;
 	
 	public IDao<Computer,Long> getDao() {
 		return this.dao;
@@ -44,8 +48,8 @@ public class ComputersService implements IService<Computer,Long> {
 	 * @return
 	 */
 	@Override
-	public List<Computer> getAll(DaoRequestParameter param) {
-		return dao.getAll(param);
+	public List<Computer> getAll(Page<Computer,Long> page) {
+		return dao.getAll(computerPageMapper.pageToDaoRequestParameter(page));
 	}
 	
 	/**
@@ -55,8 +59,8 @@ public class ComputersService implements IService<Computer,Long> {
 	 * @return
 	 */
 	@Override
-	public List<Computer> getSome(DaoRequestParameter param) {
-		return dao.getSome(param);
+	public List<Computer> getSome(Page<Computer,Long>  page) {
+		return dao.getSome(computerPageMapper.pageToDaoRequestParameter(page));
 	}
 
 	/**
@@ -72,8 +76,8 @@ public class ComputersService implements IService<Computer,Long> {
 	 * Return the number of instance in the database.
 	 * @return
 	 */
-	public Long getNbInstance(DaoRequestParameter param) {
-		return dao.getNb(param);
+	public Long getNbInstance(Page<Computer,Long>  page) {
+		return dao.getNb(computerPageMapper.pageToDaoRequestParameter(page));
 	}
 
 	/**

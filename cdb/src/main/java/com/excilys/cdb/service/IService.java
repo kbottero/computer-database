@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.excilys.cdb.exception.ServiceException;
-import com.excilys.cdb.persistence.DaoRequestParameter;
+import com.excilys.cdb.ui.util.Page;
 
 public interface IService <T, I extends Serializable> {
 	
@@ -21,7 +21,7 @@ public interface IService <T, I extends Serializable> {
 	 * Return a limited list of instance from the database.
 	 * @return
 	 */
-	public default List<T> getAll(DaoRequestParameter param) throws ServiceException {
+	public default List<T> getAll(Page<T,I> page) throws ServiceException {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -31,7 +31,7 @@ public interface IService <T, I extends Serializable> {
 	 * Ordered according to given columns. In an ascending or descending order.
 	 * @return
 	 */
-	public default List<T> getSome(DaoRequestParameter param) throws ServiceException {
+	public default List<T> getSome(Page<T,I> page) throws ServiceException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -47,7 +47,7 @@ public interface IService <T, I extends Serializable> {
 	 * Return the number of instance in the database.
 	 * @return
 	 */
-	public default Long getNbInstance(DaoRequestParameter param) throws ServiceException {
+	public default Long getNbInstance(Page<T,I> page) throws ServiceException {
 		throw new UnsupportedOperationException();
 	}
 	

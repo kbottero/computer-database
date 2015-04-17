@@ -6,12 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
 import org.hibernate.NullPrecedence;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -174,38 +171,23 @@ public class ComputerDao  implements IDao<Computer, Long> {
 	}
 	
 	public void addOrderByToRequest(Criteria criteria, DaoRequestParameter param) throws DaoException {
-		if ((param.getColToOrderBy() == null) || (param.getColToOrderBy().size() == 0)){
-			if (param.getOrder() == null) {
-				criteria.addOrder(Order.asc(ComputerMapper.DEFAULT_ID));
-			} else {
-				switch (param.getOrder()) {
-				case ASC:
-					criteria.addOrder(Order.asc(ComputerMapper.DEFAULT_ID));
-					break;
-				case DESC:
-					criteria.addOrder(Order.desc(ComputerMapper.DEFAULT_ID));
-					break;
-				default:
-					throw new DaoException(DaoException.INVALID_ARGUMENT);
-				}
-			}
+		if ((param.getOrders() == null) || (param.getOrders().size() == 0)) {
+			criteria.addOrder(Order.asc(ComputerMapper.DEFAULT_ID).nulls(NullPrecedence.LAST));
 		} else {
-			for (String strg : param.getColToOrderBy()) {
-				if (ComputerMapper.mapBDModel.containsKey(strg)) {
-					if (param.getOrder() == null) {
-						criteria.addOrder(Order.asc(ComputerMapper.mapBDModel.get(strg)).nulls(NullPrecedence.LAST));
-					} else {
-						switch (param.getOrder()) {
-						case ASC:
-							criteria.addOrder(Order.asc(ComputerMapper.mapBDModel.get(strg)).nulls(NullPrecedence.LAST));
-							break;
-						case DESC:
-							criteria.addOrder(Order.desc(ComputerMapper.mapBDModel.get(strg)).nulls(NullPrecedence.LAST));
-							break;
-						default:
-							throw new DaoException(DaoException.INVALID_ARGUMENT);
-						}
+			for (Map.Entry<String, com.excilys.cdb.persistence.DaoRequestParameter.Order> e : param.getOrders().entrySet()) {
+				Order order = null;
+				if (ComputerMapper.mapBDModel.containsValue(e.getKey())) {
+					switch(e.getValue()) {
+					case ASC:
+						order = Order.asc(e.getKey()).nulls(NullPrecedence.LAST);
+						break;
+					case DESC:
+						order = Order.desc(e.getKey()).nulls(NullPrecedence.LAST);
+						break;
+					default:
+						throw new DaoException(DaoException.INVALID_ARGUMENT);
 					}
+					criteria.addOrder(order);
 				} else {
 					throw new DaoException(DaoException.INVALID_ARGUMENT);
 				}

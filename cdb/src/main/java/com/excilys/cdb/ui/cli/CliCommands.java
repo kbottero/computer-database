@@ -418,10 +418,10 @@ public enum CliCommands {
 	private static void listComputersPage(Scanner s) {
 		Page<Computer, Long> page;
 		if (s.hasNext()) {
-			Long nbLine = s.nextLong();
-			page = new ComputerPage (computersService, nbLine,null);
+			Integer nbLine = s.nextInt();
+			page = new ComputerPage (computersService,nbLine);
 		} else {
-			page = new ComputerPage (computersService,20l,null);
+			page = new ComputerPage (computersService,20);
 		}
 	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		Scanner scan = null;
@@ -456,10 +456,10 @@ public enum CliCommands {
 	private static void listCompaniesPage(Scanner s) {
 		Page<Company, Long> page;
 		if (s.hasNext()) {
-			Long nbLine = s.nextLong();
-			page = new CompanyPage (companiesService, nbLine,null);
+			Integer nbLine = s.nextInt();
+			page = new CompanyPage (companiesService,nbLine);
 		} else {
-			page = new CompanyPage (companiesService,null,null);
+			page = new CompanyPage (companiesService,20);
 		}
 	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		Scanner scan = null;
@@ -503,9 +503,9 @@ public enum CliCommands {
 	private static void printEndOfPage (Page<?,?> page) {
 		StringBuilder stgBuild = new StringBuilder();
 		stgBuild.append("Page ");
-		stgBuild.append(page.getCurrent());
+		stgBuild.append(page.getPageNumber());
 		stgBuild.append("/");
-		stgBuild.append(page.getCount());
+		stgBuild.append(page.getNumberOfPages());
 		stgBuild.append("\t (enter '");
 		stgBuild.append(CliCommands.quitPages);
 		stgBuild.append("' to quit)");

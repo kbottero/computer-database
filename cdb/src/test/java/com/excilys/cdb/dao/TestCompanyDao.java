@@ -16,6 +16,7 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Properties;
 
 import org.junit.After;
@@ -118,9 +119,9 @@ public class TestCompanyDao {
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
-		ArrayList<String> list = new ArrayList<String>();
-		list.add("name");
-		DaoRequestParameter param = new DaoRequestParameter (null,null,list,Order.DESC,null,null);
+		LinkedHashMap<String,Order> list = new LinkedHashMap<>();
+		list.put("name",Order.DESC);
+		DaoRequestParameter param = new DaoRequestParameter (null,null,list,null,null);
 		ArrayList<Company> result = (ArrayList<Company>) dao.getAll(param);
 		
 		ArrayList<String> nameList = new ArrayList<String>();
@@ -141,10 +142,10 @@ public class TestCompanyDao {
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
-		ArrayList<String> list = new ArrayList<String>();
-		list.add("name");
-		list.add("id");
-		DaoRequestParameter param = new DaoRequestParameter (null,null,list,Order.DESC,null,null);
+		LinkedHashMap<String,Order> list = new LinkedHashMap<>();
+		list.put("name",Order.DESC);
+		list.put("id",Order.ASC);
+		DaoRequestParameter param = new DaoRequestParameter (null,null,list,null,null);
 		ArrayList<Company> result = (ArrayList<Company>) dao.getAll(param);
 		
 		ArrayList<String> nameList = new ArrayList<String>();
@@ -167,7 +168,7 @@ public class TestCompanyDao {
 
 	@Test(expected = Exception.class)
 	public void getSomeWithRequestParameterAttributeNull() throws Exception {
-		ArrayList<Company> list = (ArrayList<Company>) dao.getSome(new DaoRequestParameter(null, null, null, null, null, null));
+		ArrayList<Company> list = (ArrayList<Company>) dao.getSome(new DaoRequestParameter(null, null, null, null, null));
 		assertNotNull(list);
 		assertNotNull(list.size());
 	}
@@ -177,7 +178,7 @@ public class TestCompanyDao {
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
-		ArrayList<Company> list = (ArrayList<Company>) dao.getSome(new DaoRequestParameter(DaoRequestParameter.NameFiltering.POST, "T", null, null, 10l, null));
+		ArrayList<Company> list = (ArrayList<Company>) dao.getSome(new DaoRequestParameter(DaoRequestParameter.NameFiltering.POST, "T", null, 10l, null));
 		assertEquals(list.size(),2);
 	}
 	
@@ -185,7 +186,7 @@ public class TestCompanyDao {
 	public void getSomeOnEmptyDatabase() throws Exception {
 		statement.execute("drop table if exists computer;");
 		statement.execute("drop table if exists company;");
-		dao.getSome(new DaoRequestParameter(null, null, null, null, 10l, null));
+		dao.getSome(new DaoRequestParameter(null, null, null, 10l, null));
 	}
 	
 	@Test
@@ -193,9 +194,9 @@ public class TestCompanyDao {
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
-		ArrayList<String> list = new ArrayList<String>();
-		list.add("name");
-		DaoRequestParameter param = new DaoRequestParameter (null,null,list,Order.DESC,4l,null);
+		LinkedHashMap<String,Order> list = new LinkedHashMap<>();
+		list.put("name",Order.DESC);
+		DaoRequestParameter param = new DaoRequestParameter (null,null,list,4l,null);
 		ArrayList<Company> result = (ArrayList<Company>) dao.getSome(param);
 		
 		ArrayList<String> nameList = new ArrayList<String>();
@@ -216,9 +217,9 @@ public class TestCompanyDao {
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
-		ArrayList<String> list = new ArrayList<String>();
-		list.add("name");
-		DaoRequestParameter param = new DaoRequestParameter (null,null,list,Order.DESC,4l,1l);
+		LinkedHashMap<String,Order> list = new LinkedHashMap<>();
+		list.put("name",Order.DESC);
+		DaoRequestParameter param = new DaoRequestParameter (null,null,list,4l,1l);
 		ArrayList<Company> result = (ArrayList<Company>) dao.getSome(param);
 		
 		ArrayList<String> nameList = new ArrayList<String>();

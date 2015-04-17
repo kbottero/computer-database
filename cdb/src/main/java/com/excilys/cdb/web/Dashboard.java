@@ -1,9 +1,9 @@
 package com.excilys.cdb.web;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -11,9 +11,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.excilys.cdb.dto.ComputerDTO;
+import com.excilys.cdb.dto.ComputerPageDTO;
+import com.excilys.cdb.mapper.ComputerPageMapper;
 import com.excilys.cdb.mapper.IMapper;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.DaoRequestParameter;
 import com.excilys.cdb.service.IService;
 import com.excilys.cdb.ui.util.ComputerPage;
 
@@ -23,6 +24,7 @@ public class Dashboard {
 
 	@Autowired
 	private IService<Computer, Long> computersService;
+
 	@Autowired
 	private IMapper<Computer, ComputerDTO> computerMapper;
 	
@@ -37,72 +39,26 @@ public class Dashboard {
 		ComputerPage compPage;
 		ModelAndView model = new ModelAndView("dashboard");
 		
-		Long nbPerPage = 10l;
-		if (nbCompPerPage != null && !nbCompPerPage.isEmpty()) {
-			nbPerPage = Long.parseLong(nbCompPerPage);
-			if (nbPerPage != 10l && nbPerPage != 50l && nbPerPage != 100l) {
-				nbPerPage = 10l;
-			}
-		}
-		
-		DaoRequestParameter param = getDaoRequestParameter(search, numPage, nbCompPerPage, sortColumn, sortColumnOrder, language);
-		compPage = new ComputerPage(computersService,nbPerPage, param);
+		compPage = ComputerPageMapper.fromDTO(computersService,new ComputerPageDTO(search, numPage, nbCompPerPage, sortColumn, sortColumnOrder, language));
 		if (numPage != null && !numPage.isEmpty()) {
-			Long num = Long.parseLong(numPage);
+			Integer num = Integer.parseInt(numPage);
 			compPage.goToPage(num);
 		}
 
 		model.addObject("nbCompPerPage", nbCompPerPage);
 		model.addObject("page", compPage);
 		model.addObject("computers", computerMapper.toDTOList(compPage.getElements()));
+		StringBuilder strgBuildCol = new StringBuilder();
+		StringBuilder strgBuildOrder = new StringBuilder();
+		if (compPage.getSort() != null) {
+			for (Iterator<Order> it = compPage.getSort().iterator(); it.hasNext();) {
+				Order order = it.next();
+				strgBuildCol.append(order.getProperty());
+				strgBuildOrder.append(order.getDirection().name());
+			}
+		}
+		model.addObject("order", strgBuildCol.toString());
+		model.addObject("direction", strgBuildOrder.toString());
 		return model;
 	}
-	
-	private DaoRequestParameter getDaoRequestParameter (
-					final String search,
-					final String numPage,
-					final String nbCompPerPage,
-					final String sortColumn,
-					final String sortColumnOrder,
-					final String language) {
-		DaoRequestParameter daoRequestParameter = new DaoRequestParameter();
-		
-		if (search != null && !search.isEmpty()) {
-			daoRequestParameter.setNameLike(search);
-		}
-		if ((nbCompPerPage != null) && (! nbCompPerPage.isEmpty()) && (numPage != null) && (!numPage.isEmpty())) {
-			Long limit = Long.parseLong(nbCompPerPage);
-			daoRequestParameter.setLimit(limit);
-			Long page = Long.parseLong(numPage);
-			daoRequestParameter.setOffset((page-1)*limit);
-		} else {
-			daoRequestParameter.setLimit(10l);
-		}
-		List<String> l = null;
-		if (sortColumn != null && !sortColumn.isEmpty()) {
-			String [] list = sortColumn.split(",");
-			l = new ArrayList<String>();
-			for (String s : list) {
-				l.add(s);
-			}
-		}
-		daoRequestParameter.setColToOrderBy(l);
-		DaoRequestParameter.Order order = DaoRequestParameter.Order.ASC;;
-		if (sortColumnOrder != null && !sortColumnOrder.isEmpty()) {
-			switch (sortColumnOrder) {
-			case "ASC":
-				order = DaoRequestParameter.Order.ASC;
-				break;
-			case "DESC":
-				order = DaoRequestParameter.Order.DESC;
-				break;
-			default:
-				break;
-			}
-		}
-		daoRequestParameter.setOrder(order);
-		
-		return daoRequestParameter;
-	}
-	
 }

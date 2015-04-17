@@ -3,11 +3,11 @@ package com.excilys.cdb.dto;
 import java.io.Serializable;
 
 public class ComputerDTO implements Serializable {
-
+	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1685703593843456070L;
+	private static final long serialVersionUID = 1L;
 	
 	private Long id;
 	private String name;

@@ -25,10 +25,6 @@
 	
 	<tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager"/>
 
-	<!-- <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="mysqlDataSource"/>
-	</bean> -->
-	
 	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
 	
     <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" >

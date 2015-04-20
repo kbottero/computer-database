@@ -119,18 +119,22 @@ public class ComputerMapper implements IMapper<Computer, ComputerDTO> {
 		LocalDateTime discontinuedDate = null;
 		Company constructor = null;
 		
-		if (computerDTO.getIntroductionDate() != null && !computerDTO.getIntroductionDate().isEmpty()) {
-			introductionDate = LocalDateTime.parse(computerDTO.getIntroductionDate()+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
+		if (computerDTO.getIntroduced() != null && !computerDTO.getIntroduced().isEmpty()) {
+			introductionDate = LocalDateTime.parse(computerDTO.getIntroduced()+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
 		}
-		if (computerDTO.getDiscontinuedDate() != null && !computerDTO.getDiscontinuedDate().isEmpty()) {
-			discontinuedDate = LocalDateTime.parse(computerDTO.getDiscontinuedDate()+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
+		if (computerDTO.getDiscontinued() != null && !computerDTO.getDiscontinued().isEmpty()) {
+			discontinuedDate = LocalDateTime.parse(computerDTO.getDiscontinued()+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
 		}
-		if (computerDTO.getConstructorId() != null &&
-				!computerDTO.getConstructorId().equals(0l) &&
-				computerDTO.getConstructorName() != null &&
-				!computerDTO.getConstructorId().equals("")
-				) {
-			constructor = new Company(computerDTO.getConstructorId(), computerDTO.getConstructorName());
+		if (computerDTO.getCompanyId() != null &&
+				!computerDTO.getCompanyId().equals(0l)) {
+			if (computerDTO.getCompanyName() == null || computerDTO.getCompanyName().equals("")) {
+				Company company = companiesService.getOne(computerDTO.getCompanyId());
+				if (company != null) {
+					constructor = company;
+				}
+			} else {
+				constructor = new Company(computerDTO.getCompanyId(), computerDTO.getCompanyName());
+			}
 		}
 
 		Computer computer = new Computer (

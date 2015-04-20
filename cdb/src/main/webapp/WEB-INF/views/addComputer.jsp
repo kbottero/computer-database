@@ -5,11 +5,11 @@
             <div class="row">
                 <div class="col-xs-8 col-xs-offset-2 box">
                     <h1><spring:message code="add.computer" text="add.computer" /></h1>
-                    <form action="insertComputer" method="POST">
+                    <form action="save" method="POST">
                         <fieldset>
                             <div class="form-group">
-                                <label for="computerName"><spring:message code="computers.name.th" text="computers.name.th" /></label>
-                                <input type="text" class="form-control" name="computerName" id="computerName" placeholder="Computer name">
+                                <label for="name"><spring:message code="computers.name.th" text="computers.name.th" /></label>
+                                <input type="text" class="form-control" name="name" id="name" placeholder="Computer name">
                             </div>
                             <div class="form-group">
                                 <label for="introduced"><spring:message code="introduced.date.th" text="introduced.date.th" /></label>

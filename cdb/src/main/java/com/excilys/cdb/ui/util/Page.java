@@ -13,6 +13,10 @@ public abstract class Page <E, I extends Serializable> implements Pageable {
 	protected Integer numberOfPages;
 	protected Integer nbElements;
 	protected Integer offset;
+	public void setPageNumber(Integer pageNumber) {
+		this.pageNumber = pageNumber;
+	}
+
 	protected Sort sort;
 	protected String search;
 	

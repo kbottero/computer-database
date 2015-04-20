@@ -17,13 +17,13 @@
                     </form>
                 </div>
                 <div class="pull-right">
-                    <a class="btn btn-success" id="addComputer" href="${pageContext.request.contextPath}/addComputer"><spring:message code="add.computer" text="add.computer" /></a> 
+                    <a class="btn btn-success" id="addComputer" href="${pageContext.request.contextPath}/Computer/add"><spring:message code="add.computer" text="add.computer" /></a> 
                     <a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();"><spring:message code="edit" text="edit" /></a>
                 </div>
             </div>
         </div>
 
-        <form id="deleteForm" action="${pageContext.request.contextPath}/deleteComputer" method="POST">
+        <form id="deleteForm" action="${pageContext.request.contextPath}/Computer/delete" method="POST">
             <input type="hidden" name="selection" value="">
         </form>
 
@@ -127,11 +127,11 @@
 	                            <input type="checkbox" name="cb" class="cb" value="${c.id}">
 	                        </td>
 	                        <td>
-	                            <a href="${pageContext.request.contextPath}/editComputer?id=${c.id}" id="computer_${c.id}" onclick="">${c.name}</a>
+	                            <a href="${pageContext.request.contextPath}/Computer/edit?id=${c.id}" id="computer_${c.id}" onclick="">${c.name}</a>
 	                        </td>
-	                        <td>${c.introductionDate}</td>
-	                        <td>${c.discontinuedDate}</td>
-	                        <td>${c.constructorName}</td>
+	                        <td>${c.introduced}</td>
+	                        <td>${c.discontinued}</td>
+	                        <td>${c.companyName}</td>
 						</tr>
 					</c:forEach>
                 </tbody>

@@ -8,27 +8,27 @@
                     </div>
                     <h1><spring:message code="edit.computer" text="edit.computer" /></h1>
 
-                    <form action="saveComputer" method="GET" id="formEditComputer">
-                        <input type="hidden" name ="computerId" value="${computer.id}"/>
+                    <form action="save" method="GET" id="formEditComputer">
+                        <input type="hidden" name ="id" value="${computer.id}"/>
                         <fieldset>
                             <div class="form-group">
-                                <label for="computerName"><spring:message code="computers.name.th" text="computers.name.th" /></label>
-                                <input type="text" class="form-control" name ="computerName" id="computerName" placeholder="Computer name" value="${computer.name}">
+                                <label for="name"><spring:message code="computers.name.th" text="computers.name.th" /></label>
+                                <input type="text" class="form-control" name ="name" id="name" placeholder="Computer name" value="${computer.name}">
                             </div>
                             <div class="form-group">
                                 <label for="introduced"><spring:message code="introduced.date.th" text="introduced.date.th" /></label>
-                                <input type="date" class="form-control" name ="introduced" id="introduced" placeholder="yyyy-mm-dd" value="${computer.introductionDate}">
+                                <input type="date" class="form-control" name ="introduced" id="introduced" placeholder="yyyy-mm-dd" value="${computer.introduced}">
                             </div>
                             <div class="form-group">
                                 <label for="discontinued"><spring:message code="discontinued.date.th" text="discontinued.date.th" /></label>
-                                <input type="date" class="form-control" name ="discontinued" id="discontinued" placeholder="yyyy-mm-dd" value="${computer.discontinuedDate}">
+                                <input type="date" class="form-control" name ="discontinued" id="discontinued" placeholder="yyyy-mm-dd" value="${computer.discontinued}">
                             </div>
                             <div class="form-group">
                                 <label for="companyId"><spring:message code="company.th" text="company.th" /></label>
                                 <select name ="companyId" class="form-control" id="companyId" >
-                                   	<option value="0" <c:if test="${computer.constructorName == null}">selected</c:if>>--</option>
+                                   	<option value="0" <c:if test="${computer.companyName == null}">selected</c:if>>--</option>
                                     <c:forEach var="c" items="${companies}">
-                                    	<option value="${c.id}" <c:if test="${c.name == computer.constructorName}">selected</c:if> >${c.name}</option>
+                                    	<option value="${c.id}" <c:if test="${c.name == computer.companyName}">selected</c:if> >${c.name}</option>
 									</c:forEach>
                                 </select>
                             </div>            

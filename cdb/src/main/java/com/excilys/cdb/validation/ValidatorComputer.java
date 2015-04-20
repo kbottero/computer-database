@@ -7,7 +7,7 @@ public class ValidatorComputer {
 	public static boolean check(Computer instance) {
 		
 		return !((instance == null)  || 
-			(instance.getId() == null) ||
+//			(instance.getId() == null) ||
 			(instance.getName() == null) ||
 			(instance.getName().isEmpty())	||
 			(instance.getIntroductionDate()!= null &&

@@ -367,13 +367,13 @@ public enum CliCommands {
 		strBuild.append("\t");
 		strBuild.append(c.getName());
 		strBuild.append("\t");
-		if (c.getConstructorName()!= null) {
-			strBuild.append(c.getConstructorName());
+		if (c.getCompanyName()!= null) {
+			strBuild.append(c.getCompanyName());
 			strBuild.append("\t");
 		}
-		strBuild.append(c.getIntroductionDate());
+		strBuild.append(c.getIntroduced());
 		strBuild.append("\t");
-		strBuild.append(c.getDiscontinuedDate());
+		strBuild.append(c.getDiscontinued());
 		System.out.println(strBuild.toString());
 	}
 	

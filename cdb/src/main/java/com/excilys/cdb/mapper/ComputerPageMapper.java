@@ -85,6 +85,7 @@ public class ComputerPageMapper extends IPageMapper<Computer,Long> {
 		}
 		
 		ComputerPage page = new ComputerPage(service, nbElemPerPage);
+		page.setPageNumber(pageNumber);
 		page.setNbElemPerPage(nbElemPerPage);
 		page.setSearch(search);
 		page.setSort(sort);

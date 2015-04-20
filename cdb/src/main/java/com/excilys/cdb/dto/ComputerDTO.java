@@ -11,19 +11,24 @@ public class ComputerDTO implements Serializable {
 	
 	private Long id;
 	private String name;
-	private String introductionDate;
-	private String discontinuedDate;
-	private Long  constructorId;
-	private String constructorName;
+	private String introduced;
+	private String discontinued;
+	private Long  companyId;
+	private String companyName;
+	
+	public ComputerDTO() {
+		super();
+	}
+	
 	public ComputerDTO(Long id, String name, String introductionDate,
 			String discontinuedDate, Long constructorId, String constructorName) {
 		super();
 		this.id = id;
 		this.name = name;
-		this.introductionDate = introductionDate;
-		this.discontinuedDate = discontinuedDate;
-		this.constructorId = constructorId;
-		this.constructorName = constructorName;
+		this.introduced = introductionDate;
+		this.discontinued = discontinuedDate;
+		this.companyId = constructorId;
+		this.companyName = constructorName;
 	}
 	public Long getId() {
 		return id;
@@ -37,29 +42,29 @@ public class ComputerDTO implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getIntroductionDate() {
-		return introductionDate;
+	public String getIntroduced() {
+		return introduced;
 	}
-	public void setIntroductionDate(String introductionDate) {
-		this.introductionDate = introductionDate;
+	public void setIntroduced(String introduced) {
+		this.introduced = introduced;
 	}
-	public String getDiscontinuedDate() {
-		return discontinuedDate;
+	public String getDiscontinued() {
+		return discontinued;
 	}
-	public void setDiscontinuedDate(String discontinuedDate) {
-		this.discontinuedDate = discontinuedDate;
+	public void setDiscontinued(String discontinued) {
+		this.discontinued = discontinued;
 	}
-	public Long getConstructorId() {
-		return constructorId;
+	public Long getCompanyId() {
+		return companyId;
 	}
-	public void setConstructorId(Long constructorId) {
-		this.constructorId = constructorId;
+	public void setCompanyId(Long constructorId) {
+		this.companyId = constructorId;
 	}
-	public String getConstructorName() {
-		return constructorName;
+	public String getCompanyName() {
+		return companyName;
 	}
-	public void setConstructorName(String constructorName) {
-		this.constructorName = constructorName;
+	public void setCompanyName(String constructorName) {
+		this.companyName = constructorName;
 	}
 	public static long getSerialversionuid() {
 		return serialVersionUID;
@@ -69,16 +74,16 @@ public class ComputerDTO implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result
-				+ ((constructorId == null) ? 0 : constructorId.hashCode());
+				+ ((companyId == null) ? 0 : companyId.hashCode());
 		result = prime * result
-				+ ((constructorName == null) ? 0 : constructorName.hashCode());
+				+ ((companyName == null) ? 0 : companyName.hashCode());
 		result = prime
 				* result
-				+ ((discontinuedDate == null) ? 0 : discontinuedDate.hashCode());
+				+ ((discontinued == null) ? 0 : discontinued.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime
 				* result
-				+ ((introductionDate == null) ? 0 : introductionDate.hashCode());
+				+ ((introduced == null) ? 0 : introduced.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
@@ -91,30 +96,30 @@ public class ComputerDTO implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		ComputerDTO other = (ComputerDTO) obj;
-		if (constructorId == null) {
-			if (other.constructorId != null)
+		if (companyId == null) {
+			if (other.companyId != null)
 				return false;
-		} else if (!constructorId.equals(other.constructorId))
+		} else if (!companyId.equals(other.companyId))
 			return false;
-		if (constructorName == null) {
-			if (other.constructorName != null)
+		if (companyName == null) {
+			if (other.companyName != null)
 				return false;
-		} else if (!constructorName.equals(other.constructorName))
+		} else if (!companyName.equals(other.companyName))
 			return false;
-		if (discontinuedDate == null) {
-			if (other.discontinuedDate != null)
+		if (discontinued == null) {
+			if (other.discontinued != null)
 				return false;
-		} else if (!discontinuedDate.equals(other.discontinuedDate))
+		} else if (!discontinued.equals(other.discontinued))
 			return false;
 		if (id == null) {
 			if (other.id != null)
 				return false;
 		} else if (!id.equals(other.id))
 			return false;
-		if (introductionDate == null) {
-			if (other.introductionDate != null)
+		if (introduced == null) {
+			if (other.introduced != null)
 				return false;
-		} else if (!introductionDate.equals(other.introductionDate))
+		} else if (!introduced.equals(other.introduced))
 			return false;
 		if (name == null) {
 			if (other.name != null)

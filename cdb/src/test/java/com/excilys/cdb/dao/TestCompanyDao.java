@@ -35,17 +35,17 @@ import com.excilys.cdb.persistence.DaoRequestParameter;
 import com.excilys.cdb.persistence.DaoRequestParameter.Order;
 
 /**
- * TODO: Complete with DbUnit
  * @author Kevin Bottero
  *
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/spring-context-test.xml"})
+@ContextConfiguration(locations = {"classpath:/spring-context-test.xml"})
 public class TestCompanyDao {
 
 	private Connection connection;
 	private Statement statement;
+	
 	@Autowired
 	private CompanyDao dao;
 	

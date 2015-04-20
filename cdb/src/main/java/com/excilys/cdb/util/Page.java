@@ -1,4 +1,4 @@
-package com.excilys.cdb.ui.util;
+package com.excilys.cdb.util;
 
 import java.io.Serializable;
 import java.util.List;

@@ -1,9 +1,10 @@
 $(function() {
+	
     $('#introduced').bind('keyup change blur',  function () {testFormValidity ()});
     
     $('#discontinued').bind('keyup change blur', function () {testFormValidity ()});
     
-    $('#computerName').bind('keyup change blur', function () {testFormValidity ()});
+    $('#name').bind('keyup change blur', function () {testFormValidity ()});
     
     $('#formEditComputer').submit(function(f) {
     	if (!testFormValidity ()) {
@@ -35,12 +36,13 @@ $(function() {
 	    		$('#discontinued').removeClass('error');
     		}
         }
-    	if (!isNameValid($('#computerName').val())) {
+    	if (!isNameValid($('#name').val())) {
     		isValid = false;
-    		$('#computerName').addClass('error');
+    		$('#name').addClass('error');
         } else {
-    		$('#computerName').removeClass('error');
+    		$('#name').removeClass('error');
         }
+    	
     	if (!isValid) {
     		$('#formEditComputerSubmit').attr('disabled','disabled');
     	} else {
@@ -53,20 +55,24 @@ $(function() {
 		var introduced =  $('#introduced').val();
 		var discontinued =  $('#discontinued').val();
 		
-		var rxDatePattern = /^(19|20)(\d{2})(-)([0][1-9]|[1][0|1|2])(-)([0][1-9]|[12][0-9]|[3][0,1])$/;
+		var userLang = navigator.language || navigator.userLanguage;
+
+		if(userLang.split('-')[0] == "fr") {
+		    var rxDatePattern = /^([0][1-9]|[12][0-9]|[3][0,1])(\/)([0][1-9]|[1][0|1|2])(\/)(19|20)(\d{2})$/;	
+		} else {
+			var rxDatePattern = /^([0][1-9]|[1][0|1|2])(\/)([0][1-9]|[12][0-9]|[3][0,1])(\/)(19|20)(\d{2})$/;
+		}			
 		var dtArrayIntroduced = introduced.match(rxDatePattern);
 		var dtArrayDiscontinued = discontinued.match(rxDatePattern); // is format OK?
-		
+
 		if (dtArrayIntroduced == null || dtArrayDiscontinued == null ) {
 		    return false;
 		}
-		if ((dtArrayIntroduced[1]+dtArrayIntroduced[2] > dtArrayDiscontinued[1]+dtArrayDiscontinued[2]) ||
-			(dtArrayIntroduced[4] > dtArrayDiscontinued[4]) ||
-			(dtArrayIntroduced[6] > dtArrayDiscontinued[6])) {
+		if ((dtArrayIntroduced[5]+dtArrayIntroduced[6] > dtArrayDiscontinued[5]+dtArrayDiscontinued[6]) ||
+			(dtArrayIntroduced[3] > dtArrayDiscontinued[3]) ||
+			(dtArrayIntroduced[1] > dtArrayDiscontinued[1])) {
 			return true;
 		}
-		return false;  
-		    
 	}
 	
 	function isDateValid(txtDate) {
@@ -74,17 +80,33 @@ $(function() {
 	    if(currVal == '')
 	        return true;
 	    
-	    var rxDatePattern = /^(19|20)(\d{2})(-)([0][1-9]|[1][0|1|2])(-)([0][1-9]|[12][0-9]|[3][0,1])$/; //Declare Regex
-	    var dtArray = currVal.match(rxDatePattern); // is format OK?
+	    var userLang = navigator.language || navigator.userLanguage;
 	    
-	    if (dtArray == null) {
-	        return false;
-	    }
-	    
-	    //Checks for yyyy-mm-dd format.
-	    dtYear = dtArray[1]+dtArray[2];
-	    dtMonth = dtArray[4];    
-	    dtDay= dtArray[6];    
+		if(userLang.split('-')[0] == "fr") {
+		    var rxDatePattern = /^([0][1-9]|[12][0-9]|[3][0,1])(\/)([0][1-9]|[1][0|1|2])(\/)(19|20)(\d{2})$/; //Declare Regex
+		    var dtArray = currVal.match(rxDatePattern); // is format OK?
+		    
+		    if (dtArray == null) {
+		        return false;
+		    }
+		    
+		    //Checks for yyyy-mm-dd format.
+		    dtYear = dtArray[5]+dtArray[6];
+		    dtMonth = dtArray[2];    
+		    dtDay= dtArray[1];    
+		} else {
+			var rxDatePattern = /^([0][1-9]|[1][0|1|2])(\/)([0][1-9]|[12][0-9]|[3][0,1])(\/)(19|20)(\d{2})$/; //Declare Regex
+		    var dtArray = currVal.match(rxDatePattern); // is format OK?
+		    
+		    if (dtArray == null) {
+		        return false;
+		    }
+		    
+		    //Checks for yyyy-mm-dd format.
+		    dtYear = dtArray[5]+dtArray[6];
+		    dtMonth = dtArray[1];    
+		    dtDay= dtArray[2];    
+		}
 	    
 	    if (dtMonth < 1 || dtMonth > 12) {
 	        return false;
@@ -98,21 +120,19 @@ $(function() {
 	                return false;
 	    }
 	    return true;
-	}
+	}	
 	
 	function isNameValid(txtName) {
 	    var currVal = txtName;
 	    if(currVal == '') {
 	        return false;
 	    }
-	    
-	    var rxNamePattern = /[A-Za-z0-9_~\-@#\$%\^&\*\(\).]+$/; //Declare Regex
-	    var dtArray = currVal.match(rxNamePattern); // is format OK?
+	    var rxNamePattern = /[A-Za-z0-9_~\-@#\$%\^&\*\(\).]+$/; 
+	    var dtArray = currVal.match(rxNamePattern);
 	    
 	    if (dtArray == null) {
 	        return false;
 	    }
 	    return true;
 	}
-
 });

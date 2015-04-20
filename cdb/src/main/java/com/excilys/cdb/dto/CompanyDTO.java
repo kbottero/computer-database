@@ -2,6 +2,8 @@ package com.excilys.cdb.dto;
 
 import java.io.Serializable;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 public class CompanyDTO implements Serializable {
 
 	/**
@@ -10,6 +12,7 @@ public class CompanyDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private Long id;
+	@NotEmpty
 	private String name;
 	
 	public CompanyDTO(Long id, String name) {

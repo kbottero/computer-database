@@ -13,11 +13,11 @@
                             </div>
                             <div class="form-group">
                                 <label for="introduced"><spring:message code="introduced.date.th" text="introduced.date.th" /></label>
-                                <input type="date" class="form-control" name="introduced" id="introduced" placeholder="Introduced date">
+                                <input type="date" class="form-control" name="introduced" id="introduced" placeholder="dd/mm/yyyy">
                             </div>
                             <div class="form-group">
                                 <label for="discontinued"><spring:message code="discontinued.date.th" text="discontinued.date.th" /></label>
-                                <input type="date" class="form-control" name="discontinued" id="discontinued" placeholder="Discontinued date">
+                                <input type="date" class="form-control" name="discontinued" id="discontinued" placeholder="dd/mm/yyyy">
                             </div>
                             <div class="form-group">
                                 <label for="companyId"><spring:message code="company.th" text="company.th" /></label>

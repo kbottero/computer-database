@@ -9,7 +9,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
 import com.excilys.cdb.persistence.DaoRequestParameter;
-import com.excilys.cdb.ui.util.Page;
+import com.excilys.cdb.util.Page;
 
 public abstract class IPageMapper<T,I extends Serializable> {
 	

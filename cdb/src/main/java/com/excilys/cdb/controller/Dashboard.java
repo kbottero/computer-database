@@ -3,6 +3,7 @@ package com.excilys.cdb.controller;
 import java.util.Iterator;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -16,7 +17,7 @@ import com.excilys.cdb.mapper.ComputerPageMapper;
 import com.excilys.cdb.mapper.IMapper;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.service.IService;
-import com.excilys.cdb.ui.util.ComputerPage;
+import com.excilys.cdb.util.ComputerPage;
 
 @Controller
 @RequestMapping("/dashboard")
@@ -51,6 +52,7 @@ public class Dashboard {
 		}
 		model.addAttribute("order", strgBuildCol.toString());
 		model.addAttribute("direction", strgBuildOrder.toString());
+		model.addAttribute("language", LocaleContextHolder.getLocale().getLanguage());
 		return "dashboard";
 	}
 }

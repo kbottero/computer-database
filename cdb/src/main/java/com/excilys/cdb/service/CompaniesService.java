@@ -11,7 +11,7 @@ import com.excilys.cdb.mapper.IPageMapper;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.persistence.ComputerDao;
 import com.excilys.cdb.persistence.IDao;
-import com.excilys.cdb.ui.util.Page;
+import com.excilys.cdb.util.Page;
 
 @Service
 public class CompaniesService implements IService<Company,Long>{

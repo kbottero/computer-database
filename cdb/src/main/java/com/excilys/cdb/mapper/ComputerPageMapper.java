@@ -14,8 +14,8 @@ import com.excilys.cdb.dto.ComputerPageDTO;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.DaoRequestParameter;
 import com.excilys.cdb.service.IService;
-import com.excilys.cdb.ui.util.ComputerPage;
-import com.excilys.cdb.ui.util.Page;
+import com.excilys.cdb.util.ComputerPage;
+import com.excilys.cdb.util.Page;
 
 @Component
 public class ComputerPageMapper extends IPageMapper<Computer,Long> {

@@ -21,9 +21,9 @@ import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.service.CompaniesService;
 import com.excilys.cdb.service.ComputersService;
-import com.excilys.cdb.ui.util.CompanyPage;
-import com.excilys.cdb.ui.util.ComputerPage;
-import com.excilys.cdb.ui.util.Page;
+import com.excilys.cdb.util.CompanyPage;
+import com.excilys.cdb.util.ComputerPage;
+import com.excilys.cdb.util.Page;
 import com.excilys.cdb.validation.ValidatorDate;
 
 public enum CliCommands {

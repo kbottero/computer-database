@@ -31,6 +31,9 @@ public class ComputerMapper implements IMapper<Computer, ComputerDTO> {
 	@Autowired
 	private IService<Company,Long> companiesService;
 
+	@Autowired
+	private LocalDateTimeMapper localDateTimeMapper;
+
 	/** Map DB labels -> Model attributes. */
 	public static final HashMap<String,String> mapBDModel;
 	static {
@@ -88,10 +91,12 @@ public class ComputerMapper implements IMapper<Computer, ComputerDTO> {
 			constructorId = computer.getConstructor().getId();
 		}
 		if (computer.getIntroductionDate() != null) {
-			introductionDate = computer.getIntroductionDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+//			introductionDate = computer.getIntroductionDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+			introductionDate = localDateTimeMapper.toDTO(computer.getIntroductionDate());
 		}
 		if (computer.getDiscontinuedDate() != null) {
-			discontinuedDate = computer.getDiscontinuedDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+//			discontinuedDate = computer.getDiscontinuedDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+			discontinuedDate = localDateTimeMapper.toDTO(computer.getDiscontinuedDate());
 		}
 		if (computer.getConstructor() != null) {
 			constructorName = computer.getConstructor().getName();
@@ -120,10 +125,12 @@ public class ComputerMapper implements IMapper<Computer, ComputerDTO> {
 		Company constructor = null;
 		
 		if (computerDTO.getIntroduced() != null && !computerDTO.getIntroduced().isEmpty()) {
-			introductionDate = LocalDateTime.parse(computerDTO.getIntroduced()+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
+//			introductionDate = LocalDateTime.parse(computerDTO.getIntroduced()+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
+			introductionDate = localDateTimeMapper.fromDTO(computerDTO.getIntroduced());
 		}
 		if (computerDTO.getDiscontinued() != null && !computerDTO.getDiscontinued().isEmpty()) {
-			discontinuedDate = LocalDateTime.parse(computerDTO.getDiscontinued()+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
+//			discontinuedDate = LocalDateTime.parse(computerDTO.getDiscontinued()+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
+			discontinuedDate = localDateTimeMapper.fromDTO(computerDTO.getDiscontinued());
 		}
 		if (computerDTO.getCompanyId() != null &&
 				!computerDTO.getCompanyId().equals(0l)) {

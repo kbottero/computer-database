@@ -12,7 +12,7 @@ import com.excilys.cdb.exception.ServiceException;
 import com.excilys.cdb.mapper.IPageMapper;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.IDao;
-import com.excilys.cdb.ui.util.Page;
+import com.excilys.cdb.util.Page;
 import com.excilys.cdb.validation.ValidatorComputer;
 
 @Service

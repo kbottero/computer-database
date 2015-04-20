@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,7 +37,7 @@ public class ComputerController {
 	private IMapper<Company, CompanyDTO> companyMapper;
 
 	@RequestMapping(value="/edit", method = {RequestMethod.GET,RequestMethod.POST})
-	protected ModelAndView doGet(HttpServletRequest request, @RequestParam(value="id", required=true) final String idComputer) {
+	protected ModelAndView edit(HttpServletRequest request, @RequestParam(value="id", required=true) final String idComputer) {
 		ModelAndView model = new ModelAndView("editComputer");
 		if (idComputer != null) {
 			Long id = Long.parseLong(idComputer);
@@ -60,14 +61,13 @@ public class ComputerController {
 	
 	@RequestMapping(value="/save", method = {RequestMethod.GET,RequestMethod.POST})
     @ExceptionHandler(NoSuchRequestHandlingMethodException.class)
-	protected String doGet(
-			@ModelAttribute("computerDto") ComputerDTO computerDto) throws IOException {
+	protected String save(@Valid @ModelAttribute("computerDto") ComputerDTO computerDto) throws IOException {
 		computersService.saveOne(computerMapper.fromDTO(computerDto));
 		return "redirect:/dashboard";
 	}
 	
 	@RequestMapping(value="/delete", method = {RequestMethod.GET,RequestMethod.POST})
-	protected String doGet(@RequestParam(value="selection", required=true) final String[] selection) {
+	protected String delete(@RequestParam(value="selection", required=true) final String[] selection) {
 		if (selection != null) {
 		    for (String ids : selection) {
 		    		String[] num = ids.split(",");

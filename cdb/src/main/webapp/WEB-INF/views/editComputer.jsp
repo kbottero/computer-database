@@ -17,11 +17,11 @@
                             </div>
                             <div class="form-group">
                                 <label for="introduced"><spring:message code="introduced.date.th" text="introduced.date.th" /></label>
-                                <input type="date" class="form-control" name ="introduced" id="introduced" placeholder="yyyy-mm-dd" value="${computer.introduced}">
+                                <input type="date" class="form-control" name ="introduced" id="introduced" placeholder="dd/mm/yyyy" value="${computer.introduced}">
                             </div>
                             <div class="form-group">
                                 <label for="discontinued"><spring:message code="discontinued.date.th" text="discontinued.date.th" /></label>
-                                <input type="date" class="form-control" name ="discontinued" id="discontinued" placeholder="yyyy-mm-dd" value="${computer.discontinued}">
+                                <input type="date" class="form-control" name ="discontinued" id="discontinued" placeholder="dd/mm/yyyy" value="${computer.discontinued}">
                             </div>
                             <div class="form-group">
                                 <label for="companyId"><spring:message code="company.th" text="company.th" /></label>
@@ -44,6 +44,7 @@
         </div>
     </section>
 <script src="${pageContext.request.contextPath}/js/jquery.min.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery-ui.js"></script>
 <script src="${pageContext.request.contextPath}/js/computerValidator.js"></script>
 </body>
 </html>

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.excilys.cdb.exception.ServiceException;
-import com.excilys.cdb.ui.util.Page;
+import com.excilys.cdb.util.Page;
 
 public interface IService <T, I extends Serializable> {
 	

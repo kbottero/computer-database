@@ -17,6 +17,7 @@ import com.excilys.cdb.service.IService;
 import com.excilys.cdb.validation.ValidatorComputer;
 
 @Service
+@Transactional
 public class ComputersService implements IService<Computer,Long> {
 
 	@Autowired @Qualifier("computerDao")

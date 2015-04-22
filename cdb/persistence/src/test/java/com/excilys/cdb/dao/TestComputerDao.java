@@ -22,7 +22,6 @@ import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,19 +40,13 @@ import com.excilys.cdb.persistence.util.DaoRequestParameter.Order;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration(locations={"/spring-context-test.xml"})
+@ContextConfiguration(locations={"/spring-context-test.xml"})
 public class TestComputerDao {
 	
 	private Connection connection;
 	private Statement statement;
 	@Autowired
 	private ComputerDao dao;
-	
-	
-	@BeforeClass
-	public static void setUpDB() {
-		System.setProperty("env", "TEST");
-	}
 
 	@Before
 	public void setUp() throws Exception {

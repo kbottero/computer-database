@@ -3,7 +3,7 @@ package com.excilys.cdb.mapper.model;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public interface IMapper<T,E>{
+public interface IMapper<T,E> {
 	
 	E toDTO(T instance);
 	

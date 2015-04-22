@@ -19,11 +19,11 @@
       class="org.springframework.security.web.authentication.www.DigestAuthenticationFilter">
         <property name="userDetailsService" ref="userDetailsService" />
         <property name="authenticationEntryPoint" ref="digestEntryPoint" />
-        <property name="passwordAlreadyEncoded" value="false" />
+        <property name="passwordAlreadyEncoded" value="true" />
     </bean>
     <bean id="digestEntryPoint" 
       class="org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint">
-        <property name="realmName" value="Http Digest Authentication" />
+        <property name="realmName" value="cdb" />
 		<property name="key" value="realmsalt" />
     </bean>
     

@@ -172,7 +172,8 @@ public class ComputerDao  implements IDao<Computer, Long> {
 			throw new IllegalArgumentException();
 		}
 		Criteria cr = sessionFactory.getCurrentSession().createCriteria(Computer.class);
-		List<Computer> computersToDelete = cr.add(Restrictions.eq("company_id", companyId)).list();
+		cr.createCriteria("constructor", "company", JoinType.LEFT_OUTER_JOIN);
+		List<Computer> computersToDelete = cr.add(Restrictions.eq("company.id", companyId)).list();
 		for (Computer c : computersToDelete) {
 			sessionFactory.getCurrentSession().delete(c);
 		}

@@ -6,6 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -14,14 +15,14 @@ import com.excilys.cdb.mapper.model.impl.CompanyMapper;
 import com.excilys.cdb.model.Company;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:/spring-context-test.xml"})
+@ContextConfiguration(locations={"classpath:/application-context-test.xml"})
 public class TestCompanyMapper {
 
+	@Autowired
 	private CompanyMapper companyMapper;
 	
 	@Before
 	public void setUp() throws Exception {
-		companyMapper = new CompanyMapper();
 	}
 
 	@After

@@ -39,7 +39,7 @@ import com.excilys.cdb.persistence.util.DaoRequestParameter.Order;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/spring-context-test.xml"})
+@ContextConfiguration(locations = {"classpath:/application-context-test.xml"})
 public class TestCompanyDao {
 
 	private Connection connection;
@@ -56,8 +56,7 @@ public class TestCompanyDao {
 		properties.load(in);
 		in.close();
 		connection = DriverManager.getConnection(
-				properties.getProperty("url"),
-				properties);
+				properties.getProperty("url"),properties.getProperty("username"),properties.getProperty("password"));
 		statement = connection.createStatement();
 		
 		in = new BufferedReader(new FileReader("src/test/resources/schema.sql"));

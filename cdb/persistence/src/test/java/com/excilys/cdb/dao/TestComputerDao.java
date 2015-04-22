@@ -40,7 +40,7 @@ import com.excilys.cdb.persistence.util.DaoRequestParameter.Order;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/spring-context-test.xml"})
+@ContextConfiguration(locations={"classpath:/application-context-test.xml"})
 public class TestComputerDao {
 	
 	private Connection connection;
@@ -55,8 +55,7 @@ public class TestComputerDao {
 		properties.load(in);
 		in.close();
 		connection = DriverManager.getConnection(
-				properties.getProperty("url"),
-				properties);
+				properties.getProperty("url"),properties.getProperty("username"),properties.getProperty("password"));
 		statement = connection.createStatement();
 		
 		in = new BufferedReader(new FileReader("src/test/resources/schema.sql"));
@@ -112,7 +111,7 @@ public class TestComputerDao {
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
 		LinkedHashMap<String,Order> list = new LinkedHashMap<>();
-		list.put("name",Order.DESC);
+		list.put("computer.name",Order.DESC);
 		DaoRequestParameter param = new DaoRequestParameter (null,null,list,null,null);
 		ArrayList<Computer> result = (ArrayList<Computer>) dao.getAll(param);
 		
@@ -135,8 +134,8 @@ public class TestComputerDao {
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
 		LinkedHashMap<String,Order> list = new LinkedHashMap<>();
-		list.put("name",Order.DESC);
-		list.put("id",Order.ASC);
+		list.put("computer.name",Order.DESC);
+		list.put("computer.id",Order.ASC);
 		DaoRequestParameter param = new DaoRequestParameter (null,null,list,null,null);
 		ArrayList<Computer> result = (ArrayList<Computer>) dao.getAll(param);
 		
@@ -186,7 +185,7 @@ public class TestComputerDao {
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
 		LinkedHashMap<String,Order> list = new LinkedHashMap<>();
-		list.put("name",Order.DESC);
+		list.put("computer.name",Order.DESC);
 		DaoRequestParameter param = new DaoRequestParameter (null,null,list,4l,null);
 		ArrayList<Computer> result = (ArrayList<Computer>) dao.getSome(param);
 		
@@ -209,7 +208,7 @@ public class TestComputerDao {
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
 		LinkedHashMap<String,Order> list = new LinkedHashMap<>();
-		list.put("name",Order.DESC);
+		list.put("computer.name",Order.DESC);
 		DaoRequestParameter param = new DaoRequestParameter (null,null,list,4l,1l);
 		ArrayList<Computer> result = (ArrayList<Computer>) dao.getSome(param);
 		

@@ -15,27 +15,5 @@
 
 	<import resource="classpath*:application-context.xml" />
 	
-	<bean id="digestFilter"
-      class="org.springframework.security.web.authentication.www.DigestAuthenticationFilter">
-        <property name="userDetailsService" ref="userDetailsService" />
-        <property name="authenticationEntryPoint" ref="digestEntryPoint" />
-        <property name="passwordAlreadyEncoded" value="true" />
-    </bean>
-    <bean id="digestEntryPoint" 
-      class="org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint">
-        <property name="realmName" value="cdb" />
-		<property name="key" value="realmsalt" />
-    </bean>
-    
-    <security:http use-expressions="false" entry-point-ref="digestEntryPoint">
-	    <security:intercept-url pattern="/**" access="ROLE_USER" />
-	    <security:custom-filter ref="digestFilter" after="BASIC_AUTH_FILTER" />
-	</security:http>
-	
-	<bean id="userDetailsService"
-		 class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
-		 <property name="dataSource" ref="dataSource" />
- 	</bean>
-	
 </beans>
 

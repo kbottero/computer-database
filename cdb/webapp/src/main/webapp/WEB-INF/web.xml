@@ -21,9 +21,10 @@
 		<exception-type>java.lang.Exception</exception-type>
 		<location>/WEB-INF/views/500.html</location>
 	</error-page>
+	
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/application-context.xml</param-value>
+		<param-value>/WEB-INF/application-context.xml, /WEB-INF/security-context.xml</param-value>
 	</context-param>
 	
 	<servlet>

@@ -6,6 +6,7 @@
                 <div class="col-xs-8 col-xs-offset-2 box">
                     <h1><spring:message code="add.computer" text="add.computer" /></h1>
                     <form action="save" method="POST">
+                   		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/> 
                         <fieldset>
                             <div class="form-group">
                                 <label for="name"><spring:message code="computers.name.th" text="computers.name.th" /></label>

@@ -9,6 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -18,14 +19,14 @@ import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:/spring-context-test.xml"})
+@ContextConfiguration(locations={"classpath:/application-context-test.xml"})
 public class TestComputerMapper {
 
+	@Autowired
 	private ComputerMapper computerMapper;
 	
 	@Before
 	public void setUp() throws Exception {
-		computerMapper = new ComputerMapper();
 	}
 
 	@After
@@ -50,7 +51,7 @@ public class TestComputerMapper {
 	public void toDTOWithAllData() {
 		LocalDateTime localDateTime = LocalDateTime.now();
 		Computer computer = new Computer(1l,"Computer",localDateTime,localDateTime.plusDays(50),new Company (1l, "company"));
-		ComputerDTO computerDTO = new ComputerDTO(1l,"Computer",localDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE),localDateTime.plusDays(50).format(DateTimeFormatter.ISO_LOCAL_DATE),1l,"company");
+		ComputerDTO computerDTO = new ComputerDTO(1l,"Computer",localDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),localDateTime.plusDays(50).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),1l,"company");
 		assertEquals(computerDTO, computerMapper.toDTO(computer));
 	}
 
@@ -58,7 +59,7 @@ public class TestComputerMapper {
 	public void fromDTOWithAllData() {
 		LocalDateTime localDateTime = LocalDateTime.now();
 		Computer computer = new Computer(1l,"Computer",localDateTime,localDateTime.plusDays(50),new Company (1l, "company"));
-		ComputerDTO computerDTO = new ComputerDTO(1l,"Computer",localDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE),localDateTime.plusDays(50).format(DateTimeFormatter.ISO_LOCAL_DATE),1l,"company");
+		ComputerDTO computerDTO = new ComputerDTO(1l,"Computer",localDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),localDateTime.plusDays(50).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),1l,"company");
 		assertEquals(computer, computerMapper.fromDTO(computerDTO));
 	}
 }

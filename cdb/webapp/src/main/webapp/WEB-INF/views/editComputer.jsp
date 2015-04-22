@@ -8,8 +8,9 @@
                     </div>
                     <h1><spring:message code="edit.computer" text="edit.computer" /></h1>
 
-                    <form action="save" method="GET" id="formEditComputer">
+                    <form action="save" method="POST" id="formEditComputer">
                         <input type="hidden" name ="id" value="${computer.id}"/>
+           				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/> 
                         <fieldset>
                             <div class="form-group">
                                 <label for="name"><spring:message code="computers.name.th" text="computers.name.th" /></label>

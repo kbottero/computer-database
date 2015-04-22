@@ -32,11 +32,11 @@ public class Computer implements Serializable {
 	private String name;
 	
 	@Column(name="introduced")
-	@Type(type="com.excilys.cdb.mapper.date.LocalDateTimeUserType")
+	@Type(type="com.excilys.cdb.date.LocalDateTimeUserType")
 	private LocalDateTime introduced;
 	
 	@Column(name="discontinued")
-	@Type(type="com.excilys.cdb.mapper.date.LocalDateTimeUserType")
+	@Type(type="com.excilys.cdb.date.LocalDateTimeUserType")
 	private LocalDateTime discontinued;
 	
 	@ManyToOne

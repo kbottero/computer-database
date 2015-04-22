@@ -1,4 +1,4 @@
-package com.excilys.cdb.mapper.date;
+package com.excilys.cdb.date;
 
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;

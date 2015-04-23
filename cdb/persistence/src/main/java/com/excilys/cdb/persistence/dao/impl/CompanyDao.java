@@ -25,7 +25,6 @@ import com.excilys.cdb.persistence.util.DaoRequestParameter;
  * @author Kevin Bottero
  *
  */
-@Transactional
 @Repository("companyDao")
 @SuppressWarnings("unchecked")
 public class CompanyDao implements IDao<Company, Long>{

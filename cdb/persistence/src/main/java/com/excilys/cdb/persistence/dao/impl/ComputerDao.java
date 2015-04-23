@@ -29,7 +29,6 @@ import com.excilys.cdb.persistence.util.DaoRequestParameter;
  * @author Kevin Bottero
  *
  */
-@Transactional
 @Repository("computerDao")
 @SuppressWarnings("unchecked")
 public class ComputerDao  implements IDao<Computer, Long> {

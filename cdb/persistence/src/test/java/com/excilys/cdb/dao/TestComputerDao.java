@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
@@ -35,10 +36,10 @@ import com.excilys.cdb.persistence.util.DaoRequestParameter;
 import com.excilys.cdb.persistence.util.DaoRequestParameter.Order;
 
 /**
- * TODO: Complete with DbUnit
  * @author Kevin Bottero
  *
  */
+@Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/application-context-test.xml"})
 public class TestComputerDao {
@@ -329,7 +330,6 @@ public class TestComputerDao {
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
 		initDBWithBasicInfo(listComputer, listCompany);
-
 		dao.deleteByCompany(1l);
 		StringBuilder strg = new StringBuilder();
 		strg.append("SELECT * FROM computer WHERE company_id=1;");

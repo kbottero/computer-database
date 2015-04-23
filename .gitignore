@@ -1,5 +1,6 @@
 # Maven
 cdb/*/target
+cdb/target
 
 *.class
 

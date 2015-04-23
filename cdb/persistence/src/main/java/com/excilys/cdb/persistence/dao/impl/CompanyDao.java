@@ -13,7 +13,6 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.persistence.dao.IDao;
@@ -32,14 +31,14 @@ public class CompanyDao implements IDao<Company, Long>{
 	public CompanyDao() {};
 	
 	/** Primary Key.	 */
-	public static final String DEFAULT_ID = "id";
+	public static final String DEFAULT_ID = "company.id";
 
 	/** Map DB labels -> Model attributes. */
 	public static final HashMap<String,String> mapBDModel;
 	static {
 		mapBDModel = new HashMap<String,String>();
-		mapBDModel.put("id","id");
-		mapBDModel.put("name","name");
+		mapBDModel.put("id","company.id");
+		mapBDModel.put("name","company.name");
 	}
 	
 	@Autowired
@@ -52,14 +51,14 @@ public class CompanyDao implements IDao<Company, Long>{
 	
 	@Override
 	public List<Company> getAll(DaoRequestParameter param) throws DaoException {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class);
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class, "company");
 		addOrderByToRequest(criteria, param);
 		return criteria.list();
 	}
 
 	@Override
 	public Long getNb() throws DaoException {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class);
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class, "company");
 		Long nbElements = (Long) criteria.setProjection(Projections.rowCount()).uniqueResult();
 		if (nbElements == null) {
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT);
@@ -69,7 +68,7 @@ public class CompanyDao implements IDao<Company, Long>{
 	
 	@Override
 	public Long getNb(DaoRequestParameter param) throws DaoException {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class, "computer");
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class, "company");
 		addOrderByToRequest(criteria, param);
 		if (param.getNameLike() != null) {
 			try {
@@ -87,7 +86,7 @@ public class CompanyDao implements IDao<Company, Long>{
 	
 	@Override
 	public List<Company> getSome(DaoRequestParameter param) throws DaoException {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class);
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class, "company");
 		addOrderByToRequest(criteria, param);
 		if (param.getNameLike() != null) {
 			try {
@@ -121,7 +120,7 @@ public class CompanyDao implements IDao<Company, Long>{
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
 		Company comp=null;
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class);
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class, "company");
 		criteria.add(Restrictions.idEq(id));
 		comp = (Company) criteria.uniqueResult();
 		if (comp == null) {
@@ -186,6 +185,6 @@ public class CompanyDao implements IDao<Company, Long>{
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
 		
-		criteria.add( Restrictions.like("name", param.getNameLike()));
+		criteria.add( Restrictions.like("company.name", filter.toString()));
 	}
 }

@@ -7,8 +7,7 @@
             </h1>
             <div id="actions" class="form-horizontal">
                 <div class="pull-left">
-                    <form id="searchForm" action="#" method="GET" class="form-inline">
-
+                    <form id="searchForm" action="dashboard" method="GET" class="form-inline">
                         <input type="search" id="searchbox" name="search" class="form-control"
                          <c:if test="${page.search == null || page.search == ''}" >placeholder="<spring:message code="search.name" text="search.name" />"</c:if>
                          <c:if test="${page.search != ''}" >value="${page.search}"</c:if> />
@@ -16,18 +15,20 @@
                         class="btn btn-primary" />
                     </form>
                 </div>
-                <div class="pull-right">
-                    <a class="btn btn-success" id="addComputer" href="${pageContext.request.contextPath}/Computer/add"><spring:message code="add.computer" text="add.computer" /></a> 
-                    <a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();"><spring:message code="edit" text="edit" /></a>
-                </div>
+                <sec:authorize access="hasRole('ROLE_ADMIN')">
+	                <div class="pull-right">
+	                    <a class="btn btn-success" id="addComputer" href="${pageContext.request.contextPath}/Computer/add"><spring:message code="add.computer" text="add.computer" /></a> 
+	                    <a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();"><spring:message code="edit" text="edit" /></a>
+	                </div>
+                </sec:authorize>
             </div>
         </div>
 
-        <form id="deleteForm" action="${pageContext.request.contextPath}/Computer/delete" method="POST">
-            <input type="hidden" name="selection" value="">
-            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/> 
-        </form>
-
+        <sec:authorize access="hasRole('ROLE_ADMIN')">
+	        <form:form id="deleteForm" action="${pageContext.request.contextPath}/Computer/delete" method="POST">
+	            <input type="hidden" name="selection" value="">
+	        </form:form>
+		</sec:authorize>
         <div class="container" style="margin-top: 10px;">
             <table class="table table-striped table-bordered">
                 <thead>

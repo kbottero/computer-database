@@ -8,30 +8,33 @@
                     </div>
                     <h1><spring:message code="edit.computer" text="edit.computer" /></h1>
 
-                    <form action="save" method="POST" id="formEditComputer">
-                        <input type="hidden" name ="id" value="${computer.id}"/>
-           				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/> 
+                    <form:form action="saveEdit" method="POST" id="formEditComputer" commandName="computer">
+								<spring:message code="computers.name.th" var="computerName"/>
+								<spring:message code="date.format" var="dateFormat" />
+                        <form:hidden path="id"/>
                         <fieldset>
                             <div class="form-group">
-                                <label for="name"><spring:message code="computers.name.th" text="computers.name.th" /></label>
-                                <input type="text" class="form-control" name ="name" id="name" placeholder="Computer name" value="${computer.name}">
+                                <form:label path="name" for="name"><spring:message code="computers.name.th" text="computers.name.th" /></form:label>
+                                <form:errors path="name" cssClass="error" />
+                                <form:input path="name" type="text" cssClass="form-control" name="name" id="name" placeholder="${computerName}" ></form:input>
                             </div>
                             <div class="form-group">
-                                <label for="introduced"><spring:message code="introduced.date.th" text="introduced.date.th" /></label>
-                                <input type="date" class="form-control" name ="introduced" id="introduced" placeholder="dd/mm/yyyy" value="${computer.introduced}">
+                                <form:label path="introduced" for="introduced"><spring:message code="introduced.date.th" text="introduced.date.th" /></form:label>
+                                <form:errors path="introduced" cssClass="error" />
+                                <form:input path="introduced" type="date" cssClass="form-control" name="introduced" id="introduced" placeholder="${dateFormat}" ></form:input>
                             </div>
                             <div class="form-group">
-                                <label for="discontinued"><spring:message code="discontinued.date.th" text="discontinued.date.th" /></label>
-                                <input type="date" class="form-control" name ="discontinued" id="discontinued" placeholder="dd/mm/yyyy" value="${computer.discontinued}">
+                                <form:label path="discontinued" for="discontinued"><spring:message code="discontinued.date.th" text="discontinued.date.th" /></form:label>
+                                <form:errors path="discontinued" cssClass="error" />
+                                <form:input path="discontinued" cssClass="form-control" name="discontinued" id="discontinued" placeholder="${dateFormat}"></form:input>
                             </div>
                             <div class="form-group">
-                                <label for="companyId"><spring:message code="company.th" text="company.th" /></label>
-                                <select name ="companyId" class="form-control" id="companyId" >
-                                   	<option value="0" <c:if test="${computer.companyName == null}">selected</c:if>>--</option>
-                                    <c:forEach var="c" items="${companies}">
-                                    	<option value="${c.id}" <c:if test="${c.name == computer.companyName}">selected</c:if> >${c.name}</option>
-									</c:forEach>
-                                </select>
+                                <form:label path="companyId" for="companyId"><spring:message code="company.th" text="company.th" /></form:label>
+                                <form:errors path="companyId" cssClass="error" />
+                                <form:select path="companyId" name ="companyId" cssClass="form-control" id="companyId" >
+                                   	<form:option value="0" >--</form:option>
+									<form:options items="${companies}" itemValue="id"  itemLabel="name" />
+                                </form:select>
                             </div>            
                         </fieldset>
                         <div class="actions pull-right">
@@ -39,7 +42,7 @@
                             <spring:message code="or" text="or" />
                             <a href="${prev}" class="btn btn-default"><spring:message code="cancel" text="cancel" /></a>
                         </div>
-                    </form>
+                    </form:form>
                 </div>
             </div>
         </div>

@@ -24,7 +24,7 @@ import com.excilys.cdb.page.impl.CompanyPage;
 import com.excilys.cdb.page.impl.ComputerPage;
 import com.excilys.cdb.service.impl.CompaniesService;
 import com.excilys.cdb.service.impl.ComputersService;
-import com.excilys.cdb.validation.ValidatorDate;
+import com.excilys.cdb.validation.ValidatorLocalDateTime;
 
 public enum CliCommands {
 	
@@ -124,14 +124,14 @@ public enum CliCommands {
 				for (String strg : attrib) {
 					if ( strg.startsWith("introductionDate") ) {
 						attri = strg.substring(strg.indexOf('=')+1);
-						if (ValidatorDate.check(attri)) {
+						if (ValidatorLocalDateTime.check(attri)) {
 							introductionDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
 						} else {
 							invalidCommand(this);
 						}
 					} else if ( strg.startsWith("discontinuedDate") ) {
 						attri = strg.substring(strg.indexOf('=')+1);
-						if (ValidatorDate.check(attri)) {
+						if (ValidatorLocalDateTime.check(attri)) {
 							discontinuedDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
 						} else {
 							invalidCommand(this);
@@ -201,14 +201,14 @@ public enum CliCommands {
 				for (String strg : attrib) {
 					if ( strg.startsWith("introductionDate") ) {
 						attri = strg.substring(strg.indexOf('=')+1);
-						if (ValidatorDate.check(attri)) {
+						if (ValidatorLocalDateTime.check(attri)) {
 							introductionDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
 						} else {
 							invalidCommand(this);
 						}
 					} else if ( strg.startsWith("discontinuedDate") ) {
 						attri = strg.substring(strg.indexOf('=')+1);
-						if (ValidatorDate.check(attri)) {
+						if (ValidatorLocalDateTime.check(attri)) {
 							discontinuedDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
 						} else {
 							invalidCommand(this);

@@ -5,29 +5,32 @@
             <div class="row">
                 <div class="col-xs-8 col-xs-offset-2 box">
                     <h1><spring:message code="add.computer" text="add.computer" /></h1>
-                    <form action="save" method="POST">
-                   		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/> 
+                    <form:form action="add" method="POST" commandName="newComputer">
+								<spring:message code="computers.name.th" var="computerName"/>
+								<spring:message code="date.format" var="dateFormat" />
                         <fieldset>
                             <div class="form-group">
-                                <label for="name"><spring:message code="computers.name.th" text="computers.name.th" /></label>
-                                <input type="text" class="form-control" name="name" id="name" placeholder="Computer name">
+                                <form:label path="name" for="name"><spring:message code="computers.name.th" text="computers.name.th" /></form:label>
+                                <form:errors path="name" cssClass="error" />
+                                <form:input path="name" type="text" cssClass="form-control" name="name" id="name" placeholder="${computerName}"/>
                             </div>
                             <div class="form-group">
-                                <label for="introduced"><spring:message code="introduced.date.th" text="introduced.date.th" /></label>
-                                <input type="date" class="form-control" name="introduced" id="introduced" placeholder="dd/mm/yyyy">
+                                <form:label path="introduced" for="introduced"><spring:message code="introduced.date.th" text="introduced.date.th" /></form:label>
+                                <form:errors path="introduced" cssClass="error" />
+                                <form:input path="introduced" type="date" cssClass="form-control" name="introduced" id="introduced" placeholder="${dateFormat}" />
                             </div>
                             <div class="form-group">
-                                <label for="discontinued"><spring:message code="discontinued.date.th" text="discontinued.date.th" /></label>
-                                <input type="date" class="form-control" name="discontinued" id="discontinued" placeholder="dd/mm/yyyy">
+                                <form:label path="discontinued" for="discontinued"><spring:message code="discontinued.date.th" text="discontinued.date.th" /></form:label>
+                                <form:errors path="discontinued" cssClass="error" />
+                                <form:input path="discontinued" type="date" cssClass="form-control" name="discontinued" id="discontinued" placeholder="${dateFormat}"/>
                             </div>
                             <div class="form-group">
-                                <label for="companyId"><spring:message code="company.th" text="company.th" /></label>
-                                <select class="form-control" name="companyId" id="companyId" >
-                                  	<option value="0" selected>--</option>
-                                    <c:forEach var="c" items="${companies}">
-                                    	<option value="${c.id}">${c.name}</option>
-									</c:forEach>
-                                </select>
+                                <form:label path="companyId" for="companyId"><spring:message code="company.th" text="company.th" /></form:label>
+                                <form:errors path="companyId" cssClass="error" />
+                               	<form:select path="companyId" name ="companyId" cssClass="form-control" id="companyId" >
+                                   	<form:option value="0" >--</form:option>
+									<form:options items="${companies}" itemValue="id" itemLabel="name" />
+                                </form:select>
                             </div>                  
                         </fieldset>
                         <div class="actions pull-right">
@@ -35,7 +38,7 @@
                             <spring:message code="or" text="or" />
                             <a href="${prev}" class="btn btn-default"><spring:message code="cancel" text="cancel" /></a>
                         </div>
-                    </form>
+                    </form:form>
                 </div>
             </div>
         </div>

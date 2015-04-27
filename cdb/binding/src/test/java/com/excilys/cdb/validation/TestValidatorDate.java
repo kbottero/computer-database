@@ -33,7 +33,7 @@ public class TestValidatorDate {
 	}
 
 	/**
-	 * Test method for {@link com.excilys.cdb.validation.ValidatorDate#validateDate(java.lang.String)}.
+	 * Test method for {@link com.excilys.cdb.validation.ValidatorLocalDateTime#validateDate(java.lang.String)}.
 	 */
 	@Test
 	public void testValidateDate() {
@@ -60,7 +60,7 @@ public class TestValidatorDate {
 		testList.put("2000-12-31",true);
 		
 		for (Map.Entry<String,Boolean> entry : testList.entrySet()) {
-			assertEquals(entry.getKey() + " => " + entry.getValue(),ValidatorDate.check(entry.getKey()),entry.getValue());
+			assertEquals(entry.getKey() + " => " + entry.getValue(),ValidatorLocalDateTime.check(entry.getKey()),entry.getValue());
 		}
 		
 	}

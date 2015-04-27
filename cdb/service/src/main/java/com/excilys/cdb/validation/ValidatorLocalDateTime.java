@@ -3,7 +3,7 @@ package com.excilys.cdb.validation;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ValidatorDate {
+public class ValidatorLocalDateTime {
 	/**
 	 * Date validator
 	 * @param date

@@ -8,7 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,12 +39,14 @@ public class ComputerController {
 	private IMapper<Computer,ComputerDTO> computerMapper;
 	@Autowired
 	private IMapper<Company, CompanyDTO> companyMapper;
+	@Autowired
+	MessageSource messageSource; 
 
 	@RequestMapping(value="/edit", method = {RequestMethod.GET,RequestMethod.POST})
-	protected ModelAndView edit(HttpServletRequest request, @RequestParam(value="id", required=true) final String idComputer) {
+	protected ModelAndView edit(@RequestParam(value="id", required=true) final String idComputer, HttpServletRequest request) {
 		ModelAndView model = new ModelAndView("editComputer");
 		if (idComputer != null) {
-			if (! Pattern.matches("-?\\d+",idComputer.trim())) { 
+			if (!Pattern.matches("-?\\d+",idComputer.trim())) { 
 				return new ModelAndView("redirect:/dashboard");
 			}
 			Long id = Long.parseLong(idComputer);
@@ -54,19 +59,23 @@ public class ComputerController {
 		return model;
 	}
 	
-	@RequestMapping(value="/add",method = {RequestMethod.GET,RequestMethod.POST})
-	protected ModelAndView addComputer(HttpServletRequest request) {
-		ModelAndView model = new ModelAndView("addComputer");
+	@RequestMapping(value="/add",method = {RequestMethod.GET})
+	protected String addComputer(@ModelAttribute("newComputer") ComputerDTO computerDTO, HttpServletRequest request, Model model) {
 		List<CompanyDTO> listCompany = companyMapper.toDTOList(companiesService.getAll());
-		model.addObject("companies", listCompany);
-		model.addObject("prev", request.getHeader("Referer"));
-		return model;
+		model.addAttribute("companies", listCompany);
+		model.addAttribute("prev", request.getHeader("Referer"));
+		return "addComputer";
 	}
 	
-	@RequestMapping(value="/save", method = {RequestMethod.GET,RequestMethod.POST})
+	@RequestMapping(value="/add", method = {RequestMethod.POST})
     @ExceptionHandler(NoSuchRequestHandlingMethodException.class)
-	protected String save(@Valid @ModelAttribute("computerDto") ComputerDTO computerDto) throws IOException {
-		computersService.saveOne(computerMapper.fromDTO(computerDto));
+	protected String saveAdd(@Valid @ModelAttribute("newComputer") ComputerDTO computerDto, BindingResult bindingResult, Model model) throws IOException {
+		if (bindingResult.hasErrors()) {
+	        return "addComputer";
+	    }
+
+		final Computer computer = computerMapper.fromDTO(computerDto);
+		computersService.saveOne(computer);
 		return "redirect:/dashboard";
 	}
 	

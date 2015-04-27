@@ -3,7 +3,8 @@ package com.excilys.cdb.dto;
 import java.io.Serializable;
 
 import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.format.annotation.DateTimeFormat;
+
+import com.excilys.cdb.validation.date.DateAnnotation;
 
 public class ComputerDTO implements Serializable {
 	
@@ -11,13 +12,12 @@ public class ComputerDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
 	private Long id;
 	@NotEmpty
 	private String name;
-	@DateTimeFormat(pattern="yyyy-MM-dd")
+	@DateAnnotation
 	private String introduced;
-	@DateTimeFormat(pattern="yyyy-MM-dd")
+	@DateAnnotation
 	private String discontinued;
 	private Long  companyId;
 	private String companyName;

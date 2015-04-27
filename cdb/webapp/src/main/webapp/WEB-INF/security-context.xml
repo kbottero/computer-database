@@ -6,8 +6,6 @@
 		http://www.springframework.org/schema/security
 		http://www.springframework.org/schema/security/spring-security.xsd">
 	
-	<beans:import resource="classpath*:persistence-context.xml" />
-	
 	<beans:bean id="digestFilter"
       class="org.springframework.security.web.authentication.www.DigestAuthenticationFilter">
         <beans:property name="userDetailsService" ref="userDetailsService" />
@@ -17,12 +15,21 @@
     <beans:bean id="digestEntryPoint" 
       class="org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint">
         <beans:property name="realmName" value="cdb" />
-		<beans:property name="key" value="realmsalt" />
+		<beans:property name="key" value="realm" />
     </beans:bean>
     
     <http use-expressions="false" entry-point-ref="digestEntryPoint">
-	    <intercept-url pattern="/**" access="ROLE_USER" />
+	    <intercept-url pattern="/index.jsp" access="ROLE_USER,ROLE_ADMIN" />
+	    <intercept-url pattern="/dashboard" access="ROLE_USER,ROLE_ADMIN" />
+	    <intercept-url pattern="/perform_logout" access="ROLE_USER,ROLE_ADMIN" />
+	    <intercept-url pattern="/js/**" access="ROLE_USER,ROLE_ADMIN" />
+	    <intercept-url pattern="/css/**" access="ROLE_USER,ROLE_ADMIN" />
+	    <intercept-url pattern="/**" access="ROLE_ADMIN" />
 	    <custom-filter ref="digestFilter" after="BASIC_AUTH_FILTER" />
+		<logout
+		    logout-success-url="/dashboard"
+		    logout-url="/perform_logout" 
+		    delete-cookies="JSESSIONID" />
 	</http>
 	
 	<beans:bean id="userDetailsService"
@@ -30,5 +37,7 @@
 		 <beans:property name="dataSource" ref="dataSource" />
  	</beans:bean>
 
-
+ 	<beans:bean id="webexpressionHandler" 
+ 		class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler" />
+ 	
 </beans:beans>

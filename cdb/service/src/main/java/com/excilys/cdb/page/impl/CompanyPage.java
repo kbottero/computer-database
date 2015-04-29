@@ -11,7 +11,6 @@ public class CompanyPage extends Page<Company, Long> {
 	protected IService<Company,Long> companiesService;
 	
 	private List<Company> elements;
-
 	
 	public CompanyPage(IService<Company,Long> companiesService, Integer nbElemPerPage) {
 		super(nbElemPerPage);

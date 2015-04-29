@@ -53,14 +53,9 @@ public class Company implements Serializable {
 
 	@Override
 	public String toString() {
-		StringBuilder strgBuil = new StringBuilder();
-		strgBuil.append(name);
-		strgBuil.append("(id:");
-		strgBuil.append(id);
-		strgBuil.append(")");
-		return strgBuil.toString();
+		return "Company [id=" + id + ", name=" + name + "]";
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

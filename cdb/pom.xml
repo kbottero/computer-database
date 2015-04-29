@@ -48,8 +48,6 @@
 		<commons-logging.version>99-empty</commons-logging.version>
 		<slf4j.version>1.7.12</slf4j.version>
 		<logback.version>1.1.2</logback.version>
-		<!-- JACKSON -->
-		<jackson-mapper-asl.version>1.9.13</jackson-mapper-asl.version>
 	</properties>
 	
 	<repositories>
@@ -310,6 +308,11 @@
 			<!-- JAX-RS -->
 			<dependency>
 				<groupId>com.sun.jersey</groupId>
+				<artifactId>jersey-client</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.jersey</groupId>
 				<artifactId>jersey-server</artifactId>
 				<version>${jersey.version}</version>
 			</dependency>
@@ -345,11 +348,10 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-			<!-- JACKSON -->
 			<dependency>
-				<groupId>org.codehaus.jackson</groupId>
-				<artifactId>jackson-mapper-asl</artifactId>
-				<version>${jackson-mapper-asl.version}</version>
+				<groupId>com.sun.jersey</groupId>
+				<artifactId>jersey-json</artifactId>
+				<version>${jersey.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -1,10 +1,5 @@
 package com.excilys.cdb.date;
 
-import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
-import org.hibernate.type.StandardBasicTypes;
-import org.hibernate.usertype.EnhancedUserType;
-
 import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,14 +8,22 @@ import java.sql.Types;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+
+import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.type.StandardBasicTypes;
+import org.hibernate.usertype.EnhancedUserType;
 /**
  * As LocalDateTime is not handle by hibernate as Serializable Object.
  * @from http://blog.progs.be/550/java-time-hibernate
  * @author joachim
  *
  */
-public class LocalDateTimeUserType implements EnhancedUserType, Serializable {
+public class LocalDateTimeUserType extends XmlAdapter<String, LocalDateTime> implements EnhancedUserType, Serializable {
  
     /**
 	 * 
@@ -123,5 +126,15 @@ public class LocalDateTimeUserType implements EnhancedUserType, Serializable {
     public Object fromXMLString(String string) {
         return LocalDateTime.parse(string);
     }
+
+	@Override
+	public LocalDateTime unmarshal(String v) throws Exception {
+        return LocalDateTime.parse(v, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+	}
+
+	@Override
+	public String marshal(LocalDateTime v) throws Exception {
+        return DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").format(v);
+	}
  
 }

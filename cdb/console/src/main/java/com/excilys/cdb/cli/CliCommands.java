@@ -5,223 +5,258 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import com.excilys.cdb.dto.CompanyDTO;
 import com.excilys.cdb.dto.ComputerDTO;
-import com.excilys.cdb.mapper.model.impl.CompanyMapper;
-import com.excilys.cdb.mapper.model.impl.ComputerMapper;
+import com.excilys.cdb.mapper.model.IMapper;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.page.Page;
 import com.excilys.cdb.page.impl.CompanyPage;
 import com.excilys.cdb.page.impl.ComputerPage;
-import com.excilys.cdb.service.impl.CompaniesService;
-import com.excilys.cdb.service.impl.ComputersService;
+import com.excilys.cdb.service.IService;
 import com.excilys.cdb.validation.ValidatorLocalDateTime;
 
-public enum CliCommands {
+@Component
+public class CliCommands {
+	
+	@Autowired
+	private IService<Computer,Long> computersService;
+	@Autowired
+	private IService<Company,Long> companiesService;
+	@Autowired
+	private IMapper<Computer,ComputerDTO> computerMapper;
+	@Autowired
+	private IMapper<Company,CompanyDTO>  companyMapper;
+	
+	private static String invalidCommand = "Invalid Command";
+	private static String pages = "pages";
+	public static String prompt = ">";
+	public static String quitPages = "q";
+	
+	public enum Commands {
+		LIST_COMPUTERS ("list_computers"),
+		LIST_COMPANIES ("list_companies"),
+		SHOW ("show_details"),
+		UPDATE ("update"),
+		CREATE ("create"),
+		DELETE_COMPUTER ("delete_computer"),
+		DELETE_COMPANY ("delete_company"),
+		HELP ("help"),
+		QUIT ("quit");
+		
+		private final String label;
+
+		private static Map<String,Commands> listCommands;
+		static {
+			listCommands = new HashMap<String,Commands>();
+			for (Commands cliCom : Commands.values()) {
+					listCommands.put(cliCom.getLabel(), cliCom);
+			}
+		}
+		
+		Commands(String label) {
+	        this.label = label;
+	    }
+		
+		public String getLabel() {
+			return label;
+		}
+	}
 	
 	/**
 	 * Command to display computers. Can display all of them or page by page.
 	 */
-	LIST_COMPUTERS ("list_computers") {
-		@Override
-		public void execute(Scanner s) {
-			String keyWord;
-			if (s.hasNext()) {
-				keyWord = s.next();
-				if (keyWord.equals(pages)) {
-					listComputersPage(s);
-				} else {
-					invalidCommand(this);
-				}
+	public void listComputer(Scanner s) {
+		String keyWord;
+		if (s.hasNext()) {
+			keyWord = s.next();
+			if (keyWord.equals(pages)) {
+				listComputersPage(s);
 			} else {
-				listComputers();
+				invalidCommand(Commands.LIST_COMPUTERS);
+			}
+		} else {
+			listComputers();
+		}
+	}
+	public static String getHelp(Commands c) {
+		switch (c) {
+		case LIST_COMPUTERS :
+			return c.getLabel()+" [pages [nbLinePerPages]]";
+		
+		case LIST_COMPANIES :
+			return  c.getLabel()+" [pages [nbLinePerPages]]";
+		
+		case SHOW :
+			return  c.getLabel()+" id";
+			
+		case UPDATE :	
+			return  c.getLabel()+" id [name=new_name] [introductionDate=yyyy-MM-dd] [discontinuedDate=yyyy-MM-dd] [company_id=new_company_id]";
+		
+		case CREATE:	
+			return c.getLabel()+" name [introductionDate=yyyy-MM-dd] [discontinuedDate=yyyy-MM-dd] [company_id=new_company_id]";
+			
+		case DELETE_COMPUTER:
+			return c.getLabel()+" id";
+			
+		case DELETE_COMPANY:
+			return c.getLabel()+" id";
+			
+		case HELP :
+			return "help : return list of commands";
+			
+		case QUIT:
+			return "quit";
+		
+		default:
+			StringBuilder strgBuild = new StringBuilder();
+			strgBuild.append("Help : list commands");
+			for (Commands commands : Commands.values()) {
+				strgBuild.append(getHelp(commands));
+			}
+			return strgBuild.toString();
+		}
+	}
+
+	public Commands getCommands(Scanner s) {
+		if (s.hasNext()) {
+			String comm = s.next();
+			if (! comm.isEmpty()) {
+				Commands com = Commands.listCommands.get(comm);
+				if (com != null) {
+					switch (com) {
+					case LIST_COMPUTERS :
+						listComputer(s);
+					break;
+					case LIST_COMPANIES :
+						listCompanies(s);
+					break;
+					case SHOW :
+						show(s);
+					break;
+					case UPDATE :
+						update(s);
+					break;
+					case CREATE:
+						create(s);
+					break;
+					case DELETE_COMPUTER:
+						deleteComputer(s);
+					break;
+					case DELETE_COMPANY:
+						deleteCompany(s);
+					break;
+					case HELP :
+						help();
+					break;
+					case QUIT:
+					break;
+					default:
+						help();
+					break;
+					}
+					return com;
+				}
 			}
 		}
-		@Override
-		public String getHelp() {
-			return this.getLabel()+" [pages [nbLinePerPages]]";
-		}
-	},
+		return Commands.HELP;
+	}
+
 	/**
 	 * Command to display companies. Can display all of them or page by page.
 	 */
-	LIST_COMPANIES ("list_companies") {
-		@Override
-		public void execute(Scanner s) {
-			String keyWord;
-			if (s.hasNext()) {
-				keyWord = s.next();
-				if (keyWord.equals(pages)) {
-					listCompaniesPage(s);
-				} else {
-					invalidCommand(this);
-				}
+	public void listCompanies (Scanner s) {
+		String keyWord;
+		if (s.hasNext()) {
+			keyWord = s.next();
+			if (keyWord.equals(pages)) {
+				listCompaniesPage(s);
 			} else {
-				listCompanies();
+				invalidCommand(Commands.LIST_COMPANIES);
 			}
+		} else {
+			listCompanies();
 		}
-		@Override
-		public String getHelp() {
-			return  this.getLabel()+" [pages [nbLinePerPages]]";
-		}
-	},
+	}
+	
 	/**
 	 * Print data on one computer.
 	 */
-	SHOW ("show_details") {
-		@Override
-		public void execute(Scanner s) {
-			if (s.hasNext()) {
-				long id = s.nextLong();
-				Computer computer = computersService.getOne(id);
-				if (computer != null) {
-					printComputer(computerMapper.toDTO(computer));
-				} else {
-					System.out.println("This id does not refer to any computer");
-				}
+	public void show(Scanner s) {
+		if (s.hasNext()) {
+			long id = s.nextLong();
+			Computer computer = computersService.getOne(id);
+			if (computer != null) {
+				printComputer(computerMapper.toDTO(computer));
 			} else {
-				invalidCommand(this);
+				System.out.println("This id does not refer to any computer");
 			}
-			
+		} else {
+			invalidCommand(Commands.SHOW);
 		}
-		@Override
-		public String getHelp() {
-			return  this.getLabel()+" id";
-		}
-	},
+	}
+	
 	/**
 	 * Update one computers.
 	 */
-	UPDATE ("update") {
-		@Override
-		public void execute(Scanner s) {
-			Computer computer;
-			Long id;
-			Long company_id = null;
-			String name = null;
-			LocalDateTime introductionDate = null;
-			LocalDateTime discontinuedDate = null;
-			
-			if (s.hasNext()) {
-				id = s.nextLong();
-			} else {
-				invalidCommand(this);
-				return;
-			}
-			
-			if (s.hasNext()) {
-				String attri = s.nextLine();
-				String[] attrib = attri.trim().split(" ");
-				for (String strg : attrib) {
-					if ( strg.startsWith("introductionDate") ) {
-						attri = strg.substring(strg.indexOf('=')+1);
-						if (ValidatorLocalDateTime.check(attri)) {
-							introductionDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
-						} else {
-							invalidCommand(this);
-						}
-					} else if ( strg.startsWith("discontinuedDate") ) {
-						attri = strg.substring(strg.indexOf('=')+1);
-						if (ValidatorLocalDateTime.check(attri)) {
-							discontinuedDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
-						} else {
-							invalidCommand(this);
-						}
-					} else if ( strg.startsWith("name") ) {
-						name = strg.substring(strg.indexOf('=')+1);
-					} else if ( strg.startsWith("company_id") ) {
-						company_id = Long.valueOf(strg.substring(strg.indexOf('=')+1));
-					} else {
-						invalidCommand(this);
-						return;
-					}
-				}
-			}
-
-			computer = computersService.getOne(id);
-			
-			if (computer != null) {
-				if (name != null) {
-					computer.setName(name);
-				}
-				if (introductionDate != null) {
-					computer.setIntroductionDate(introductionDate);
-				}
-				if (discontinuedDate != null) {
-					computer.setDiscontinuedDate(discontinuedDate);
-				}
-				if (company_id != null) {
-					computer.setConstructor(companiesService.getOne(company_id));
-				}
-			} else {
-				invalidCommand(this);
-				return;
-			}
-			
-			computersService.saveOne(computer);
+	public void update(Scanner s) {
+		Computer computer;
+		Long id;
+		Long company_id = null;
+		String name = null;
+		LocalDateTime introductionDate = null;
+		LocalDateTime discontinuedDate = null;
+		
+		if (s.hasNext()) {
+			id = s.nextLong();
+		} else {
+			invalidCommand(Commands.UPDATE);
+			return;
 		}
-		@Override
-		public String getHelp() {
-			return  this.getLabel()+" id [name=new_name] [introductionDate=yyyy-MM-dd] [discontinuedDate=yyyy-MM-dd] [company_id=new_company_id]";
-		}
-	},
-	/**
-	 * Create one computers.
-	 */
-	CREATE ("create") {
-		@Override
-		public void execute(Scanner s) {
-			Computer computer;
-			String name;
-			Long company_id = null;
-			LocalDateTime introductionDate = null;
-			LocalDateTime discontinuedDate = null;
-
-			if (s.hasNext()) {
-				name = s.next();
-			} else {
-				System.out.println(invalidCommand);
-				return;
-			}
-			
-			computer = new Computer(-1,name);
-			
-			if (s.hasNext()) {
-				String attri = s.nextLine();
-				String[] attrib = attri.trim().split(" ");
-				for (String strg : attrib) {
-					if ( strg.startsWith("introductionDate") ) {
-						attri = strg.substring(strg.indexOf('=')+1);
-						if (ValidatorLocalDateTime.check(attri)) {
-							introductionDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
-						} else {
-							invalidCommand(this);
-						}
-					} else if ( strg.startsWith("discontinuedDate") ) {
-						attri = strg.substring(strg.indexOf('=')+1);
-						if (ValidatorLocalDateTime.check(attri)) {
-							discontinuedDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
-						} else {
-							invalidCommand(this);
-						}
-					} else if ( strg.startsWith("company_id") ) {
-						company_id = Long.valueOf(strg.substring(strg.indexOf('=')+1));
+		
+		if (s.hasNext()) {
+			String attri = s.nextLine();
+			String[] attrib = attri.trim().split(" ");
+			for (String strg : attrib) {
+				if ( strg.startsWith("introductionDate") ) {
+					attri = strg.substring(strg.indexOf('=')+1);
+					if (ValidatorLocalDateTime.check(attri)) {
+						introductionDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
 					} else {
-						invalidCommand(this);
-						return;
+						invalidCommand(Commands.UPDATE);
 					}
+				} else if ( strg.startsWith("discontinuedDate") ) {
+					attri = strg.substring(strg.indexOf('=')+1);
+					if (ValidatorLocalDateTime.check(attri)) {
+						discontinuedDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
+					} else {
+						invalidCommand(Commands.UPDATE);
+					}
+				} else if ( strg.startsWith("name") ) {
+					name = strg.substring(strg.indexOf('=')+1);
+				} else if ( strg.startsWith("company_id") ) {
+					company_id = Long.valueOf(strg.substring(strg.indexOf('=')+1));
+				} else {
+					invalidCommand(Commands.UPDATE);
+					return;
 				}
 			}
-			
+		}
+
+		computer = computersService.getOne(id);
+		
+		if (computer != null) {
+			if (name != null) {
+				computer.setName(name);
+			}
 			if (introductionDate != null) {
 				computer.setIntroductionDate(introductionDate);
 			}
@@ -231,132 +266,104 @@ public enum CliCommands {
 			if (company_id != null) {
 				computer.setConstructor(companiesService.getOne(company_id));
 			}
-			computersService.saveOne(computer);
-			if (computer.getId() != -1) {
-				System.out.println("Computer created. Id = "+computer.getId());
-			}
+		} else {
+			invalidCommand(Commands.UPDATE);
+			return;
 		}
-		@Override
-		public String getHelp() {
-			return this.getLabel()+" name [introductionDate=yyyy-MM-dd] [discontinuedDate=yyyy-MM-dd] [company_id=new_company_id]";
-		}
-	},
-	/**
-	 * Delete one computers.
-	 */
-	DELETE_COMPUTER ("delete_computer") {
-		@Override
-		public void execute(Scanner s) {
-			if (s.hasNext()) {
-				long id = s.nextLong();
-				computersService.deleteOne(id);
-			} else {
-				invalidCommand(this);
-			}
-		}
-		@Override
-		public String getHelp() {
-			return this.getLabel()+" id";
-		}
-	},
-	/**
-	 * Delete one company.
-	 */
-	DELETE_COMPANY("delete_company") {
-		@Override
-		public void execute(Scanner s) {
-			if (s.hasNext()) {
-				long id = s.nextLong();
-				companiesService.deleteOne(id);
-			} else {
-				invalidCommand(this);
-			}
-		}
-		@Override
-		public String getHelp() {
-			return this.getLabel()+" id";
-		}
-	},
-	/**
-	 * List all the existing commands.
-	 */
-	HELP ("help") {
-		@Override
-		public void execute(Scanner s) {
-			System.out.println("Help : list commands");
-			for (CliCommands commands : CliCommands.values()) {
-				System.out.println(commands.getHelp());
-			}
-		}
-		@Override
-		public String getHelp() {
-			return "help : return list of commands";
-		}
-	},
-	/**
-	 * Command to quit the CLI
-	 */
-	QUIT ("quit") {
-		@Override
-		public void execute(Scanner s) {
 		
-		}
-		@Override
-		public String getHelp() {
-			return this.getLabel();
-		}
-	};
+		computersService.saveOne(computer);
+	}
 	
-	private final String label;
+	/**
+	 * Create one computers.
+	 */
+	public void create(Scanner s) {
+		Computer computer;
+		String name;
+		Long company_id = null;
+		LocalDateTime introductionDate = null;
+		LocalDateTime discontinuedDate = null;
 
-	private static ComputersService computersService;
-	private static CompaniesService companiesService;
-	private static ComputerMapper computerMapper;
-	private static CompanyMapper companyMapper;
-	private static String invalidCommand = "Invalid Command";
-	private static String pages = "pages";
-	public static String prompt = ">";
-	public static String quitPages = "q";
-	
-	private static Map<String,CliCommands> listCommands;
-	static {
-		listCommands = new HashMap<String,CliCommands>();
-		for (CliCommands cliCom : CliCommands.values()) {
-				listCommands.put(cliCom.getLabel(), cliCom);
-		}
-		@SuppressWarnings("resource")
-		ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
-		computersService = (ComputersService) context.getBean("computersService");
-		companiesService = (CompaniesService) context.getBean("companiesService");
-		computerMapper = (ComputerMapper) context.getBean("computerMapper");
-		companyMapper = (CompanyMapper) context.getBean("companyMapper");
-	}
-	
-	CliCommands(String label) {
-        this.label = label;
-    }
-	
-	public String getLabel() {
-		return label;
-	}
-	
-	public String getHelp() {
-		return this.name();
-	}
-	
-	public abstract void execute(Scanner s);
-	
-	public static CliCommands getCommands(Scanner s) {
 		if (s.hasNext()) {
-			String comm = s.next();
-			if (! comm.isEmpty()) {
-				CliCommands com = listCommands.get(comm);
-				if (com != null) {
-					return com;
+			name = s.next();
+		} else {
+			System.out.println(invalidCommand);
+			return;
+		}
+		
+		computer = new Computer(-1,name);
+		
+		if (s.hasNext()) {
+			String attri = s.nextLine();
+			String[] attrib = attri.trim().split(" ");
+			for (String strg : attrib) {
+				if ( strg.startsWith("introductionDate") ) {
+					attri = strg.substring(strg.indexOf('=')+1);
+					if (ValidatorLocalDateTime.check(attri)) {
+						introductionDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
+					} else {
+						invalidCommand(Commands.CREATE);
+					}
+				} else if ( strg.startsWith("discontinuedDate") ) {
+					attri = strg.substring(strg.indexOf('=')+1);
+					if (ValidatorLocalDateTime.check(attri)) {
+						discontinuedDate = LocalDateTime.parse(attri+"T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
+					} else {
+						invalidCommand(Commands.CREATE);
+					}
+				} else if ( strg.startsWith("company_id") ) {
+					company_id = Long.valueOf(strg.substring(strg.indexOf('=')+1));
+				} else {
+					invalidCommand(Commands.CREATE);
+					return;
 				}
 			}
 		}
-		return CliCommands.HELP;
+		
+		if (introductionDate != null) {
+			computer.setIntroductionDate(introductionDate);
+		}
+		if (discontinuedDate != null) {
+			computer.setDiscontinuedDate(discontinuedDate);
+		}
+		if (company_id != null) {
+			computer.setConstructor(companiesService.getOne(company_id));
+		}
+		computersService.saveOne(computer);
+		if (computer.getId() != -1) {
+			System.out.println("Computer created. Id = "+computer.getId());
+		}
+	}
+	/**
+	 * Delete one computers.
+	 */
+	public void deleteComputer(Scanner s) {
+		if (s.hasNext()) {
+			long id = s.nextLong();
+			computersService.deleteOne(id);
+		} else {
+			invalidCommand(Commands.DELETE_COMPUTER);
+		}
+	}
+	/**
+	 * Delete one company.
+	 */
+	public void deleteCompany(Scanner s) {
+		if (s.hasNext()) {
+			long id = s.nextLong();
+			companiesService.deleteOne(id);
+		} else {
+			invalidCommand(Commands.DELETE_COMPANY);
+		}
+	}
+	/**
+	 * List all the existing commands.
+	 */
+	public static void help() {
+		System.out.println("Help : list commands");
+		for (Commands commands : Commands.values()) {
+			System.out.println(getHelp(commands));
+		}
 	}
 
 	/**
@@ -388,35 +395,33 @@ public enum CliCommands {
 		strBuild.append(c.getName());
 		System.out.println(strBuild.toString());
 	}
-	
 
 	/**
 	 * Display the list of computers within the Database
 	 */
-	private static void listComputers() {
-		ArrayList<Computer> list = new ArrayList<Computer>();
-		list = (ArrayList<Computer>) computersService.getAll();
-		for (Computer computer : list) {
-			printComputer(computerMapper.toDTO(computer));
+	private void listComputers() {
+		RestTemplate restTemplate = new RestTemplate();
+		ComputerDTO[] arrayComputerDTOs = restTemplate.getForObject("http://localhost:8080/cdb/rest/Computer/getAll", ComputerDTO[].class);
+		for (ComputerDTO computer : arrayComputerDTOs) {
+			printComputer(computer);
 		}
 	}
 
 	/**
 	 * Display the list of companies within the Database
 	 */
-	private static void listCompanies() {
-		ArrayList<Company> list = new ArrayList<Company>();
-		list = (ArrayList<Company>) companiesService.getAll();
-		for (Company company : list) {
-			printCompany(companyMapper.toDTO(company));
+	private void listCompanies() {
+		RestTemplate restTemplate = new RestTemplate();
+		CompanyDTO[] arrayCompanyDTOs = restTemplate.getForObject("http://localhost:8080/cdb/rest/Company/getAll", CompanyDTO[].class);
+		for (CompanyDTO company : arrayCompanyDTOs) {
+			printCompany(company);
 		}
 	}
 
 	/**
-	 * Display page by page the list of computers within the Database,
-	 * 
+	 * Display page by page the list of computers within the Database
 	 */
-	private static void listComputersPage(Scanner s) {
+	private void listComputersPage(Scanner s) {
 		Page<Computer, Long> page;
 		if (s.hasNext()) {
 			Integer nbLine = s.nextInt();
@@ -454,7 +459,7 @@ public enum CliCommands {
 	 * Display page by page the list of companies within the Database,
 	 * @param s Current Scanner value
 	 */
-	private static void listCompaniesPage(Scanner s) {
+	private void listCompaniesPage(Scanner s) {
 		Page<Company, Long> page;
 		if (s.hasNext()) {
 			Integer nbLine = s.nextInt();
@@ -492,16 +497,16 @@ public enum CliCommands {
 	 * Display a message relative to an invalid command.
 	 * @param comm
 	 */
-	private static void invalidCommand(CliCommands comm) {
+	private void invalidCommand(Commands comm) {
 		System.out.print(invalidCommand);
 		System.out.print(" : ");
-		System.out.println(comm.getHelp());
+		System.out.println(getHelp(comm));
 	}
 	
 	/**
 	 * Print information related to the current page
 	 */
-	private static void printEndOfPage (Page<?,?> page) {
+	private void printEndOfPage (Page<?,?> page) {
 		StringBuilder stgBuild = new StringBuilder();
 		stgBuild.append("Page ");
 		stgBuild.append(page.getPageNumber());

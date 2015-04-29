@@ -35,7 +35,7 @@ public class Computer implements Serializable {
 	@Type(type="com.excilys.cdb.date.LocalDateTimeUserType")
 	private LocalDateTime introduced;
 	
-	@Column(name="discontinued")
+	@Column(name="discontinued") 
 	@Type(type="com.excilys.cdb.date.LocalDateTimeUserType")
 	private LocalDateTime discontinued;
 	
@@ -105,35 +105,6 @@ public class Computer implements Serializable {
 	}
 
 	@Override
-	public String toString() {
-		StringBuilder str = new StringBuilder();
-		str.append("id:");
-		str.append(id);
-		str.append(":");
-		str.append(name);
-		str.append(" [");
-		if (constructor!=null) {
-			str.append(constructor);
-		}
-		if (introduced!=null) {
-			if (constructor!=null) {
-				str.append(",");
-			}
-			str.append(introduced);
-		}
-		if (discontinued!=null) {
-			if (introduced!=null) {
-				str.append("/");
-			} else {
-				str.append(",");
-			}
-			str.append(discontinued);
-		}
-		str.append("]");
-		return  str.toString();
-	}
-
-	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -153,6 +124,13 @@ public class Computer implements Serializable {
 		if (id != other.id)
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Computer [id=" + id + ", name=" + name + ", introduced="
+				+ introduced + ", discontinued=" + discontinued
+				+ ", constructor=" + constructor + "]";
 	}
 
 

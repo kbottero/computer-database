@@ -83,11 +83,11 @@ public class ComputerController {
 	protected String delete(@RequestParam(value="selection", required=true) final String[] selection) {
 		if (selection != null) {
 		    for (String ids : selection) {
-		    		String[] num = ids.split(",");
-		    		for (String id : num) {
-						Long idValue = Long.parseLong(id);
-						computersService.deleteOne(idValue);
-		    		}
+	    		String[] num = ids.split(",");
+	    		for (String id : num) {
+					Long idValue = Long.parseLong(id);
+					computersService.deleteOne(idValue);
+	    		}
 		    }
 		}
 		return "redirect:/dashboard";

@@ -18,6 +18,7 @@
 
 	<properties>
 		<mavenCompiler.version>3.1</mavenCompiler.version>
+		<maven-war-plugin.version>2.6</maven-war-plugin.version>
 		<java.version>1.8</java.version>
 		<servlet.version>3.0.1</servlet.version>
 		<!-- Validation -->
@@ -40,6 +41,8 @@
 		<!-- Jax-RS -->
 		<jersey.version>1.19</jersey.version>
 		<jersey-spring.version>1.19</jersey-spring.version>
+		<!-- Jackson -->
+		<jersey-media-json-jackson.version>2.17</jersey-media-json-jackson.version>
 		<!-- Test -->
 		<junit.version>4.11</junit.version>
 		<mockito.version>1.9.5</mockito.version>
@@ -85,7 +88,6 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
 	<dependencyManagement>
 		<dependencies>
 			<!-- MODULE -->
@@ -353,10 +355,22 @@
 				<artifactId>jersey-json</artifactId>
 				<version>${jersey.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.media</groupId>
+				<artifactId>jersey-media-json-jackson</artifactId>
+				<version>${jersey-media-json-jackson.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<build>
-		<finalName>cdb</finalName>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>${maven-war-plugin.version}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>

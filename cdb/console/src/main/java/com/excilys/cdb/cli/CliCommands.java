@@ -36,6 +36,8 @@ public class CliCommands {
 	@Autowired
 	private IMapper<Company,CompanyDTO>  companyMapper;
 	
+	private static final String SERVER_URL = "http://localhost:8080/webservice/rest/";
+	
 	private static String invalidCommand = "Invalid Command";
 	private static String pages = "pages";
 	public static String prompt = ">";
@@ -87,6 +89,7 @@ public class CliCommands {
 			listComputers();
 		}
 	}
+	
 	public static String getHelp(Commands c) {
 		switch (c) {
 		case LIST_COMPUTERS :
@@ -137,7 +140,7 @@ public class CliCommands {
 						listComputer(s);
 					break;
 					case LIST_COMPANIES :
-						listCompanies(s);
+						listCompany(s);
 					break;
 					case SHOW :
 						show(s);
@@ -173,7 +176,7 @@ public class CliCommands {
 	/**
 	 * Command to display companies. Can display all of them or page by page.
 	 */
-	public void listCompanies (Scanner s) {
+	public void listCompany (Scanner s) {
 		String keyWord;
 		if (s.hasNext()) {
 			keyWord = s.next();
@@ -401,7 +404,7 @@ public class CliCommands {
 	 */
 	private void listComputers() {
 		RestTemplate restTemplate = new RestTemplate();
-		ComputerDTO[] arrayComputerDTOs = restTemplate.getForObject("http://localhost:8080/cdb/rest/Computer/getAll", ComputerDTO[].class);
+		ComputerDTO[] arrayComputerDTOs = restTemplate.getForObject(SERVER_URL+"Computer/get/all", ComputerDTO[].class);
 		for (ComputerDTO computer : arrayComputerDTOs) {
 			printComputer(computer);
 		}
@@ -412,7 +415,7 @@ public class CliCommands {
 	 */
 	private void listCompanies() {
 		RestTemplate restTemplate = new RestTemplate();
-		CompanyDTO[] arrayCompanyDTOs = restTemplate.getForObject("http://localhost:8080/cdb/rest/Company/getAll", CompanyDTO[].class);
+		CompanyDTO[] arrayCompanyDTOs = restTemplate.getForObject(SERVER_URL+"Company/get/all", CompanyDTO[].class);
 		for (CompanyDTO company : arrayCompanyDTOs) {
 			printCompany(company);
 		}

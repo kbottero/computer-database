@@ -30,7 +30,7 @@ public class ComputerWebService {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/getAll")
+	@Path("/get/all")
 	public List<ComputerDTO> getAll() {
 		return computerMapper.toDTOList(computersService.getAll());
 	}
@@ -38,19 +38,17 @@ public class ComputerWebService {
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/getAllPaged")
-	public Response getAll(Page<Computer, Long>  page) {
-		String output = computersService.getAll(page).toString();
-		return Response.status(200).entity(output).build();
+	@Path("/get/all/page")
+	public List<ComputerDTO> getAll(Page<Computer, Long>  page) {
+		return computerMapper.toDTOList(computersService.getAll(page));
 	}
 	
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/getSome")
-	public Response getSome(Page<Computer, Long>  page) {
-		String output = computersService.getSome(page).toString();
-		return Response.status(200).entity(output).build();
+	@Path("/get/page")
+	public List<ComputerDTO> getSome(Page<Computer, Long>  page) {
+		return computerMapper.toDTOList(computersService.getSome(page));
 	}
 	
 	@GET
@@ -59,28 +57,26 @@ public class ComputerWebService {
 	@Path("/save")
 	public Response saveOne(Computer computer) {
 		computersService.saveOne(computer);
-		return Response.status(200).build();
+		return Response.status(200).entity("Save").build();
 	}
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/getOne")
-	public Response getSome(@QueryParam("id") Long id) {
-		String output = computersService.getOne(id).toString();
-		return Response.status(200).entity(output).build();
+	@Path("/get/{id}")
+	public ComputerDTO getSome(@QueryParam("id") Long id) {
+		return computerMapper.toDTO(computersService.getOne(id));
 	}
 	
 	@GET
-	@Path("/NbComputer")
-	public Response getNbComputer() {
-		String output = computersService.getNbInstance().toString();
-		return Response.status(200).entity(output).build();
+	@Path("/nb")
+	public String getNbComputer() {
+		return computersService.getNbInstance().toString();
 	}
 	
 	@GET
 	@Path("/delete")
 	public Response delete(@QueryParam("id") Long id) {
 		computersService.deleteOne(id);
-		return Response.status(200).build();
+		return Response.status(200).entity("Delete").build();
 	}
 }

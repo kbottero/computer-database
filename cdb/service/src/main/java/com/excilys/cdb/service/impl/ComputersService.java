@@ -17,7 +17,7 @@ import com.excilys.cdb.service.IService;
 import com.excilys.cdb.validation.ValidatorComputer;
 
 @Service
-@Transactional
+@Transactional(readOnly=true)
 public class ComputersService implements IService<Computer,Long> {
 
 	@Autowired @Qualifier("computerDao")
@@ -39,7 +39,6 @@ public class ComputersService implements IService<Computer,Long> {
 	 * @return
 	 */
 	@Override
-	@Transactional(readOnly=true)
 	public List<Computer> getAll() {
 		return dao.getAll();
 	}
@@ -89,7 +88,7 @@ public class ComputersService implements IService<Computer,Long> {
 	 */
 	@Override
 	public Computer getOne(Long id) {
-			return dao.getById(id);
+		return dao.getById(id);
 	}
 
 	/**
@@ -115,7 +114,7 @@ public class ComputersService implements IService<Computer,Long> {
 	 * @return
 	 */
 	@Override
-	@Transactional(rollbackFor=RuntimeException.class)
+	@Transactional(readOnly=false,rollbackFor=RuntimeException.class)
 	public void deleteOne(Long id) throws ServiceException {
 		dao.delete(id);
 	}

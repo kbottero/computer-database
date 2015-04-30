@@ -75,4 +75,12 @@
 			<artifactId>jersey-json</artifactId>
 		</dependency>
 	</dependencies>
+	<build>
+		<finalName>cdbWebService</finalName>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 </project>

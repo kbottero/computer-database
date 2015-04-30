@@ -24,4 +24,9 @@
                 <spring:message code="application.name" text="application.name" />
             </a>
         </div>
+        <sec:authorize access="permitAll">
+			<form:form action="logout" method="post">
+				<input type="submit" class="btn btn-danger" value="Logout" />
+			</form:form>
+		</sec:authorize>
     </header>

@@ -11,25 +11,12 @@
 		<!-- MODULE -->
 		<dependency>
 			<groupId>${parent.groupId}</groupId>
-			<artifactId>core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${parent.groupId}</groupId>
-			<artifactId>persistence</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${parent.groupId}</groupId>
 			<artifactId>service</artifactId>
 		</dependency>
 		<!-- VALIDATION -->		
 		<dependency>
 		    <groupId>org.hibernate</groupId>
 		    <artifactId>hibernate-validator</artifactId>
-		</dependency>
-		<!-- HIBERNATE -->
-		<dependency>
-				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-entitymanager</artifactId>
 		</dependency>
 		<!-- SPRING -->
 		<dependency>

@@ -30,6 +30,8 @@ import com.excilys.cdb.service.IService;
 @Controller
 @RequestMapping("/Computer")
 public class ComputerController {
+	
+	public final static String SERVEUR_BASE_URL = "http://localhost:8080/cdb";
 
 	@Autowired
 	private IService<Computer,Long> computersService;
@@ -54,7 +56,11 @@ public class ComputerController {
 			model.addObject("computer", computer);
 			List<CompanyDTO> listCompany = companyMapper.toDTOList(companiesService.getAll());
 			model.addObject("companies", listCompany);
-			model.addObject("prev", request.getHeader("Referer"));
+			if (request.getHeader("Referer").contains("/Computer") ) {
+				model.addObject("prev", SERVEUR_BASE_URL);
+			} else {
+				model.addObject("prev", request.getHeader("Referer"));
+			}
 		}
 		return model;
 	}
@@ -72,6 +78,18 @@ public class ComputerController {
 	protected String saveAdd(@Valid @ModelAttribute("newComputer") ComputerDTO computerDto, BindingResult bindingResult, Model model) throws IOException {
 		if (bindingResult.hasErrors()) {
 	        return "addComputer";
+	    }
+
+		final Computer computer = computerMapper.fromDTO(computerDto);
+		computersService.saveOne(computer);
+		return "redirect:/dashboard";
+	}
+	
+	@RequestMapping(value="/addEdit", method = {RequestMethod.POST})
+    @ExceptionHandler(NoSuchRequestHandlingMethodException.class)
+	protected String saveEdit(@Valid @ModelAttribute("newComputer") ComputerDTO computerDto, BindingResult bindingResult, Model model) throws IOException {
+		if (bindingResult.hasErrors()) {
+			return "redirect:/dashboard";
 	    }
 
 		final Computer computer = computerMapper.fromDTO(computerDto);

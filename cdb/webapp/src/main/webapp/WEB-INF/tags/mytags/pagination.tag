@@ -11,7 +11,7 @@
 		<c:if test="${page != 1}">
 			<a href="<mylib:link target="dashboard" search="${requestScope.page.search}"
 			numPage="${requestScope.page.pageNumber - 1}" nbCompPerPage="${requestScope.page.nbElemPerPage}"
-			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}" language="fr"
+			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}"
 			/>" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
 	    </c:if>
 	</li>
@@ -19,7 +19,7 @@
 		<c:forEach var="i" begin="1" end="${pageCount}">
 			<li><a <c:if test="${page == i}">class="selectedLi"</c:if> href="<mylib:link target="dashboard" search="${requestScope.page.search}"
 			numPage="${i}" nbCompPerPage="${requestScope.page.nbElemPerPage}"
-			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}" language="fr"
+			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}"
 			/>">${i}</a></li>
 		</c:forEach>
 	</c:if>
@@ -28,66 +28,66 @@
 			<c:forEach var="i" begin="1" end="3">
 				<li><a <c:if test="${page == i}">class="selectedLi"</c:if> href="<mylib:link target="dashboard" search="${requestScope.page.search}"
 			numPage="${i}" nbCompPerPage="${requestScope.page.nbElemPerPage}"
-			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}" language="fr"
+			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}"
 			/>">${i}</a></li>
 			</c:forEach>
 			<c:if test="${pageCount - page < 3}">
 				<c:forEach var="i" begin="4" end="${pageCount}">
 					<li><a <c:if test="${page == i}">class="selectedLi"</c:if> href="<mylib:link target="dashboard" search="${requestScope.page.search}"
 			numPage="${i}" nbCompPerPage="${requestScope.page.nbElemPerPage}"
-			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}" language="fr"
+			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}"
 			/>">${i}</a></li>
 				</c:forEach>
 			</c:if>
 			<c:if test="${pageCount - page >= 3}">
 				<li><a href="<mylib:link target="dashboard" search="${requestScope.page.search}"
 			numPage="4" nbCompPerPage="${requestScope.page.nbElemPerPage}"
-			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}" language="fr"
+			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}"
 			/>">4</a></li>
 				<li><a href="#">...</a></li>
 				<li><a href="<mylib:link target="dashboard" search="${requestScope.page.search}"
 			numPage="${pageCount}" nbCompPerPage="${requestScope.page.nbElemPerPage}"
-			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}" language="fr"
+			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}"
 			/>">${pageCount}</a></li>
 			</c:if>
 		</c:if>
 		<c:if test="${page >= 4}">
 			<li><a href="<mylib:link target="dashboard" search="${requestScope.page.search}"
 			numPage="${1}" nbCompPerPage="${requestScope.page.nbElemPerPage}"
-			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}" language="fr"
+			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}"
 			/>">1</a></li>
 			<li><a href="#">...</a></li>
 			<c:if test="${pageCount - page <= 3}">
 				<c:if test="${pageCount == page}">
 					<li><a href="<mylib:link target="dashboard" search="${requestScope.page.search}"
 			numPage="${page - 2}" nbCompPerPage="${requestScope.page.nbElemPerPage}"
-			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}" language="fr"
+			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}"
 			/>">${page - 2}</a></li>
 				</c:if>
 				<c:forEach var="i" begin="${page-1}" end="${pageCount}">
 					<li><a <c:if test="${page == i}">class="selectedLi"</c:if> href="<mylib:link target="dashboard" search="${requestScope.page.search}"
 			numPage="${i}" nbCompPerPage="${requestScope.page.nbElemPerPage}"
-			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}" language="fr"
+			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}"
 			/>">${i}</a></li>
 				</c:forEach>
 			</c:if>
 			<c:if test="${pageCount - page > 3}">
 				<li><a href="<mylib:link target="dashboard" search="${requestScope.page.search}"
 			numPage="${page - 1}" nbCompPerPage="${requestScope.page.nbElemPerPage}"
-			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}" language="fr"
+			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}"
 			/>">${page - 1}</a></li>
 				<li><a  class="selectedLi" href="<mylib:link target="dashboard" search="${requestScope.page.search}"
 			numPage="${page}" nbCompPerPage="${requestScope.page.nbElemPerPage}"
-			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}" language="fr"
+			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}"
 			/>">${page}</a></li>
 				<li><a href="<mylib:link target="dashboard" search="${requestScope.page.search}"
 			numPage="${page + 1}" nbCompPerPage="${requestScope.page.nbElemPerPage}"
-			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}" language="fr"
+			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}"
 			/>">${page + 1}</a></li>
 				<li><a href="#">...</a></li>
 				<li><a href="<mylib:link target="dashboard" search="${requestScope.page.search}"
 			numPage="${pageCount}" nbCompPerPage="${requestScope.page.nbElemPerPage}"
-			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}" language="fr"
+			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}"
 			/>">${pageCount}</a></li>
 			</c:if>
 		</c:if>
@@ -96,7 +96,7 @@
 	<c:if test="${page != pageCount}">
     	<a href="<mylib:link target="dashboard" search="${requestScope.page.search}"
 			numPage="${requestScope.page.pageNumber + 1}" nbCompPerPage="${requestScope.page.nbElemPerPage}"
-			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}" language="fr"
+			sortColumn="${requestScope.order}" sortColumnOrder="${requestScope.direction}"
 			/>" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
     </c:if>
   </li>

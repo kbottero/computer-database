@@ -14,10 +14,6 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>binding</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>service</artifactId>
-		</dependency>
 		<!-- Spring 3 dependencies -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -76,7 +72,7 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>cdbWebService</finalName>
+		<finalName>webservice</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>

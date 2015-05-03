@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 
-public class ValidatorDate implements ConstraintValidator<DateAnnotation, String> {
+public class DateValidator implements ConstraintValidator<DateAnnotation, String> {
 	
 	@Autowired
 	private MessageSource messageSource;
@@ -21,8 +21,9 @@ public class ValidatorDate implements ConstraintValidator<DateAnnotation, String
 		if (value == null) {
 			return true;
 		}
-		return value.matches(messageSource.getMessage(
-				"date.format", null,
-				LocaleContextHolder.getLocale()));
+		String regex = messageSource.getMessage(
+				"date.pattern", null,
+				LocaleContextHolder.getLocale());
+		return value.matches(regex);
 	}
 }

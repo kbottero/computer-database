@@ -15,7 +15,7 @@ import com.excilys.cdb.persistence.dao.impl.ComputerDao;
 import com.excilys.cdb.service.IService;
 
 @Service
-@Transactional
+@Transactional(readOnly=true)
 public class CompaniesService implements IService<Company,Long>{
 
 	@Autowired @Qualifier("companyDao")

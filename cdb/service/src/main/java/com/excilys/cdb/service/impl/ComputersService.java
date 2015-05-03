@@ -97,6 +97,7 @@ public class ComputersService implements IService<Computer,Long> {
 	 * @return
 	 */
 	@Override
+	@Transactional(readOnly=false)
 	public void saveOne(Computer c) throws ServiceException {
 		if (!ValidatorComputer.check(c)) {
 			throw new ServiceException();

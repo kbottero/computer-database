@@ -16,36 +16,36 @@
 		<!-- SPRING -->
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-jdbc</artifactId>
+			<artifactId>spring-jdbc</artifactId> <!-- Handle the connection to the database -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-jpa</artifactId>
+			<artifactId>spring-data-jpa</artifactId> <!-- Allow the use of @Repository -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-tx</artifactId>
+			<artifactId>spring-tx</artifactId> <!-- Handle transaction in test (needed by Hibernate) -->
 			<scope>test</scope>
 		</dependency>
 		<!-- HIBERNATE -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
+			<artifactId>hibernate-core</artifactId> <!-- Allow the use of Criteria -->
 			<scope>test</scope>
 		</dependency>
 		<!-- BDD -->
 		<dependency>
 			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
+			<artifactId>mysql-connector-java</artifactId> <!-- MySQL Driver -->
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-dbcp2</artifactId>
+			<artifactId>commons-dbcp2</artifactId> <!-- Connection Pool -->
 		</dependency>
 		<dependency>
 			<groupId>cglib</groupId>
-			<artifactId>cglib</artifactId>
+			<artifactId>cglib</artifactId> <!-- Allow AOP operation -->
 		</dependency>
 		<!-- TEST -->
 		<dependency>

@@ -35,10 +35,6 @@ import com.excilys.cdb.persistence.dao.impl.ComputerDao;
 import com.excilys.cdb.persistence.util.DaoRequestParameter;
 import com.excilys.cdb.persistence.util.DaoRequestParameter.Order;
 
-/**
- * @author Kevin Bottero
- *
- */
 @Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/application-context-test.xml"})
@@ -56,7 +52,7 @@ public class TestComputerDao {
 		properties.load(in);
 		in.close();
 		connection = DriverManager.getConnection(
-				properties.getProperty("url"),properties.getProperty("username"),properties.getProperty("password"));
+				properties.getProperty("db.url"),properties.getProperty("db.username"),properties.getProperty("db.password"));
 		statement = connection.createStatement();
 		
 		in = new BufferedReader(new FileReader("src/test/resources/schema.sql"));

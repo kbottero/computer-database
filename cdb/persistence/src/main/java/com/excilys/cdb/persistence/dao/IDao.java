@@ -3,98 +3,89 @@ package com.excilys.cdb.persistence.dao;
 import java.io.Serializable;
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import com.excilys.cdb.persistence.exception.DaoException;
 import com.excilys.cdb.persistence.util.DaoRequestParameter;
 
-@Transactional
 public interface IDao <T, I extends Serializable> {
 	
 	/**
 	 * Return a List of the instances within the database.
-	 * @return
-	 * @throws DaoException
+	 * @return List of all instances
 	 */
-	public default List<T> getAll() throws DaoException {
+	public default List<T> getAll() {
 		throw new UnsupportedOperationException();
 	}
 	
 	/**
 	 * Return a List of the instances within the database.
-	 * Ordered according to the given columns in an ascending or descending manner.
+	 * Ordered according to the given parameters.
 	 * 
-	 * @param orderByCol 
-	 * 				Label(s) to base the ordering. Primary Key By default.
-	 * @param order 
-	 * 				ASCending or DESCending
-	 * @return		List<T>
-	 * @throws DaoException
+	 * @param param Parameters related to the research.
+	 * @return	List<T> of all instances that responds to the parameter of the research.
+	 * @throws DaoException if param is null or contains invalid values.
 	 */
-	public default List<T> getAll( DaoRequestParameter param)  throws DaoException {
+	public default List<T> getAll( DaoRequestParameter param) {
 		throw new UnsupportedOperationException();
 	}
 	
 	/**
 	 * Return the number of instances within the database.
 	 * @return
-	 * @throws DaoException
+	 * @throws DaoException if we can't count instances.
 	 */
-	public default Long getNb()  throws DaoException {
+	public default Long getNb() {
 		throw new UnsupportedOperationException();
 	}
 	
 	/**
 	 * Return the number of instances within the database.
-	 * @return
-	 * @throws DaoException
+	 * @return Number of instances
+	 * @throws DaoException if we can't count instances or param is null or contains invalid values.
 	 */
-	public default Long getNb( DaoRequestParameter param)  throws DaoException {
+	public default Long getNb( DaoRequestParameter param) {
 		throw new UnsupportedOperationException();
 	}
 	
 	/**
 	 * Return a specific instance base on the primary key that define it.
-	 * @param id
-	 * @return
-	 * @throws DaoException
+	 * An instance with the given id must exist in the database, otherwise
+	 * an exception is throw.
+	 * @param id of the researched instance
+	 * @return Instance with the given id. 
+	 * @throws DaoException id is null or invalid.
 	 */
-	public default T getById( I id)  throws DaoException {
+	public default T getById( I id) {
 		throw new UnsupportedOperationException();
 	}
 	
 	/**
 	 * Save an instance in the database.
-	 * @param id
-	 * @return
-	 * @throws DaoException
+	 * @param <T> Instance to save
+	 * @throws DaoException if the entities is not valid.
 	 */
-	public default void save( T c)  throws DaoException {
+	public default void save( T c) {
 		throw new UnsupportedOperationException();
 	}
 	
 	/**
 	 * Delete an instance from the database.
-	 * @param id
-	 * @return
-	 * @throws DaoException
+	 * @param id of the instance to delete
+	 * @throws DaoException if id is invalid or the entity can not be deleted.
 	 */
-	public default void delete( I id)  throws DaoException {
+	public default void delete( I id) {
 		throw new UnsupportedOperationException();
 	}
 
 	/**
 	 * Return a List of the instances within the database.
-	 * Instances should have an attribute name and result will be filtered according to the name given.
-	 * (every instance that begin with the given string)
-	 * Ordered according to the given columns. Limited to a given number. 
-	 * Ordered in an ascending or descending order.  With a given offset.
+	 * Instances should have an attribute name and result will be filtered according to the given parameters.
 	 * 
 	 * @param param
 	 * 				All the parameters related to the request.
-	 * @throws DaoException
+	 * @return List<T> of the instance that respond to the parameters
+	 * @throws DaoException if param is null or contains invalid values.
 	 */
-	public default List<T> getSome( DaoRequestParameter param) throws DaoException {
+	public default List<T> getSome( DaoRequestParameter param) {
 		throw new UnsupportedOperationException();
 	}
 }

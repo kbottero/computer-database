@@ -48,14 +48,14 @@
                         	<c:choose>
 	                        	<c:when test="${requestScope.page.sort!=null && requestScope.page.sort.getOrderFor('name')!=null && requestScope.page.sort.getOrderFor('name').getDirection().name()=='ASC'}" >
 									<a href="<mylib:link target="dashboard" search="${requestScope.page.search}"
-		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="name" language="fr"
+		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="name"
 		                        	sortColumnOrder="DESC"/>">
 		                            	<spring:message code="computers.name.th" text="computers.name.th" />
 		                            </a>
 	                        	</c:when>
 	                        	<c:otherwise>
 									<a href="<mylib:link target="dashboard" search="${requestScope.page.search}"
-		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="name" language="fr"
+		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="name"
 		                        	sortColumnOrder="ASC"/>">
 		                            	<spring:message code="computers.name.th" text="computers.name.th" />
 		                            </a>
@@ -66,14 +66,14 @@
                         	<c:choose>
 	                        	<c:when test="${requestScope.page.sort!=null && requestScope.page.sort.getOrderFor('introduced')!=null && requestScope.page.sort.getOrderFor('introduced').getDirection().name()=='ASC'}" >
 									<a href="<mylib:link target="dashboard" search="${requestScope.page.search}"
-		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="introduced" language="fr"
+		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="introduced"
 		                        	sortColumnOrder="DESC"/>">
                             			<spring:message code="introduced.date.th" text="introduced.date.th" />
 		                            </a>
 	                        	</c:when>
 	                        	<c:otherwise>
 									<a href="<mylib:link target="dashboard" search="${requestScope.page.search}"
-		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="introduced" language="fr"
+		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="introduced"
 		                        	sortColumnOrder="ASC"/>">
                             			<spring:message code="introduced.date.th" text="introduced.date.th" />
 		                            </a>
@@ -85,14 +85,14 @@
                         	<c:choose>
 	 	                       	<c:when test="${requestScope.page.sort!=null && requestScope.page.sort.getOrderFor('discontinued')!=null && requestScope.page.sort.getOrderFor('discontinued').getDirection().name()=='ASC'}" >
 									<a href="<mylib:link target="dashboard" search="${requestScope.page.search}"
-		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="discontinued" language="fr"
+		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="discontinued"
 		                        	sortColumnOrder="DESC"/>">
                             			<spring:message code="discontinued.date.th" text="discontinued.date.th" />
 		                            </a>
 	                        	</c:when>
 	                        	<c:otherwise>
 									<a href="<mylib:link target="dashboard" search="${requestScope.page.search}"
-		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="discontinued" language="fr"
+		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="discontinued"
 		                        	sortColumnOrder="ASC"/>">
                             			<spring:message code="discontinued.date.th" text="discontinued.date.th" />
 		                            </a>
@@ -104,14 +104,14 @@
                         	<c:choose>
 	 	                       	<c:when test="${requestScope.page.sort!=null && requestScope.page.sort.getOrderFor('constructor')!=null && requestScope.page.sort.getOrderFor('constructor').getDirection().name()=='ASC'}" >
 									<a href="<mylib:link target="dashboard" search="${requestScope.page.search}"
-		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="constructor" language="fr"
+		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="constructor"
 		                        	sortColumnOrder="DESC"/>">
                             			<spring:message code="company.th" text="company.th" />
 		                            </a>
 	                        	</c:when>
 	                        	<c:otherwise>
 									<a href="<mylib:link target="dashboard" search="${requestScope.page.search}"
-		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="constructor" language="fr"
+		                        	numPage="${1}" nbCompPerPage="${requestScope.page.pageSize}" sortColumn="constructor"
 		                        	sortColumnOrder="ASC"/>">
                             			<spring:message code="company.th" text="company.th" />
 		                            </a>

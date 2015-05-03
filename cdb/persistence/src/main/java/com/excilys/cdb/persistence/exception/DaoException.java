@@ -7,7 +7,7 @@ package com.excilys.cdb.persistence.exception;
  */
 public class DaoException extends RuntimeException{
 
-	private static final long serialVersionUID = 3930740027979797558L;
+	private static final long serialVersionUID = 1L;
 	
 	public static final String CAN_NOT_CREATE_CONNECTION = "can not create connection";
 	public static final String CAN_NOT_CREATE_STATEMENT = "can not create statement";

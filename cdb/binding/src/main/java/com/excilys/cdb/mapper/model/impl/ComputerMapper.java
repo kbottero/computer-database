@@ -1,7 +1,6 @@
 package com.excilys.cdb.mapper.model.impl;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,41 +12,16 @@ import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.service.IService;
 
-/**
- * Mapper for com.excilys.cdb.Model.Computer using java.sql.ResultSet
- * 
- * @author Kevin Bottero
- *
- */
 @Component
 public class ComputerMapper implements IMapper<Computer, ComputerDTO> {
-
-	/** Primary Key.	 */
-	public static final String DEFAULT_ID = "computer.id";
 
 	@Autowired
 	private LocalDateTimeMapper localDateTimeMapper;
 
 	@Autowired
-	private IService<Company,Long> companiesService;
-
-	/** Map DB labels -> Model attributes. */
-	public static final HashMap<String,String> mapBDModel;
-	static {
-		mapBDModel = new HashMap<String,String>();
-		mapBDModel.put("id","computer.id");
-		mapBDModel.put("name","computer.name");
-		mapBDModel.put("introduced","computer.introduced");
-		mapBDModel.put("discontinued","computer.discontinued");
-		mapBDModel.put("constructor","company.name");
-	}
+	private IService<Company,Long> companiesService;	
 	
-	/**
-	 * Create a ComputerDTO from a Computer.
-	 * @param computer
-	 * 				Data on the Computer
-	 * @return Created ComputerDTO instance
-	 */
+	@Override
 	public ComputerDTO toDTO(Computer computer) {
 		
 		String introductionDate = "";
@@ -79,12 +53,7 @@ public class ComputerMapper implements IMapper<Computer, ComputerDTO> {
 		return compDto;
 	}
 	
-	/**
-	 * Create a Computer from a ComputerDTO.
-	 * @param computerDTO
-	 * 				Data on the Computer
-	 * @return Created Computer instance
-	 */
+	@Override
 	public Computer fromDTO(ComputerDTO computerDTO) {
 		
 		LocalDateTime introductionDate = null;

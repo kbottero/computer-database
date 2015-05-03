@@ -9,11 +9,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
-
 /**
  * Handle conversion of date related to the language define in the local.
- * @author Kevin Bottero
- *
  */
 @Component
 public class LocalDateTimeMapper {

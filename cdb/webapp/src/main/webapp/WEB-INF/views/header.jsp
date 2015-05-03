@@ -24,6 +24,8 @@
                 <spring:message code="application.name" text="application.name" />
             </a>
         </div>
+        <a class="navbar-brand" href="dashboard.html?language=fr">fr</a>
+        <a class="navbar-brand" href="dashboard.html?language=en">en</a>
         <sec:authorize access="permitAll">
 			<form:form action="logout" method="post">
 				<input type="submit" class="btn btn-danger" value="Logout" />

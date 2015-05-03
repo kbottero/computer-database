@@ -5,5 +5,4 @@
 <%@ attribute name="nbCompPerPage" required="false" %>
 <%@ attribute name="sortColumn" required="false" %>
 <%@ attribute name="sortColumnOrder" required="false" %>
-<%@ attribute name="language" required="false" %>
-<c:url value="${target}?search=${search}&numPage=${numPage}&nbCompPerPage=${nbCompPerPage}&sortColumn=${sortColumn}&sortColumnOrder=${sortColumnOrder}&language=${language}" />
+<c:url value="${target}?search=${search}&numPage=${numPage}&nbCompPerPage=${nbCompPerPage}&sortColumn=${sortColumn}&sortColumnOrder=${sortColumnOrder}" />

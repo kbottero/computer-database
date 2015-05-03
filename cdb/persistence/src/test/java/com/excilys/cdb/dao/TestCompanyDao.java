@@ -31,13 +31,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.dao.impl.CompanyDao;
+import com.excilys.cdb.persistence.exception.DaoException;
 import com.excilys.cdb.persistence.util.DaoRequestParameter;
 import com.excilys.cdb.persistence.util.DaoRequestParameter.Order;
 
-/**
- * @author Kevin Bottero
- *
- */
+
 @Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/application-context-test.xml"})
@@ -57,7 +55,7 @@ public class TestCompanyDao {
 		properties.load(in);
 		in.close();
 		connection = DriverManager.getConnection(
-				properties.getProperty("url"),properties.getProperty("username"),properties.getProperty("password"));
+				properties.getProperty("db.url"),properties.getProperty("db.username"),properties.getProperty("db.password"));
 		statement = connection.createStatement();
 		
 		in = new BufferedReader(new FileReader("src/test/resources/schema.sql"));
@@ -100,7 +98,7 @@ public class TestCompanyDao {
 		dao.getAll();
 	}
 	
-	@Test(expected = NullPointerException.class)
+	@Test(expected = DaoException.class)
 	public void getAllWithNullParam() throws Exception {
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
@@ -155,7 +153,7 @@ public class TestCompanyDao {
 		}
 	}
 	
-	@Test(expected = NullPointerException.class)
+	@Test(expected = DaoException.class)
 	public void getSomeWithNullParameter() throws Exception {
 		dao.getSome(null);
 	}

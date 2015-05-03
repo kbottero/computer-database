@@ -11,6 +11,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -25,15 +27,12 @@ import com.excilys.cdb.persistence.util.DaoRequestParameter;
  *
  */
 @Repository("companyDao")
-@SuppressWarnings("unchecked")
 public class CompanyDao implements IDao<Company, Long>{
 	
-	public CompanyDao() {};
-	
-	/** Primary Key.	 */
+	/* Primary Key.	 */
 	public static final String DEFAULT_ID = "company.id";
 
-	/** Map DB labels -> Model attributes. */
+	/*Associate an attribute to a column label in the database*/
 	public static final HashMap<String,String> mapBDModel;
 	static {
 		mapBDModel = new HashMap<String,String>();
@@ -43,62 +42,87 @@ public class CompanyDao implements IDao<Company, Long>{
 	
 	@Autowired
 	private SessionFactory sessionFactory;
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(Company.class);
+	
+	public CompanyDao() {};
 
 	@Override
-	public List<Company> getAll() throws DaoException {
+	@SuppressWarnings("unchecked")
+	public List<Company> getAll() {
 		return sessionFactory.getCurrentSession().createCriteria(Company.class).list();
 	}
 	
 	@Override
-	public List<Company> getAll(DaoRequestParameter param) throws DaoException {
+	public List<Company> getAll(DaoRequestParameter param) {
+		if (param == null) {
+			LOGGER.error("Parameter is null");
+			throw new DaoException(DaoException.INVALID_ARGUMENT);
+		}
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class, "company");
 		addOrderByToRequest(criteria, param);
-		return criteria.list();
+		@SuppressWarnings("unchecked")
+		List<Company> list = criteria.list();
+		return list;
 	}
 
 	@Override
-	public Long getNb() throws DaoException {
+	public Long getNb() {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class, "company");
 		Long nbElements = (Long) criteria.setProjection(Projections.rowCount()).uniqueResult();
 		if (nbElements == null) {
+			LOGGER.error("Can't get nb company");
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT);
 		}
 		return nbElements;
 	}
 	
 	@Override
-	public Long getNb(DaoRequestParameter param) throws DaoException {
+	public Long getNb(DaoRequestParameter param) {
+		if (param == null) {
+			LOGGER.error("Parameter is null");
+			throw new DaoException(DaoException.INVALID_ARGUMENT);
+		}
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class, "company");
 		addOrderByToRequest(criteria, param);
 		if (param.getNameLike() != null) {
 			try {
 				setWhenCondition (criteria, param);
 			} catch (SQLException e) {
+				LOGGER.error("Error adding restriction to the request.");
 				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			}
 		}
 		Long nbElements = (Long) criteria.setProjection(Projections.rowCount()).uniqueResult();
 		if (nbElements == null) {
+			LOGGER.error("Can't get nb computer");
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT);
 		}
 		return nbElements;
 	}
 	
 	@Override
-	public List<Company> getSome(DaoRequestParameter param) throws DaoException {
+	public List<Company> getSome(DaoRequestParameter param) {
+		if (param == null) {
+			LOGGER.error("Parameter is null");
+			throw new DaoException(DaoException.INVALID_ARGUMENT);
+		}
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Company.class, "company");
 		addOrderByToRequest(criteria, param);
 		if (param.getNameLike() != null) {
 			try {
 				setWhenCondition (criteria, param);
 			} catch (SQLException e) {
+				LOGGER.error("Error adding restriction to the request.");
 				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			}
 		}
 		if (param.getLimit() == null) {
+			LOGGER.error("Parameter limit argument is null");
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		} else {
 			if (param.getLimit() < 0) {
+				LOGGER.error("Parameter limit argument null or negative");
 				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			} else {
 				criteria.setMaxResults(param.getLimit().intValue()); 
@@ -106,17 +130,21 @@ public class CompanyDao implements IDao<Company, Long>{
 		}
 		if (param.getOffset() != null) {
 			if (param.getOffset() < 0) {
+				LOGGER.error("Parameter offset argument is null");
 				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			} else {
 				criteria.setFirstResult(param.getOffset().intValue()); 
 			}
 		}
-		return criteria.list();
+		@SuppressWarnings("unchecked")
+		List<Company> list = criteria.list();
+		return list;
 	}
 
 	@Override
-	public Company getById(Long id) throws DaoException {
+	public Company getById(Long id) {
 		if (id == null) {
+			LOGGER.error("Id is null");
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
 		Company comp=null;
@@ -124,20 +152,22 @@ public class CompanyDao implements IDao<Company, Long>{
 		criteria.add(Restrictions.idEq(id));
 		comp = (Company) criteria.uniqueResult();
 		if (comp == null) {
+			LOGGER.error("Can't get company with id="+id);
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT);
 		}
 		return comp;
 	}
 	
 	@Override
-	public void delete(Long id)  throws DaoException {
+	public void delete(Long id)  {
 		if (id == null) {
-			throw new IllegalArgumentException();
+			LOGGER.error("Id is null");
+			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
 		sessionFactory.getCurrentSession().delete(this.getById(id));
 	}
 	
-	public void addOrderByToRequest(Criteria criteria, DaoRequestParameter param) throws DaoException {
+	private void addOrderByToRequest(Criteria criteria, DaoRequestParameter param) {
 		if ((param.getOrders() == null) || (param.getOrders().size() == 0)) {
 			criteria.addOrder(Order.asc(DEFAULT_ID).nulls(NullPrecedence.LAST));
 		} else {
@@ -152,6 +182,7 @@ public class CompanyDao implements IDao<Company, Long>{
 						order = Order.desc(mapBDModel.get(e.getKey())).nulls(NullPrecedence.LAST);
 						break;
 					default:
+						LOGGER.error("Unknown value for Order enumerate.");
 						throw new DaoException(DaoException.INVALID_ARGUMENT);
 					}
 					criteria.addOrder(order);
@@ -162,7 +193,7 @@ public class CompanyDao implements IDao<Company, Long>{
 		}
 	}
 	
-	public void setWhenCondition (Criteria criteria, DaoRequestParameter param) throws SQLException {
+	private void setWhenCondition (Criteria criteria, DaoRequestParameter param) throws SQLException {
 		StringBuilder filter = new StringBuilder();
 		switch (param.getNameFiltering()) {
 		case POST:
@@ -182,6 +213,7 @@ public class CompanyDao implements IDao<Company, Long>{
 			filter.append(param.getNameLike());
 			break;
 		default:
+			LOGGER.error("Unknown value for NameFiltering enumerate.");
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
 		

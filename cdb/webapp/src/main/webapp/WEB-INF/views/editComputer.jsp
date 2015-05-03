@@ -8,7 +8,7 @@
                     </div>
                     <h1><spring:message code="edit.computer" text="edit.computer" /></h1>
 
-                    <form:form action="saveEdit" method="POST" id="formEditComputer" commandName="computer">
+                    <form:form action="addEdit" method="POST" id="formEditComputer" commandName="computer">
 								<spring:message code="computers.name.th" var="computerName"/>
 								<spring:message code="date.format" var="dateFormat" />
                         <form:hidden path="id"/>

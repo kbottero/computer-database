@@ -8,10 +8,7 @@ import java.sql.Types;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
-
-import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
@@ -23,11 +20,8 @@ import org.hibernate.usertype.EnhancedUserType;
  * @author joachim
  *
  */
-public class LocalDateTimeUserType extends XmlAdapter<String, LocalDateTime> implements EnhancedUserType, Serializable {
+public class LocalDateTimeUserType implements EnhancedUserType, Serializable {
  
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private static final int[] SQL_TYPES = new int[]{Types.TIMESTAMP};
@@ -126,15 +120,4 @@ public class LocalDateTimeUserType extends XmlAdapter<String, LocalDateTime> imp
     public Object fromXMLString(String string) {
         return LocalDateTime.parse(string);
     }
-
-	@Override
-	public LocalDateTime unmarshal(String v) throws Exception {
-        return LocalDateTime.parse(v, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
-	}
-
-	@Override
-	public String marshal(LocalDateTime v) throws Exception {
-        return DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").format(v);
-	}
- 
 }

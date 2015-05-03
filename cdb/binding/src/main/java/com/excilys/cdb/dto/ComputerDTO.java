@@ -8,9 +8,6 @@ import com.excilys.cdb.validation.date.DateAnnotation;
 
 public class ComputerDTO implements Serializable {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private Long id;
 	@NotEmpty
@@ -134,6 +131,4 @@ public class ComputerDTO implements Serializable {
 			return false;
 		return true;
 	}
-
-	
 }

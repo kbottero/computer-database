@@ -18,10 +18,7 @@ import org.hibernate.annotations.Type;
 @Entity
 @Table(name="computer")
 public class Computer implements Serializable {
-	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -32,10 +29,12 @@ public class Computer implements Serializable {
 	private String name;
 	
 	@Column(name="introduced")
-	@Type(type="com.excilys.cdb.date.LocalDateTimeUserType")
+	//Needed as long as Hibernate doesn't support LocalDateTime serialization
+	@Type(type="com.excilys.cdb.date.LocalDateTimeUserType") 
 	private LocalDateTime introduced;
 	
 	@Column(name="discontinued") 
+	//Needed as long as Hibernate doesn't support LocalDateTime serialization
 	@Type(type="com.excilys.cdb.date.LocalDateTimeUserType")
 	private LocalDateTime discontinued;
 	

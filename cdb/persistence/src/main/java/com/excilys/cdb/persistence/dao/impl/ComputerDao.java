@@ -1,7 +1,6 @@
 package com.excilys.cdb.persistence.dao.impl;
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,8 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -29,11 +30,12 @@ import com.excilys.cdb.persistence.util.DaoRequestParameter;
  *
  */
 @Repository("computerDao")
-@SuppressWarnings("unchecked")
 public class ComputerDao  implements IDao<Computer, Long> {
 
+	/*Primary key*/
 	public static final String DEFAULT_ID = "computer.id";
 	
+	/*Associate an attribute to a column label in the database*/
 	public static final HashMap<String,String> mapBDModel;
 	static {
 		mapBDModel = new HashMap<String,String>();
@@ -47,33 +49,43 @@ public class ComputerDao  implements IDao<Computer, Long> {
 	@Autowired
 	private SessionFactory sessionFactory;
 	
+	private static final Logger LOGGER = LoggerFactory.getLogger(ComputerDao.class);
+	
 	@Override
-	public List<Computer> getAll() throws DaoException {
+	@SuppressWarnings("unchecked")
+	public List<Computer> getAll() {
 		return sessionFactory.getCurrentSession().createCriteria(Computer.class).list();
 
 	}
 
 	@Override
-	public List<Computer> getAll(DaoRequestParameter param) throws DaoException {
+	@SuppressWarnings("unchecked")
+	public List<Computer> getAll(DaoRequestParameter param) {
+		if (param == null) {
+			LOGGER.error("Parameter is null");
+			throw new DaoException(DaoException.INVALID_ARGUMENT);
+		}
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Computer.class, "computer");
 		addOrderByToRequest(criteria, param);
 		return criteria.list();
 	}
 
 	@Override
-	public Long getNb() throws DaoException {
+	public Long getNb() {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Computer.class);
 		Long nbElements = (Long) criteria.setProjection(Projections.rowCount()).uniqueResult();
 		if (nbElements == null) {
+			LOGGER.error("Can't get nb computer");
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT);
 		}
 		return nbElements;
 	}
 	
 	@Override
-	public Long getNb(DaoRequestParameter param) throws DaoException {
+	public Long getNb(DaoRequestParameter param) {
 		if (param == null) {
-			return getNb();
+			LOGGER.error("Can't get nb computer");
+			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Computer.class, "computer");
 		criteria.createCriteria("constructor", "company", JoinType.LEFT_OUTER_JOIN);
@@ -82,33 +94,41 @@ public class ComputerDao  implements IDao<Computer, Long> {
 			try {
 				setWhenCondition (criteria, param);
 			} catch (SQLException e) {
+				LOGGER.error("Error adding restriction to the request.");
 				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			}
 		}
 		Long nbElements = (Long) criteria.setProjection(Projections.rowCount()).uniqueResult();
 		if (nbElements == null) {
+			LOGGER.error("Can't get nb computer");
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT);
 		}
 		return nbElements;
 	}
 
 	@Override
-	public List<Computer> getSome(DaoRequestParameter param) throws DaoException {
-
+	public List<Computer> getSome(DaoRequestParameter param) {
+		if (param == null) {
+			LOGGER.error("Parameter is null");
+			throw new DaoException(DaoException.INVALID_ARGUMENT);
+		}
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Computer.class, "computer");
 		criteria.createCriteria("constructor", "company", JoinType.LEFT_OUTER_JOIN);
 		if (param.getNameLike() != null) {
 			try {
 				setWhenCondition (criteria, param);
 			} catch (SQLException e) {
+				LOGGER.error("Error adding restriction to the request.");
 				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			}	
 		}
 		addOrderByToRequest(criteria, param);
 		if (param.getLimit() == null) {
+			LOGGER.error("Parameter limit argument is null");
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		} else {
 			if (param.getLimit() < 0) {
+				LOGGER.error("Parameter limit argument null or negative");
 				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			} else {
 				criteria.setMaxResults(param.getLimit().intValue()); 
@@ -116,17 +136,21 @@ public class ComputerDao  implements IDao<Computer, Long> {
 		}
 		if (param.getOffset() != null) {
 			if (param.getOffset() < 0) {
+				LOGGER.error("Parameter offset argument is null");
 				throw new DaoException(DaoException.INVALID_ARGUMENT);
 			} else {
 				criteria.setFirstResult(param.getOffset().intValue()); 
 			}
 		}
-		return criteria.list();
+		@SuppressWarnings("unchecked")
+		List<Computer> list = criteria.list();
+		return list;
 	}
 
 	@Override
-	public Computer getById(Long id) throws DaoException {
+	public Computer getById(Long id) {
 		if (id == null) {
+			LOGGER.error("Id is null");
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
 		Computer comp;
@@ -134,14 +158,16 @@ public class ComputerDao  implements IDao<Computer, Long> {
 		criteria.add(Restrictions.idEq(id));
 		comp = (Computer) criteria.uniqueResult();
 		if (comp == null) {
+			LOGGER.error("Can't get computer with id="+id);
 			throw new DaoException(DaoException.CAN_NOT_GET_ELEMENT);
 		}
 		return comp;
 	}
 
 	@Override
-	public void save(Computer computer) throws DaoException {
+	public void save(Computer computer) {
 		if (computer == null) {
+			LOGGER.error("Computer is null");
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Computer.class);
@@ -158,26 +184,34 @@ public class ComputerDao  implements IDao<Computer, Long> {
 	}
 
 	@Override
-	public void delete(Long id) throws DaoException {
+	public void delete(Long id) {
 		if (id == null) {
-			throw new IllegalArgumentException();
+			LOGGER.error("Id is null");
+			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
 		sessionFactory.getCurrentSession().delete(this.getById(id));
 	}
-	
-	public void deleteByCompany(Long companyId) throws DaoException {
+
+	/**
+	 * Delete all computer build by the company with the given id.
+	 * @param companyId
+	 * @throws DaoException if the id in null.
+	 */
+	public void deleteByCompany(Long companyId) {
 		if (companyId == null) {
-			throw new IllegalArgumentException();
+			LOGGER.error("Company id is null");
+			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
 		Criteria cr = sessionFactory.getCurrentSession().createCriteria(Computer.class);
 		cr.createCriteria("constructor", "company", JoinType.LEFT_OUTER_JOIN);
+		@SuppressWarnings("unchecked")
 		List<Computer> computersToDelete = cr.add(Restrictions.eq("company.id", companyId)).list();
 		for (Computer c : computersToDelete) {
 			sessionFactory.getCurrentSession().delete(c);
 		}
 	}
 	
-	public void addOrderByToRequest(Criteria criteria, DaoRequestParameter param) throws DaoException {
+	private void addOrderByToRequest(Criteria criteria, DaoRequestParameter param) {
 		if ((param.getOrders() == null) || (param.getOrders().size() == 0)) {
 			criteria.addOrder(Order.asc(DEFAULT_ID).nulls(NullPrecedence.LAST));
 		} else {
@@ -192,6 +226,7 @@ public class ComputerDao  implements IDao<Computer, Long> {
 						order = Order.desc(e.getKey()).nulls(NullPrecedence.LAST);
 						break;
 					default:
+						LOGGER.error("Unknown value for Order enumerate.");
 						throw new DaoException(DaoException.INVALID_ARGUMENT);
 					}
 					criteria.addOrder(order);
@@ -202,7 +237,7 @@ public class ComputerDao  implements IDao<Computer, Long> {
 		}
 	}
 
-	public void setWhenCondition (Criteria criteria, DaoRequestParameter param) throws SQLException {
+	private void setWhenCondition (Criteria criteria, DaoRequestParameter param) throws SQLException {
 		StringBuilder filter = new StringBuilder();
 		switch (param.getNameFiltering()) {
 		case POST:
@@ -222,6 +257,7 @@ public class ComputerDao  implements IDao<Computer, Long> {
 			filter.append(param.getNameLike());
 			break;
 		default:
+			LOGGER.error("Unknown value for NameFiltering enumerate.");
 			throw new DaoException(DaoException.INVALID_ARGUMENT);
 		}
 		
@@ -229,28 +265,5 @@ public class ComputerDao  implements IDao<Computer, Long> {
 		Criterion companyName = Restrictions.like("company.name", filter.toString());
 		LogicalExpression orExp = Restrictions.or(computerName, companyName);
 		criteria.add(orExp);
-	}
-	
-	public void setComputerInMap (final Map<String, Object> map, Computer computer) throws DaoException {
-		if (computer.getName() != null) {
-			map.put("name",computer.getName());
-		} else {
-			throw new DaoException(DaoException.INVALID_ARGUMENT);
-		}
-		if (computer.getIntroductionDate() != null) {
-			map.put("introduced",Timestamp.valueOf(computer.getIntroductionDate()));
-		} else {
-			map.put("introduced",null);
-		}
-		if (computer.getDiscontinuedDate() != null) {
-			map.put("discontinued",Timestamp.valueOf(computer.getDiscontinuedDate()));
-		}else {
-			map.put("discontinued",null);
-		}
-		if (computer.getConstructor() != null) {
-			map.put("company_id",computer.getConstructor().getId());
-		} else {
-			map.put("company_id",null);
-		}
 	}
 }

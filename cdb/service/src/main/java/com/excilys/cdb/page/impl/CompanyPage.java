@@ -34,8 +34,8 @@ public class CompanyPage extends Page<Company, Long> {
 	}
 	
 	/**
-	 * Display next page
-	 * @return true if there is still pages to display, 0 else
+	 * Load next page
+	 * @return true if there is still pages to load, 0 else
 	 */
 	@Override
 	public boolean nextPage() {
@@ -48,7 +48,11 @@ public class CompanyPage extends Page<Company, Long> {
 			return false;
 		}
 	}
-
+	
+	/**
+	 * Load previous page
+	 * @return true if there is still pages to load, 0 else
+	 */
 	@Override
 	public boolean previousPage() {
 		if (pageNumber != 1) {
@@ -61,6 +65,10 @@ public class CompanyPage extends Page<Company, Long> {
 		}
 	}
 
+	/**
+	 * Load the given page
+	 * @return
+	 */
 	@Override
 	public boolean goToPage(Integer numPage) {
 		if (numPage > 0 && numPage < numberOfPages+1) {

@@ -1,16 +1,8 @@
 package com.excilys.cdb.exception;
 
-/**
- * 
- * @author Kevin Bottero
- *
- */
 public class ServiceException extends RuntimeException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2436807985927075314L;
+	private static final long serialVersionUID = 1L;
 
 	public ServiceException() {
 		super();

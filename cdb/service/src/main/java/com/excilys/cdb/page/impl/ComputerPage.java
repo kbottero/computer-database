@@ -6,7 +6,6 @@ import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.page.Page;
 import com.excilys.cdb.service.IService;
 
-
 public class ComputerPage extends Page<Computer, Long> {
 
 	protected IService<Computer, Long> computersService;
@@ -35,8 +34,8 @@ public class ComputerPage extends Page<Computer, Long> {
 	}
 	
 	/**
-	 * Display next page
-	 * @return true if there is still pages to display, 0 else
+	 * Load next page
+	 * @return true if there is still pages to load, 0 else
 	 */
 	@Override
 	public boolean nextPage() {
@@ -49,7 +48,11 @@ public class ComputerPage extends Page<Computer, Long> {
 			return false;
 		}
 	}
-
+	
+	/**
+	 * Load previous page
+	 * @return true if there is still pages to load, 0 else
+	 */
 	@Override
 	public boolean previousPage() {
 		if (pageNumber > 1) {
@@ -61,7 +64,11 @@ public class ComputerPage extends Page<Computer, Long> {
 			return false;
 		}
 	}
-
+	
+	/**
+	 * Load the given page
+	 * @return
+	 */
 	@Override
 	public boolean goToPage(Integer numPage) {
 		if (numPage > 0 && numPage < numberOfPages+1) {

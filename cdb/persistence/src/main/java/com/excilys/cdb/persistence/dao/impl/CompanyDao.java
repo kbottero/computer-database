@@ -21,11 +21,6 @@ import com.excilys.cdb.persistence.dao.IDao;
 import com.excilys.cdb.persistence.exception.DaoException;
 import com.excilys.cdb.persistence.util.DaoRequestParameter;
 
-/**
- * CompanyDao
- * @author Kevin Bottero
- *
- */
 @Repository("companyDao")
 public class CompanyDao implements IDao<Company, Long>{
 	

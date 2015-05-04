@@ -24,11 +24,6 @@ import com.excilys.cdb.persistence.dao.IDao;
 import com.excilys.cdb.persistence.exception.DaoException;
 import com.excilys.cdb.persistence.util.DaoRequestParameter;
 
-/**
- * ComputerDao
- * @author Kevin Bottero
- *
- */
 @Repository("computerDao")
 public class ComputerDao  implements IDao<Computer, Long> {
 

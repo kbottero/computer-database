@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.dao.impl.ComputerDao;
+import com.excilys.cdb.persistence.exception.DaoException;
 import com.excilys.cdb.persistence.util.DaoRequestParameter;
 import com.excilys.cdb.persistence.util.DaoRequestParameter.Order;
 
@@ -94,7 +95,7 @@ public class TestComputerDao {
 		dao.getAll();
 	}
 	
-	@Test(expected = NullPointerException.class)
+	@Test(expected = DaoException.class)
 	public void getAllWithNullParam() throws Exception {
 		ArrayList<Computer> listComputer = new ArrayList<Computer>();
 		ArrayList<Company> listCompany = new ArrayList<Company>();
@@ -149,7 +150,7 @@ public class TestComputerDao {
 		}
 	}
 	
-	@Test(expected = NullPointerException.class)
+	@Test(expected = DaoException.class)
 	public void getSomeWithNullParameter() throws Exception {
 		dao.getSome(null);
 	}

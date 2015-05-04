@@ -15,6 +15,11 @@
 		</dependency>
 		<!-- SPRING -->
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId> <!-- Handle the connection to the database -->
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-jpa</artifactId> <!-- Allow the use of @Repository -->
 		</dependency>
